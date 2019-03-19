@@ -1,22 +1,21 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
-from django.utils import timezone
 
-from .models import Profile
+from .users_constants import GENDER, MARITAL_STATUS, BIRTH_DATE_YEARS_RANGE
+from .models import Profile, Nationality
 
 
 class StaffCreationForm(UserCreationForm):
     """docstring for StaffCreationForm"""
     email = forms.EmailField()
-    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
 
     class Meta:
         """docstring for Meta"""
         model = User
-        fields = ['username', 'first_name', 'last_name',
-                  'email', 'password1', 'password2', 'group'
-                  ]
+        fields = ('username', 'first_name', 'last_name',
+                  'email', 'password1', 'password2',
+                  )
 
 
 class StaffUpdateForm(UserCreationForm):
@@ -26,43 +25,18 @@ class StaffUpdateForm(UserCreationForm):
     class Meta:
         """docstring for Meta"""
         model = User
-        fields = ['username', 'first_name', 'last_name',
-                  'email', 'password1', 'password2'
-                  ]
+        fields = ('username', 'first_name', 'last_name',
+                  'email',
+                  )
 
 
 class ProfileCreationForm(forms.ModelForm):
     """docstring for ProfileCreationForm"""
-    GENDER = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-    )
-
-    MARITAL_STATUS = (
-        ('SINGLE', 'Single'),
-        ('MARRIED', 'Married'),
-        ('SEPARATED', 'Separated'),
-        ('DIVORCED', 'Divorced'),
-        ('WIDOW', 'Widow')
-    )
-
-    NATIONALITY = (
-        ('DJIBOUTI', 'Djibouti'),
-        ('ETHIOPIAN', 'Ethiopian'),
-        ('KENYAN', 'Kenyan'),
-        ('SOMALI', 'Somali'),
-        ('TANZANIAN', 'Tanzanian'),
-        ('YEMENI', 'Yemeni'),
-        ('UGANDAN', 'Ugandan'),
-        ('OTHER', 'Other'),
-    )
-
-    YEARS = [year for year in range(1940, timezone.now().year)]
-
-    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=YEARS))
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_DATE_YEARS_RANGE))
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect())
     marital_status = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.Select())
-    nationality = forms.ChoiceField(choices=NATIONALITY, widget=forms.Select())
+    nationality = forms.ModelChoiceField(queryset=Nationality.objects.all())
     image = forms.ImageField(required=False)
     mobile_number = forms.CharField(required=False)
     passport_number = forms.CharField(required=False)
@@ -75,42 +49,26 @@ class ProfileCreationForm(forms.ModelForm):
         fields = [
             'marital_status', 'mobile_number', 'id_number',
             'passport_number', 'nationality', 'address', 'town',
-            'date_of_birth', 'sex', 'image',
+            'date_of_birth', 'sex', 'image', 'user_group',
         ]
 
 
 class ProfileUpdateForm(forms.ModelForm):
     """docstring for ProfileUpdateForm"""
-    GENDER = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-    )
 
-    MARITAL_STATUS = (
-        ('SINGLE', 'Single'),
-        ('MARRIED', 'Married'),
-        ('SEPARATED', 'Separated'),
-        ('DIVORCED', 'Divorced'),
-        ('WIDOW', 'Widow')
-    )
+    def __int__(self, *args, disabled_user_group=True, disabled_sex=True, disabled_nationality=True,
+                disabled_date_of_birth=True, **kwargs):
+        super(ProfileUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['sex'].disabled = disabled_sex
+        self.fields['nationality'] = disabled_nationality
+        self.fields['date_of_birth'] = disabled_date_of_birth
+        self.fields['user_group'] = disabled_user_group
 
-    NATIONALITY = (
-        ('DJIBOUTIAN', 'Djiboutian'),
-        ('ETHIOPIAN', 'Ethiopian'),
-        ('KENYAN', 'Kenyan'),
-        ('SOMALI', 'Somali'),
-        ('TANZANIAN', 'Tanzanian'),
-        ('YEMENI', 'Yemeni'),
-        ('UGANDAN', 'Ugandan'),
-        ('OTHER', 'Other'),
-    )
-
-    YEARS = [year for year in range(1940, timezone.now().year)]
-
-    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=YEARS))
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all())
+    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_DATE_YEARS_RANGE))
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect())
     marital_status = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.Select())
-    nationality = forms.ChoiceField(choices=NATIONALITY, widget=forms.Select())
+    nationality = forms.ModelChoiceField(queryset=Nationality.objects.all())
     image = forms.ImageField(required=False)
     mobile_number = forms.CharField(required=False)
     passport_number = forms.CharField(required=False)
@@ -123,5 +81,5 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = [
             'marital_status', 'mobile_number', 'id_number',
             'passport_number', 'nationality', 'address', 'town',
-            'date_of_birth', 'sex', 'image',
+            'date_of_birth', 'sex', 'image', 'user_group',
         ]

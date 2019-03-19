@@ -7,54 +7,54 @@
 		<div class="d-flex w-100">
 			<div class="p-2 w-75 m-3 card" style="background-color: #eeeeee;">
 				<div class="card d-flex flex-row-reverse align-items-center mb-3" style="height: 120px; background-color: #E61D2B">
-					<img class="p-2 rounded-circle ml-auto" src="#" alt="" style="width: 105px; height: 105px;">
+					<img class="p-2 rounded-circle ml-auto" src="{{ user.profile.image.url }}" alt="" style="width: 105px; height: 105px;">
 				</div>
 				<div class="card p-3">
 		            <fieldset class="form-group">
 		                <h3 class="border-bottom mb-4">BIO DATA</h3>
-		                {{ profile_creation_form.image|as_crispy_field }}
+		                {{ profile_update_form.image|as_crispy_field }}
 		                <div class="form-row">
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ user_creation_form.first_name|as_crispy_field }}
+						        {{ user_update_form.first_name|as_crispy_field }}
 					      	</div>
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ user_creation_form.last_name|as_crispy_field }}
+						        {{ user_update_form.last_name|as_crispy_field }}
 					      	</div>
 					    </div>
 					    <div class="form-row">
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.date_of_birth|as_crispy_field }}
+						        {{ profile_update_form.date_of_birth|as_crispy_field }}
 					      	</div>
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.sex|as_crispy_field }}
+						        {{ profile_update_form.sex|as_crispy_field }}
 					      	</div>
 					    </div>
 					    <div class="form-row">
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.marital_status|as_crispy_field }}
+						        {{ profile_update_form.marital_status|as_crispy_field }}
 					      	</div>
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.mobile_number|as_crispy_field }}
+						        {{ profile_update_form.mobile_number|as_crispy_field }}
 					      	</div>
 					    </div>
 					    <div class="form-row">
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ user_creation_form.email|as_crispy_field }}
+						        {{ user_update_form.email|as_crispy_field }}
 					      	</div>
 					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.id_number|as_crispy_field }}
+						        {{ profile_update_form.id_number|as_crispy_field }}
 					      	</div>
 					    </div>
-					    {{ profile_creation_form.passport_number|as_crispy_field }}
+					    {{ profile_update_form.passport_number|as_crispy_field }}
 					    <div class="form-row">
 					      	<div class="form-group col-md-4 mb-0">
-					        	{{ profile_creation_form.nationality|as_crispy_field }}
+					        	{{ profile_update_form.nationality|as_crispy_field }}
 				      		</div>
 					      	<div class="form-group col-md-4 mb-0">
-						        {{ profile_creation_form.address|as_crispy_field }}
+						        {{ profile_update_form.address|as_crispy_field }}
 				      		</div>
 					      	<div class="form-group col-md-4 mb-0">
-						        {{ profile_creation_form.town|as_crispy_field }}
+						        {{ profile_update_form.town|as_crispy_field }}
 					      	</div>
 					    </div>
 		            </fieldset>
@@ -67,11 +67,9 @@
 			<div class="p-2 w-25 m-3 card">
 				<fieldset class="form-group">
 	                <h5 class="border-bottom mb-4">User Account Settings</h5>
-	                {{ user_creation_form.username|as_crispy_field }}
-	                {{ user_creation_form.password1|as_crispy_field }}
-	                {{ user_creation_form.password2|as_crispy_field }}
+	                {{ user_update_form.username|as_crispy_field }}
                     <h5 class="border-bottom mb-4">User Group</h5>
-                    {{ user_creation_form.group|as_crispy_field  }}
+                    {{ profile_creation_form.user_group|as_crispy_field  }}
 	            </fieldset>
 			</div>
 		</div>

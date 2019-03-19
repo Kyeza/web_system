@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import Group
 
+from users.models import Profile
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm
 
 
@@ -14,14 +15,11 @@ def register_staff(request):
         if user_creation_form.is_valid() and profile_creation_form.is_valid():
             user_instance = user_creation_form.save(commit=False)
             user_instance.save()
-            user_group = Group.objects.get(pk=int(request.POST.get('group')))
+            user_group = Group.objects.get(pk=int(request.POST.get('user_group')))
             user_group.user_set.add(user_instance)
             user_profile_instance = profile_creation_form.save(commit=False)
             user_profile_instance.user = user_instance
             user_profile_instance.save()
-            print(f'\nDebug info:\nObject type: {type(user_profile_instance)}')
-            print(f'\nDictionary: {user_profile_instance.__dict__}')
-            print(f'\nCleaned data: {profile_creation_form.cleaned_data}\n')
             messages.success(request, 'You have successfully created a new Employee')
             return redirect('payroll:index')
 
@@ -52,6 +50,6 @@ def profile(request):
 
     context = {
         'user_update_form': user_update_form,
-        'profile_update_form': profile_update_form
+        'profile_update_form': profile_update_form,
     }
     return render(request, 'users/profile.html', context)
