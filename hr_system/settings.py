@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
+    'payroll.apps.PayrollConfig',
+    'support_data.apps.SupportDataConfig',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -128,3 +131,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+LOGIN_REDIRECT_URL = 'payroll:index'
+LOGIN_URL = 'login'
+
+LOGOUT_REDIRECT_URL = 'payroll:index'
