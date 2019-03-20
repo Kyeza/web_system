@@ -14,4 +14,4 @@ MARITAL_STATUS = (
     ('WIDOW', 'Widow')
 )
 
-BIRTH_DATE_YEARS_RANGE = [year for year in range(1940, timezone.now().year)]
+YEARS = [year for year in range(1980, timezone.now().year)]

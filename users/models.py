@@ -2,11 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 
 from .utils import get_image_filename
-from .users_constants import MARITAL_STATUS, GENDER
+from .constants import MARITAL_STATUS, GENDER
 
 
-class Profile(models.Model):
-    """docstring for Profile"""
+class Employee(models.Model):
+    """docstring for Employee"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     user_group = models.ForeignKey(Group, on_delete=models.SET(None))
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS)
@@ -21,21 +21,4 @@ class Profile(models.Model):
     town = models.CharField(max_length=30, blank=True)
 
     def __str__(self):
-        return f'{self.user.username.capitalize()} Profile'
-
-
-class Country(models.Model):
-    """docstring for Countries"""
-    name = models.CharField(max_length=36)
-
-    def __str__(self):
-        return self.name
-
-
-class Nationality(models.Model):
-    """docstring for Nationality"""
-    country = models.OneToOneField(Country, on_delete=models.CASCADE, primary_key=True)
-    name = models.CharField(max_length=36)
-
-    def __str__(self):
-        return self.name
+        return f'{self.user.username.capitalize()} Employee'

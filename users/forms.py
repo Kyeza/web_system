@@ -2,8 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 
-from .users_constants import GENDER, MARITAL_STATUS, BIRTH_DATE_YEARS_RANGE
-from .models import Profile, Nationality
+from .constants import GENDER, MARITAL_STATUS
+from hr_system.constants import  YEARS
+from .models import Employee
+from support_data.models import Nationality
 
 
 class StaffCreationForm(UserCreationForm):
@@ -33,7 +35,7 @@ class StaffUpdateForm(UserCreationForm):
 class ProfileCreationForm(forms.ModelForm):
     """docstring for ProfileCreationForm"""
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
-    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_DATE_YEARS_RANGE))
+    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=YEARS))
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect())
     marital_status = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.Select())
     nationality = forms.ModelChoiceField(queryset=Nationality.objects.all())
@@ -45,7 +47,7 @@ class ProfileCreationForm(forms.ModelForm):
 
     class Meta:
         """docstring for Meta"""
-        model = Profile
+        model = Employee
         fields = [
             'marital_status', 'mobile_number', 'id_number',
             'passport_number', 'nationality', 'address', 'town',
@@ -65,7 +67,7 @@ class ProfileUpdateForm(forms.ModelForm):
         self.fields['user_group'] = disabled_user_group
 
     user_group = forms.ModelChoiceField(queryset=Group.objects.all())
-    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_DATE_YEARS_RANGE))
+    date_of_birth = forms.DateField(widget=forms.SelectDateWidget(years=YEARS))
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect())
     marital_status = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.Select())
     nationality = forms.ModelChoiceField(queryset=Nationality.objects.all())
@@ -77,7 +79,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
     class Meta:
         """docstring for Meta"""
-        model = Profile
+        model = Employee
         fields = [
             'marital_status', 'mobile_number', 'id_number',
             'passport_number', 'nationality', 'address', 'town',

@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import Group
 
-from users.models import Profile
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm
 
 
@@ -42,7 +41,7 @@ def profile(request):
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             profile_update_form.save()
-            messages.success(request, 'Your Profile has been updated')
+            messages.success(request, 'Your Employee has been updated')
             return redirect('profile')
     else:
         user_update_form = StaffUpdateForm(instance=request.user)
