@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
-from payroll.models import PayrollCenter, Bank, Currency
+from payroll.models import PayrollCenter, Bank, Currency, PayrollPeriod, EarningDeductionCategory, EarningDeductionType
 from support_data.models import Nationality, DutyStation, Department, JobTitle, ContractType, Relationship, Country, \
     Grade
 from .constants import MARITAL_STATUS, GENDER, EMP_STATUS
@@ -60,7 +60,22 @@ class Employee(models.Model):
              update_fields=None):
         if self.appointment_date is None:
             self.appointment_date = timezone.now()
-        super().save(['appointment_date'])
+            super().save(update_fields=['appointment_date'])
+        super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return f'{self.user.username.capitalize()} Employee'
+
+
+class PayrollProcessors(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    earning_and_deductions_type = models.ForeignKey(EarningDeductionType, on_delete=models.PROTECT)
+    earning_and_deductions_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.PROTECT)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+    payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL, null=True)
+    payroll_key = models.CharField(max_length=150, blank=True, null=False, default='Auto generated', unique=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.payroll_key is None:
+            self.payroll_key = f'P{self.payroll_period_id}S{self.employee_id}K{self.earning_and_deductions_type_id}'
+        super().save(['payroll_key'])

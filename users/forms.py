@@ -148,12 +148,7 @@ class ProfileUpdateForm(forms.ModelForm):
     duty_station = forms.ModelChoiceField(queryset=DutyStation.objects.all(), required=False)
     department = forms.ModelChoiceField(queryset=Department.objects.all(), required=False)
     job_title = forms.ModelChoiceField(queryset=JobTitle.objects.all(), required=False)
-    appointment_date = forms.DateField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        ),
-        required=False,
-    )
+    appointment_date = forms.DateField(disabled=True)
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
     cost_centre = forms.CharField(required=False)
     grade = forms.ModelChoiceField(queryset=Grade.objects.all(), required=False)

@@ -5,7 +5,6 @@ from django.urls import reverse
 
 from hr_system.constants import YES_OR_NO_TYPES
 from support_data.models import Country, Organization
-from users.models import Employee
 from .constants import MONTHS, PAYROLL_YEARS, OPEN_OR_CLOSED
 
 
@@ -94,17 +93,3 @@ class PAYERates(models.Model):
     upper_boundary = models.DecimalField(max_digits=7, decimal_places=2)
     fixed_amount = models.DecimalField(max_digits=7, decimal_places=2)
     rate = models.DecimalField(max_digits=7, decimal_places=2)
-
-
-class PayrollProcessors(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    earning_and_deductions_type = models.ForeignKey(EarningDeductionType, on_delete=models.PROTECT)
-    earning_and_deductions_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.PROTECT)
-    amount = models.DecimalField(max_digits=7, decimal_places=2)
-    payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL)
-    payroll_key = models.CharField(max_length=150, blank=True, null=False, default='Auto generated', unique=True)
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.payroll_key is None:
-            self.payroll_key = f'P{self.payroll_period_id}S{self.employee_id}K{self.earning_and_deductions_type_id}'
-        super().save(['payroll_key'])
