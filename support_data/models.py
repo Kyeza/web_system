@@ -1,9 +1,10 @@
 import datetime
 
 from django.db import models
+from django.urls import reverse
 
 from hr_system.constants import YES_OR_NO_TYPES
-from .constants import  TAX_YEAR_CHOICES
+from .constants import TAX_YEAR_CHOICES
 
 
 class Country(models.Model):
@@ -55,9 +56,9 @@ class JobTitle(models.Model):
 class ContractType(models.Model):
     """docstring for ContractType"""
     contract_type = models.CharField(max_length=150)
-    contract_expiry = models.IntegerField()
+    contract_expiry = models.IntegerField(default=0)
     leave_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
-    leave_days_entitled = models.IntegerField()
+    leave_days_entitled = models.IntegerField(default=0)
 
     def __str__(self):
         return self.contract_type
@@ -74,7 +75,10 @@ class Relationship(models.Model):
 class Organization(models.Model):
     """docstring for Organization"""
     name = models.CharField(max_length=100)
-    country = models.OneToOneField(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return reverse('support_data:organization-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.name
@@ -95,9 +99,7 @@ class Tax(models.Model):
     lower_boundary = models.DecimalField(max_digits=7, decimal_places=2)
     upper_boundary = models.DecimalField(max_digits=7, decimal_places=2)
     fixed_amount = models.DecimalField(max_digits=7, decimal_places=2)
-    year = models.IntegerField(choices=TAX_YEAR_CHOICES,  default=datetime.datetime.now().year)
+    year = models.IntegerField(choices=TAX_YEAR_CHOICES, default=datetime.datetime.now().year)
 
     def __str__(self):
         return self.country
-
-

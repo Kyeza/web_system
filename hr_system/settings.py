@@ -136,3 +136,5 @@ LOGIN_REDIRECT_URL = 'payroll:index'
 LOGIN_URL = 'login'
 
 LOGOUT_REDIRECT_URL = 'payroll:index'
+
+AUTH_USER_MODEL = 'users.User'

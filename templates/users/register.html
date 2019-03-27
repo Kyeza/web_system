@@ -2,78 +2,235 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-	<form  class="w-100" method="POST" enctype="multipart/form-data">
+    <form id="registrationForm" class="w-100" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-		<div class="d-flex w-100">
-			<div class="p-2 w-75 m-3 card" style="background-color: #eeeeee;">
-				<div class="card d-flex flex-row-reverse align-items-center mb-3" style="height: 120px; background-color: #E61D2B">
-					<img class="p-2 rounded-circle ml-auto" src="#" alt="" style="width: 105px; height: 105px;">
-				</div>
-				<div class="card p-3">
-		            <fieldset class="form-group">
-		                <h3 class="border-bottom mb-4">BIO DATA</h3>
-		                {{ profile_creation_form.image|as_crispy_field }}
-		                <div class="form-row">
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ user_creation_form.first_name|as_crispy_field }}
-					      	</div>
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ user_creation_form.last_name|as_crispy_field }}
-					      	</div>
-					    </div>
-					    <div class="form-row">
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.date_of_birth|as_crispy_field }}
-					      	</div>
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.sex|as_crispy_field }}
-					      	</div>
-					    </div>
-					    <div class="form-row">
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.marital_status|as_crispy_field }}
-					      	</div>
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.mobile_number|as_crispy_field }}
-					      	</div>
-					    </div>
-					    <div class="form-row">
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ user_creation_form.email|as_crispy_field }}
-					      	</div>
-					      	<div class="form-group col-md-6 mb-0">
-						        {{ profile_creation_form.id_number|as_crispy_field }}
-					      	</div>
-					    </div>
-					    {{ profile_creation_form.passport_number|as_crispy_field }}
-					    <div class="form-row">
-					      	<div class="form-group col-md-4 mb-0">
-					        	{{ profile_creation_form.nationality|as_crispy_field }}
-				      		</div>
-					      	<div class="form-group col-md-4 mb-0">
-						        {{ profile_creation_form.address|as_crispy_field }}
-				      		</div>
-					      	<div class="form-group col-md-4 mb-0">
-						        {{ profile_creation_form.town|as_crispy_field }}
-					      	</div>
-					    </div>
-		            </fieldset>
-		            <div class="form-group">
-		                <button class="btn btn-outline-success" type="submit">CREATE</button>
-		                <a class="btn btn-danger" href="{% url 'payroll:index' %}">CANCEL</a>
-		            </div>
-				</div>
-			</div>
-			<div class="p-2 w-25 m-3 card">
-				<fieldset class="form-group">
-	                <h5 class="border-bottom mb-4">User Account Settings</h5>
-	                {{ user_creation_form.username|as_crispy_field }}
-	                {{ user_creation_form.password1|as_crispy_field }}
-	                {{ user_creation_form.password2|as_crispy_field }}
+        <div class="d-flex w-100">
+            <div class="p-2 w-75 m-3 card" style="background-color: #eeeeee;">
+                <div class="card d-flex flex-row-reverse align-items-center mb-3"
+                     style="height: 120px; background-color: #E61D2B">
+                    <img class="p-2 rounded-circle ml-auto" src="#" alt="" style="width: 105px; height: 105px;">
+                </div>
+                <div class="card p-3">
+                    <fieldset class="form-group">
+                        <ul class="nav nav-tabs" id="infoTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="bio-data-tab" data-toggle="tab" href="#bio-data"
+                                   role="tab" aria-controls="home" aria-selected="true">BIO DATA</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="work-info-tab" data-toggle="tab" href="#work-info"
+                                   role="tab" aria-controls="profile" aria-selected="false">WORK INFO</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="payroll-info-tab" data-toggle="tab" href="#payroll-info"
+                                   role="tab" aria-controls="contact" aria-selected="false">PAYROLL INFO</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="emergency-contact-tab" data-toggle="tab"
+                                   href="#emergency-contact"
+                                   role="tab" aria-controls="contact" aria-selected="false">EMERGENCY CONTACT</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="infoTabContent">
+                            {#                            BIO DATA TAB#}
+                            <div class="tab-pane fade show active" id="bio-data" role="tabpanel"
+                                 aria-labelledby="bio-data-tab">
+                                {{ profile_creation_form.image|as_crispy_field }}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ user_creation_form.first_name|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ user_creation_form.last_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.date_of_birth|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.sex|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.marital_status|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.mobile_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ user_creation_form.email|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.id_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.passport_number|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.nationality|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.residential_address|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.district|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#                            WORK INFO TAB#}
+                            <div class="tab-pane fade" id="work-info" role="tabpanel" aria-labelledby="work-info-tab">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.duty_country|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.duty_station|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.department|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.job_title|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.appointment_date|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.contract_type|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.cost_centre|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.grade|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.gross_salary|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.currency|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.tin_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#                            PAYROLL INFO TAB#}
+                            <div class="tab-pane fade" id="payroll-info" role="tabpanel"
+                                 aria-labelledby="payroll-info-tab">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.social_security|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.social_security_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.payroll_center|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.bank_1|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_creation_form.first_account_number|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-2 mb-0">
+                                        {{ profile_creation_form.first_bank_percentage|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.bank_1|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_creation_form.second_account_number|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-2 mb-0">
+                                        {{ profile_creation_form.second_bank_percentage|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#                            EMERGENCY CONTACT TAB#}
+                            <div class="tab-pane fade" id="emergency-contact" role="tabpanel"
+                                 aria-labelledby="emergency-contact-tab">
+                                {{ profile_creation_form.kin_full_name|as_crispy_field }}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.kin_phone_number|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.kin_email|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_creation_form.kin_relationship|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-success" type="submit">SUBMIT</button>
+                        <a class="btn btn-danger" href="{% url 'payroll:index' %}">CANCEL</a>
+                    </div>
+                </div>
+            </div>
+            <div class="p-2 w-25 m-3 card">
+                <fieldset class="form-group">
+                    <h5 class="border-bottom mb-4">User Account Settings</h5>
+                    {{ user_creation_form.username|as_crispy_field }}
+                    {{ user_creation_form.password1|as_crispy_field }}
+                    {{ user_creation_form.password2|as_crispy_field }}
                     <h5 class="border-bottom mb-4">User Group</h5>
                     {{ profile_creation_form.user_group|as_crispy_field  }}
-	            </fieldset>
-			</div>
-		</div>
-	</form>
+                </fieldset>
+            </div>
+        </div>
+    </form>
+    <script>
+
+        appointment_date = document.getElementById("id_appointment_date");
+        appointment_date.value = new Date();
+
+        first = document.getElementById("id_first_name");
+        last = document.getElementById("id_last_name");
+
+        first.addEventListener("keyup", updateUsername);
+        last.addEventListener("keyup", updateUsername);
+
+        function updateUsername() {
+            document.getElementById("id_username").value = first.value.toLowerCase().trim() + "."
+                + last.value.toLowerCase().trim();
+            document.getElementById("id_password1").value = first.value.toLowerCase().trim()[0]
+                + "@" + last.value.toLowerCase().trim()[0] + "12345";
+            document.getElementById("id_password2").value = first.value.toLowerCase().trim()[0]
+                + "@" + last.value.toLowerCase().trim()[0] + "12345";
+        }
+    </script>
 {% endblock content %}
