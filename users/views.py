@@ -5,7 +5,8 @@ from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 
-from users.models import Employee
+from payroll.models import EarningDeductionType, PayrollPeriod
+from users.models import Employee, PayrollProcessors
 from .forms import (StaffCreationForm, ProfileCreationForm,
                     StaffUpdateForm, ProfileUpdateForm,
                     EmployeeApprovalForm)
@@ -77,7 +78,7 @@ def user_update_profile(request, pk=None):
             user_update_form.save()
             profile_update_form.save()
             messages.success(request, 'Employee has been updated')
-            return redirect('users:employee-approval')
+            return redirect('users:edit-employee')
     else:
         user_update_form = StaffUpdateForm(instance=profile_user)
         profile_update_form = ProfileUpdateForm(instance=profile_user.employee)
@@ -103,7 +104,18 @@ def approve_employee(request, pk=None):
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             profile_update_form.save()
-            messages.success(request, 'Employee has been updated')
+
+            # add user to PayrollProcessor
+            if profile_user.employee.employment_status == 'APPROVED':
+                open_payroll_period = PayrollPeriod.objects.filter(status='OPEN').first()
+                for ed_type in EarningDeductionType.objects.all():
+                    user_process = PayrollProcessors(employee=profile_user.employee,
+                                                     earning_and_deductions_category=ed_type.ed_category,
+                                                     earning_and_deductions_type=ed_type,
+                                                     amount=0, payroll_period=open_payroll_period)
+                    user_process.save()
+
+            messages.success(request, 'Employee has been approved')
             return redirect('users:employee-approval')
     else:
         user_update_form = StaffUpdateForm(instance=profile_user)

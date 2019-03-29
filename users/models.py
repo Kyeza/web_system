@@ -73,9 +73,10 @@ class PayrollProcessors(models.Model):
     earning_and_deductions_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL, null=True)
-    payroll_key = models.CharField(max_length=150, blank=True, null=False, default='Auto generated', unique=True)
+    payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.payroll_key is None:
             self.payroll_key = f'P{self.payroll_period_id}S{self.employee_id}K{self.earning_and_deductions_type_id}'
-        super().save(['payroll_key'])
+
+        super().save(force_insert, force_update, using, update_fields)

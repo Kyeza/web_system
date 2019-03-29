@@ -19,6 +19,7 @@ EMP_STATUS_APP_TER = (
 )
 
 EMP_APPROVE_OR_REJECT = (
+    ('RECRUIT', 'Recruit'),
     ('APPROVED', 'Approve'),
     ('REJECTED', 'Reject'),
 )
