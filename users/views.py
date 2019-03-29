@@ -6,7 +6,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 
 from users.models import Employee
-from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm
+from .forms import (StaffCreationForm, ProfileCreationForm,
+                    StaffUpdateForm, ProfileUpdateForm,
+                    EmployeeApprovalForm)
 
 
 @login_required
@@ -79,6 +81,33 @@ def user_update_profile(request, pk=None):
     else:
         user_update_form = StaffUpdateForm(instance=profile_user)
         profile_update_form = ProfileUpdateForm(instance=profile_user.employee)
+
+    context = {
+        'profile_user': profile_user,
+        'user_update_form': user_update_form,
+        'profile_update_form': profile_update_form,
+    }
+    return render(request, 'users/profile.html', context)
+
+
+@login_required
+def approve_employee(request, pk=None):
+    prof = get_object_or_404(Employee, pk=pk)
+    profile_user = prof.user
+
+    if request.method == 'POST':
+        user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
+        print(f'User Form is valid: {user_update_form.is_valid()}')
+        profile_update_form = EmployeeApprovalForm(request.POST, request.FILES, instance=profile_user.employee)
+        print(f'Profile Form is valid: {profile_update_form.is_valid()}')
+        if user_update_form.is_valid() and profile_update_form.is_valid():
+            user_update_form.save()
+            profile_update_form.save()
+            messages.success(request, 'Employee has been updated')
+            return redirect('users:employee-approval')
+    else:
+        user_update_form = StaffUpdateForm(instance=profile_user)
+        profile_update_form = EmployeeApprovalForm(instance=profile_user.employee)
 
     context = {
         'profile_user': profile_user,

@@ -213,6 +213,9 @@
                     <h5 class="border-bottom mb-4">User Group</h5>
                     {{ profile_update_form.user_group|as_crispy_field }}
                     <h5 class="border-bottom mb-4">Update Employee status</h5>
+                    <div class="border p-2 rounded">
+                        Current status: <span class="text-success">{{ profile_user.employee.employment_status }}</span>
+                    </div>
                     {{ profile_update_form.employment_status|as_crispy_field }}
                 </fieldset>
             </div>

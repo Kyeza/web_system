@@ -13,4 +13,5 @@ urlpatterns = [
     path('edit_employee/', ApprovedEmployeeListView.as_view(), name='edit-employee'),
     path('terminated_employees/', TerminatedEmployeeListView.as_view(), name='terminated-employee'),
     path('rejected_employees/', RejectedEmployeeListView.as_view(), name='rejected-employee'),
+    path('new_employee_approval/<int:pk>/edit/', views.approve_employee, name='approve-employee'),
 ]

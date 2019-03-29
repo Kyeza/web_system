@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -28,14 +29,46 @@ class PayrollPeriod(models.Model):
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
     month = models.IntegerField(choices=MONTHS, default=datetime.datetime.now().month)
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year)
-    payroll_key = models.CharField(max_length=150, blank=True, null=False, default='Auto generated')
-    status = models.CharField(max_length=6, choices=OPEN_OR_CLOSED, default=OPEN_OR_CLOSED[0][0])
+    payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None)
+    status = models.CharField(max_length=6, choices=OPEN_OR_CLOSED, default=OPEN_OR_CLOSED[1][0])
+
+    def get_absolute_url(self):
+        return reverse('payroll:payroll-period-detail', kwargs={'pk': self.pk})
+
+    def validate_status(self):
+        open_periods = []
+        center_payroll_periods = self.payroll_center.payrollperiod_set.all()
+
+        if center_payroll_periods:
+            for period in center_payroll_periods:
+                if period.status == 'OPEN':
+                    open_periods.append(period)
+
+            if len(open_periods) >= 1:
+                return OPEN_OR_CLOSED[1][0]
+
+        return OPEN_OR_CLOSED[0][0]
+
+    def clean(self):
+        if self.status == 'OPEN':
+            open_periods = []
+            center_payroll_periods = self.payroll_center.payrollperiod_set.all()
+
+            if center_payroll_periods:
+                for period in center_payroll_periods:
+                    if period.status == 'OPEN':
+                        open_periods.append(period)
+                if len(open_periods) >= 1:
+                    raise ValidationError(f'Can not set "Status: {self.status}", \nonly one  '
+                                          f'Payroll period can be open at a time')
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        self.full_clean()
         if self.payroll_key is None:
             self.payroll_key = f'Y{self.year}M{self.month}C{self.payroll_center_id}'
-        super().save(['payroll_key'])
+
+        super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return f'{self.payroll_center.name}-{self.payroll_key}'

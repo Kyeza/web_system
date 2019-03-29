@@ -4,7 +4,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from .models import PayrollCenter
+from .models import PayrollCenter, PayrollPeriod
 
 
 @login_required
@@ -30,3 +30,23 @@ class PayrollCenterDetailView(DetailView):
 class PayrollCenterListView(ListView):
     model = PayrollCenter
     paginate_by = 10
+
+
+class PayrollPeriodCreate(CreateView):
+    model = PayrollPeriod
+    fields = ['payroll_center', 'month', 'year', 'status']
+
+
+class PayrollPeriodUpdate(UpdateView):
+    model = PayrollPeriod
+    fields = ['payroll_center', 'month', 'year', 'status']
+
+
+class PayrollPeriodDetailView(DetailView):
+    model = PayrollPeriod
+    fields = ['payroll_center', 'month', 'year', 'status']
+
+
+class PayrollPeriodListView(ListView):
+    model = PayrollPeriod
+    fields = ['payroll_center', 'month', 'year', 'status']

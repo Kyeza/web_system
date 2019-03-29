@@ -60,7 +60,7 @@ class Employee(models.Model):
              update_fields=None):
         if self.appointment_date is None:
             self.appointment_date = timezone.now()
-            super().save(update_fields=['appointment_date'])
+            super().save()
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
