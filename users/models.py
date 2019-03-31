@@ -97,6 +97,9 @@ class PayrollProcessors(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
+    def __str__(self):
+        return f'{self.payroll_key}-{self.payroll_period.payroll_center}'
+
 
 class TerminatedEmployees(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)

@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
-                            PayrollCenterEds)
+                            PayrollCenterEds, LSTRates)
 from reports.models import PayrollPeriodReport
 from users.models import Employee, PayrollProcessors
 from .forms import (StaffCreationForm, ProfileCreationForm,
@@ -99,15 +99,16 @@ def add_user_to_payroll_processor(user):
     user_status = user.employee.employment_status
     payroll_periods = user.employee.payroll_center.payrollperiod_set.all()
     if user_status == 'APPROVED' or user_status == 'REACTIVATED':
-        open_payroll_period = PayrollPeriod.objects.filter(status='OPEN').first()
-        user_payroll_center = user.employee.payroll_center
-        payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
-        for pc_ed_type in payroll_center_ed_types:
-            user_process = PayrollProcessors(employee=user.employee,
-                                             earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
-                                             earning_and_deductions_type=pc_ed_type.ed_type,
-                                             amount=0, payroll_period=open_payroll_period)
-            user_process.save()
+        if payroll_periods:
+            open_payroll_period = payroll_periods.filter(status='OPEN').first()
+            user_payroll_center = user.employee.payroll_center
+            payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
+            for pc_ed_type in payroll_center_ed_types:
+                user_process = PayrollProcessors(employee=user.employee,
+                                                 earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
+                                                 earning_and_deductions_type=pc_ed_type.ed_type,
+                                                 amount=0, payroll_period=open_payroll_period)
+                user_process.save()
 
 
 @login_required
@@ -125,6 +126,7 @@ def approve_employee(request, pk=None):
             profile_update_form.save()
 
             # add user to PayrollProcessor
+            add_user_to_payroll_processor(profile_user)
 
             messages.success(request, 'Employee has been approved')
             return redirect('users:employee-approval')
@@ -228,55 +230,128 @@ def process_payroll_period(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
 
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
-    emps_in_period = list(set([n.employee for n in period_processes]))
+    employees_in_period = []
+
+    # removing any terminated employees before processing
+    for process in period_processes:
+        if process.employee.employment_status == 'TERMINATED':
+            process.delete()
+        else:
+            employees_in_period.append(process.employee)
+
+    if employees_in_period:
+        employees_to_process = list(set(employees_in_period))
+    else:
+        # redirecting to list of payroll periods in case there are no employee to process
+        messages.info(request, 'There are no users in Payroll period to process')
+        return redirect('payroll:open-payroll-period-list')
+
     earnings = EarningDeductionCategory.objects.get(pk=1)
     deductions = EarningDeductionCategory.objects.get(pk=2)
     statutory = EarningDeductionCategory.objects.get(pk=3)
 
-    for employee in emps_in_period:
+    # getting updated payroll processors in case any employees have been removed
+    period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+
+    for employee in employees_to_process:
         gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
         ge_data = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category=earnings).all()
+
+        # calculating gross earnings
+        if ge_data:
+            for inst in ge_data:
+                if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
+                    inst.amount = employee.gross_salary
+                    inst.save(update_fields=['amount'])
+                gross_earnings += inst.amount
+
+        # calculating LST
+        fixed_lst = 0
+        for lst_brac in LSTRates.objects.all():
+            if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary)):
+                fixed_lst = lst_brac.fixed_amount / 4
+                break
+        lst = fixed_lst
+        ge_minus_lst = gross_earnings - lst
+
+        # calculating PAYE
+        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
+        for tx_brac in PAYERates.objects.all():
+            if int(ge_minus_lst) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary)):
+                tax_bracket = tx_brac.lower_boundary
+                tax_rate = tx_brac.rate / 100
+                fixed_tax = tx_brac.fixed_amount
+                break
+        paye = (ge_minus_lst - tax_bracket) * tax_rate + fixed_tax
+
+        # calculating NSSF 5% and 10%
+        nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
+        nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
+
+        # update PAYE if exists in payroll center
+        employee_paye_processor = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type=11).first()
+        if employee_paye_processor:
+            employee_paye_processor.amount = paye
+            employee_paye_processor.save(update_fields=['amount'])
+
+        # update LST if exists in payroll center
+        employee_lst_processor = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type=13).first()
+        if employee_paye_processor:
+            employee_lst_processor.amount = lst
+            employee_lst_processor.save(update_fields=['amount'])
+
+        # update NSSF 10% if exists in payroll center
+        employee_nssf_10_processor = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type=63).first()
+        if employee_nssf_10_processor:
+            employee_nssf_10_processor.amount = nssf_10
+            employee_nssf_10_processor.save(update_fields=['amount'])
+
+        # update NSSF 5%_5 if exists in payroll center
+        employee_nssf_5_processor = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type=64).first()
+        if employee_nssf_5_processor:
+            employee_nssf_5_processor.amount = nssf_5
+            employee_nssf_5_processor.save(update_fields=['amount'])
+
+        # getting updated payroll processors with updated amounts
+        period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+
         tx_data_ded = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category=deductions).all()
         tx_data_stat = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category=statutory).all()
 
-        # calculating gross earnings
-        if ge_data:
-            for inst in ge_data:
-                gross_earnings += inst.amount
-
-        # calculating PAYE
-        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
-        for tx_brac in PAYERates.objects.all():
-            if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary)):
-                tax_bracket = tx_brac.lower_boundary
-                tax_rate = tx_brac.rate / 100
-                fixed_tax = tx_brac.fixed_amount
-                break
-
-        paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
-        nssf = Decimal(int(gross_earnings) * (10 / 100))
-
+        # calculating total deductions from deductions
         if tx_data_ded:
             for inst in tx_data_ded:
                 total_deductions += inst.amount
 
+        # calculating total deductions from statutory deductions
         if tx_data_stat:
             for inst in tx_data_stat:
                 total_deductions += inst.amount
 
         net_pay = gross_earnings - total_deductions
-        user_report = PayrollPeriodReport(employee=employee,
-                                          lst=lst,
-                                          paye=paye,
-                                          payroll_period=payroll_period,
-                                          gross_earnings=gross_earnings,
-                                          nssf=nssf,
-                                          total_deductions=total_deductions,
-                                          net_pay=net_pay)
-        user_report.save()
+
+        report_exists = PayrollPeriodReport.objects.first(employee=employee) \
+            .filter(payroll_period=payroll_period).first()
+
+        if report_exists is None:
+            user_report = PayrollPeriodReport(employee=employee,
+                                              payroll_period=payroll_period,
+                                              gross_earnings=gross_earnings,
+                                              total_deductions=total_deductions,
+                                              net_pay=net_pay)
+            user_report.save()
+        else:
+            report_exists.gross_earnings = gross_earnings
+            report_exists.total_deductions = total_deductions
+            report_exists.net_pay = net_pay
+            report_exists.save(update_fields=['gross_earnings', 'total_deductions', 'net_pay'])
 
     period_report = PayrollPeriodReport.objects.filter(payroll_period=payroll_period)
     context = {

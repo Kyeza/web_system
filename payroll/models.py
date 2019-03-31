@@ -117,3 +117,6 @@ class PAYERates(models.Model):
 class PayrollCenterEds(models.Model):
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
     ed_type = models.ForeignKey(EarningDeductionType, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f'{self.payroll_center.name}-{self.ed_type.ed_type}'
