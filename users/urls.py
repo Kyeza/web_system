@@ -14,4 +14,6 @@ urlpatterns = [
     path('terminated_employees/', TerminatedEmployeeListView.as_view(), name='terminated-employee'),
     path('rejected_employees/', RejectedEmployeeListView.as_view(), name='rejected-employee'),
     path('new_employee_approval/<int:pk>/edit/', views.approve_employee, name='approve-employee'),
+    path('payroll_period/<int:pk>/process/', views.process_payroll_period, name='process_payroll-period'),
+    path('terminate_employee/<int:pk>/', views.terminate_employee, name='terminate-employee'),
 ]

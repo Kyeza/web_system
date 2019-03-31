@@ -50,3 +50,13 @@ class PayrollPeriodDetailView(DetailView):
 class PayrollPeriodListView(ListView):
     model = PayrollPeriod
     fields = ['payroll_center', 'month', 'year', 'status']
+
+
+class PayrollPeriodForProcessing(ListView):
+    model = PayrollPeriod
+    template_name = 'payroll/payrollperiod_process_list.html'
+    fields = ['payroll_center', 'month', 'year', 'status']
+    paginate_by = 10
+
+    def get_queryset(self):
+        return PayrollPeriod.objects.filter(status='OPEN').all().order_by('id')

@@ -7,7 +7,7 @@ from payroll.models import Currency, PayrollCenter, Bank
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
-from .models import Employee, User
+from .models import Employee, User, TerminatedEmployees
 
 
 class StaffCreationForm(UserCreationForm):
@@ -216,3 +216,32 @@ class EmployeeApprovalForm(ProfileUpdateForm):
             'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
             'kin_relationship', 'employment_status',
         ]
+
+
+class TerminationForm(forms.ModelForm):
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all())
+    notice_date = forms.DateTimeField(
+        widget=forms.TextInput(
+            attrs={'type': 'date'}
+        ),
+        required=False
+    )
+    exit_date = forms.DateTimeField(
+        widget=forms.TextInput(
+            attrs={'type': 'date'}
+        ),
+        required=False
+    )
+    termination_date = forms.DateTimeField(
+        widget=forms.TextInput(
+            attrs={'type': 'date'}
+        ),
+        required=False
+    )
+    days_given = forms.IntegerField(required=False)
+    employable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
+    reason = forms.Textarea()
+
+    class Meta:
+        model = TerminatedEmployees
+        fields = ['employee', 'notice_date', 'exit_date', 'termination_date', 'days_given', 'employable', 'reason']

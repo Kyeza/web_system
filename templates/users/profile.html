@@ -216,7 +216,8 @@
                     <div class="border p-2 rounded">
                         Current status: <span class="text-success">{{ profile_user.employee.employment_status }}</span>
                     </div>
-                    {{ profile_update_form.employment_status|as_crispy_field }}
+                    <a class="btn btn-danger btn-block mt-4"
+                       href="{% url 'users:terminate-employee' profile_user.id %}">TERMINATE</a>
                 </fieldset>
             </div>
         </div>

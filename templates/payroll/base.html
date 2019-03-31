@@ -112,14 +112,27 @@
                     Payroll
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <h6 class="dropdown-item disabled">PAYROLL PERIODS</h6>
-                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-create' %}">Add Payroll Period</a>
-                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">Close Payroll Period</a>
-                    <h6 class="dropdown-item disabled">PAYROLL GENERATOR</h6>
-                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">Process Payroll</a>
-                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">Edit Payroll</a>
-                    <h6 class="dropdown-item disabled">PAYROLL GENERATOR</h6>
-                    <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">Payroll Reports</a>
+                    <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">PAYROLL
+                        PERIODS</a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-create' %}">
+                        <small>Add Payroll Period</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">
+                        <small>Close Payroll Period</small>
+                    </a>
+                    <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">PAYROLL
+                        GENERATOR</a>
+                    <a class="dropdown-item" href="{% url 'payroll:open-payroll-period-list' %}">
+                        <small>Process Payroll</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">
+                        <small>Edit Payroll</small>
+                    </a>
+                    <a class="dropdown-item disabled"
+                       style="font-weight: bolder; color: rgba(93,97,99,0.83);">REPORTS</a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">
+                        <small>Payroll Reports</small>
+                    </a>
                 </div>
             </li>
             <li class="nav-item dropdown">

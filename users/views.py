@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,11 +7,13 @@ from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 
-from payroll.models import EarningDeductionType, PayrollPeriod
+from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
+                            PayrollCenterEds)
+from reports.models import PayrollPeriodReport
 from users.models import Employee, PayrollProcessors
 from .forms import (StaffCreationForm, ProfileCreationForm,
                     StaffUpdateForm, ProfileUpdateForm,
-                    EmployeeApprovalForm)
+                    EmployeeApprovalForm, TerminationForm)
 
 
 @login_required
@@ -28,9 +32,9 @@ def register_employee(request):
             user_profile_instance.save()
             messages.success(request, 'You have successfully created a new Employee')
             return redirect('payroll:index')
-
-    user_creation_form = StaffCreationForm()
-    profile_creation_form = ProfileCreationForm()
+    else:
+        user_creation_form = StaffCreationForm()
+        profile_creation_form = ProfileCreationForm()
 
     context = {
         'title': 'New Employee',
@@ -91,6 +95,21 @@ def user_update_profile(request, pk=None):
     return render(request, 'users/profile.html', context)
 
 
+def add_user_to_payroll_processor(user):
+    user_status = user.employee.employment_status
+    payroll_periods = user.employee.payroll_center.payrollperiod_set.all()
+    if user_status == 'APPROVED' or user_status == 'REACTIVATED':
+        open_payroll_period = PayrollPeriod.objects.filter(status='OPEN').first()
+        user_payroll_center = user.employee.payroll_center
+        payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
+        for pc_ed_type in payroll_center_ed_types:
+            user_process = PayrollProcessors(employee=user.employee,
+                                             earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
+                                             earning_and_deductions_type=pc_ed_type.ed_type,
+                                             amount=0, payroll_period=open_payroll_period)
+            user_process.save()
+
+
 @login_required
 def approve_employee(request, pk=None):
     prof = get_object_or_404(Employee, pk=pk)
@@ -106,14 +125,6 @@ def approve_employee(request, pk=None):
             profile_update_form.save()
 
             # add user to PayrollProcessor
-            if profile_user.employee.employment_status == 'APPROVED':
-                open_payroll_period = PayrollPeriod.objects.filter(status='OPEN').first()
-                for ed_type in EarningDeductionType.objects.all():
-                    user_process = PayrollProcessors(employee=profile_user.employee,
-                                                     earning_and_deductions_category=ed_type.ed_category,
-                                                     earning_and_deductions_type=ed_type,
-                                                     amount=0, payroll_period=open_payroll_period)
-                    user_process.save()
 
             messages.success(request, 'Employee has been approved')
             return redirect('users:employee-approval')
@@ -189,7 +200,7 @@ class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Terminated').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='APPROVED').order_by('-appointment_date')
 
 
 class RejectedEmployeeListView(LoginRequiredMixin, ListView):
@@ -211,3 +222,76 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Employee.objects.filter(employment_status='Rejected').order_by('-appointment_date')
+
+
+def process_payroll_period(request, pk):
+    payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
+
+    period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+    emps_in_period = list(set([n.employee for n in period_processes]))
+    earnings = EarningDeductionCategory.objects.get(pk=1)
+    deductions = EarningDeductionCategory.objects.get(pk=2)
+    statutory = EarningDeductionCategory.objects.get(pk=3)
+
+    for employee in emps_in_period:
+        gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
+        ge_data = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_category=earnings).all()
+        tx_data_ded = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_category=deductions).all()
+        tx_data_stat = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_category=statutory).all()
+
+        # calculating gross earnings
+        if ge_data:
+            for inst in ge_data:
+                gross_earnings += inst.amount
+
+        # calculating PAYE
+        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
+        for tx_brac in PAYERates.objects.all():
+            if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary)):
+                tax_bracket = tx_brac.lower_boundary
+                tax_rate = tx_brac.rate / 100
+                fixed_tax = tx_brac.fixed_amount
+                break
+
+        paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
+        nssf = Decimal(int(gross_earnings) * (10 / 100))
+
+        if tx_data_ded:
+            for inst in tx_data_ded:
+                total_deductions += inst.amount
+
+        if tx_data_stat:
+            for inst in tx_data_stat:
+                total_deductions += inst.amount
+
+        net_pay = gross_earnings - total_deductions
+        user_report = PayrollPeriodReport(employee=employee,
+                                          lst=lst,
+                                          paye=paye,
+                                          payroll_period=payroll_period,
+                                          gross_earnings=gross_earnings,
+                                          nssf=nssf,
+                                          total_deductions=total_deductions,
+                                          net_pay=net_pay)
+        user_report.save()
+
+    period_report = PayrollPeriodReport.objects.filter(payroll_period=payroll_period)
+    context = {
+        'payroll_period': payroll_period,
+        'period_report': period_report,
+    }
+    return render(request, 'users/process_payroll_period.html', context)
+
+
+def terminate_employee(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    form = TerminationForm(instance=employee)
+
+    context = {
+        'employee': employee,
+        'form': form,
+    }
+    return render(request, 'users/_terminate_employee_form.html', context)

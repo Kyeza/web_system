@@ -13,6 +13,7 @@
                     <th>Month</th>
                     <th>Year</th>
                     <th>Status</th>
+                    <th>Process Payroll</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -25,6 +26,7 @@
                         <td>{{ payroll_period.month }}</td>
                         <td>{{ payroll_period.year }}</td>
                         <td>{{ payroll_period.status }}</td>
+                        <td><a href="{% url 'users:process_payroll-period' payroll_period.id %}">Process</a></td>
                     </tr>
                 {% empty %}
                     <p class="text-center">No Payroll centers yet</p>

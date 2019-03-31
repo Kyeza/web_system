@@ -1,33 +1,36 @@
 {% extends 'payroll/base.html' %}
-{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="content-section">
-        <h3 class="border-bottom mb-4">Payroll Periods</h3>
+        <h5 class="border-bottom mb-4">
+            {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
+        </h5>
         <div class="table-responsive-md">
             <table class="table table-sm table-borderless table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Payroll key</th>
-                    <th>Payroll center</th>
-                    <th>Month</th>
-                    <th>Year</th>
-                    <th>Status</th>
+                    <th>Staff</th>
+                    <th>Gross Earnings</th>
+                    <th>LST</th>
+                    <th>PAYE</th>
+                    <th>NSSF</th>
+                    <th>Total deductions</th>
+                    <th>Net pay</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for payroll_period in object_list %}
+                {% for user_report in period_report %}
                     <tr>
-                        <td>
-                            <a href="{% url 'payroll:payroll-period-update' payroll_period.id %}">{{ payroll_period.payroll_key }}</a>
-                        </td>
-                        <td>{{ payroll_period.payroll_center }}</td>
-                        <td>{{ payroll_period.month }}</td>
-                        <td>{{ payroll_period.year }}</td>
-                        <td>{{ payroll_period.status }}</td>
+                        <td>{{ user_report.employee.user.get_full_name }}</td>
+                        <td>{{ user_report.gross_earnings }}</td>
+                        <td>{{ user_report.lst }}</td>
+                        <td>{{ user_report.paye }}</td>
+                        <td>{{ user_report.nssf }}</td>
+                        <td>{{ user_report.total_deductions }}</td>
+                        <td>{{ user_report.net_pay }}</td>
                     </tr>
                 {% empty %}
-                    <p class="text-center">No Payroll centers yet</p>
+                    <p class="text-center">Payroll period not processed yet</p>
                 {% endfor %}
                 </tbody>
             </table>

@@ -35,20 +35,6 @@ class PayrollPeriod(models.Model):
     def get_absolute_url(self):
         return reverse('payroll:payroll-period-detail', kwargs={'pk': self.pk})
 
-    def validate_status(self):
-        open_periods = []
-        center_payroll_periods = self.payroll_center.payrollperiod_set.all()
-
-        if center_payroll_periods:
-            for period in center_payroll_periods:
-                if period.status == 'OPEN':
-                    open_periods.append(period)
-
-            if len(open_periods) >= 1:
-                return OPEN_OR_CLOSED[1][0]
-
-        return OPEN_OR_CLOSED[0][0]
-
     def clean(self):
         if self.status == 'OPEN':
             open_periods = []
@@ -113,16 +99,21 @@ class Currency(models.Model):
         return self.currency
 
 
-class ISRates(models.Model):
-    lower_boundary = models.DecimalField(max_digits=7, decimal_places=2)
-    upper_boundary = models.DecimalField(max_digits=7, decimal_places=2)
-    fixed_amount = models.DecimalField(max_digits=7, decimal_places=2)
-    rate = models.DecimalField(max_digits=7, decimal_places=2)
+class LSTRates(models.Model):
+    lower_boundary = models.DecimalField(max_digits=12, decimal_places=2)
+    upper_boundary = models.DecimalField(max_digits=12, decimal_places=2)
+    fixed_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    rate = models.DecimalField(max_digits=12, decimal_places=2)
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class PAYERates(models.Model):
-    lower_boundary = models.DecimalField(max_digits=7, decimal_places=2)
-    upper_boundary = models.DecimalField(max_digits=7, decimal_places=2)
-    fixed_amount = models.DecimalField(max_digits=7, decimal_places=2)
-    rate = models.DecimalField(max_digits=7, decimal_places=2)
+    lower_boundary = models.DecimalField(max_digits=12, decimal_places=2)
+    upper_boundary = models.DecimalField(max_digits=12, decimal_places=2)
+    fixed_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    rate = models.DecimalField(max_digits=12, decimal_places=2)
+
+
+class PayrollCenterEds(models.Model):
+    payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
+    ed_type = models.ForeignKey(EarningDeductionType, on_delete=models.SET_NULL, null=True)
