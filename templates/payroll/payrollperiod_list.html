@@ -3,35 +3,31 @@
 
 {% block content %}
     <div class="content-section">
-        <legend class="border-bottom mb-4">New Staff Profiles - Pending Approval</legend>
+        <h3 class="border-bottom mb-4">Payroll Periods</h3>
         <div class="table-responsive-md">
             <table class="table table-sm table-borderless table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Name</th>
-                    <th>Job Title</th>
-                    <th>ID Number</th>
-                    <th>Email</th>
-                    <th>Mobile No</th>
-                    <th>Department</th>
-                    <th>Employee status</th>
+                    <th>Payroll key</th>
+                    <th>Payroll center</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for employee in object_list %}
+                {% for payroll_period in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'users:approve-employee' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
+                            <a href="{% url 'payroll:payroll-period-update' payroll_period.id %}">{{ payroll_period.payroll_key }}</a>
                         </td>
-                        <td>{{ employee.job_title }}</td>
-                        <td>{{ employee.id_number }}</td>
-                        <td>{{ employee.user.email }}</td>
-                        <td>{{ employee.mobile_number }}</td>
-                        <td>{{ employee.department }}</td>
-                        <td class="text-warning">{{ employee.employment_status }}</td>
+                        <td>{{ payroll_period.payroll_center }}</td>
+                        <td>{{ payroll_period.month }}</td>
+                        <td>{{ payroll_period.year }}</td>
+                        <td>{{ payroll_period.status }}</td>
                     </tr>
                 {% empty %}
-                    <p class="text-center">No "Employees" pending for approval</p>
+                    <p class="text-center">No Payroll centers yet</p>
                 {% endfor %}
                 </tbody>
             </table>

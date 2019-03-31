@@ -10,6 +10,21 @@
                      style="height: 120px; background-color: #E61D2B">
                     <img class="p-2 rounded-circle ml-auto" src="#" alt="" style="width: 105px; height: 105px;">
                 </div>
+                {% if user_creation_form.non_field_errors %}
+                    {% for error in user_creation_form.non_field_errors %}
+                        <div class="alert alert-info alert-dismissible">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if profile_creation_form.non_field_errors %}
+                    {% for error in profile_creation_form.non_field_errors %}
+                        <div class="alert alert-info alert-dismissible fade show">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>{{ error }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div class="card p-3">
                     <fieldset class="form-group">
                         <ul class="nav nav-tabs" id="infoTab" role="tablist">

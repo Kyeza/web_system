@@ -6,8 +6,8 @@ from hr_system.constants import YES_OR_NO_TYPES
 from payroll.models import Currency, PayrollCenter, Bank
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
-from .constants import GENDER, MARITAL_STATUS, EMP_STATUS
-from .models import Employee, User
+from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
+from .models import Employee, User, TerminatedEmployees
 
 
 class StaffCreationForm(UserCreationForm):
@@ -119,6 +119,11 @@ class ProfileCreationForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     """docstring for ProfileUpdateForm"""
 
+    CHOICES = (
+        ('APPROVED', 'Approve'),
+        ('REJECTED', 'Reject'),
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['first_account_number'].label = "Account Number 1"
@@ -129,6 +134,7 @@ class ProfileUpdateForm(forms.ModelForm):
         self.fields['kin_email'].label = "Email"
         self.fields['kin_phone_number'].label = "Phone"
         self.fields['kin_relationship'].label = "Relationship"
+        self.fields['employment_status'].label = "Change status"
 
     # bio-data fields
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), disabled=True)
@@ -148,12 +154,7 @@ class ProfileUpdateForm(forms.ModelForm):
     duty_station = forms.ModelChoiceField(queryset=DutyStation.objects.all(), required=False)
     department = forms.ModelChoiceField(queryset=Department.objects.all(), required=False)
     job_title = forms.ModelChoiceField(queryset=JobTitle.objects.all(), required=False)
-    appointment_date = forms.DateField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        ),
-        required=False,
-    )
+    appointment_date = forms.DateField(disabled=True)
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
     cost_centre = forms.CharField(required=False)
     grade = forms.ModelChoiceField(queryset=Grade.objects.all(), required=False)
@@ -178,7 +179,7 @@ class ProfileUpdateForm(forms.ModelForm):
     kin_email = forms.EmailField(required=False)
     kin_relationship = forms.ModelChoiceField(queryset=Relationship.objects.all(), required=False)
 
-    employment_status = forms.ChoiceField(choices=EMP_STATUS, widget=forms.Select(), required=False)
+    employment_status = forms.ChoiceField(choices=EMP_STATUS_APP_TER, widget=forms.Select(), required=False)
 
     class Meta:
         """docstring for Meta"""
@@ -195,3 +196,52 @@ class ProfileUpdateForm(forms.ModelForm):
             'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
             'kin_relationship', 'employment_status',
         ]
+
+
+class EmployeeApprovalForm(ProfileUpdateForm):
+    employment_status = forms.ChoiceField(choices=EMP_APPROVE_OR_REJECT, widget=forms.Select(), required=False)
+
+    class Meta:
+        """docstring for Meta"""
+        model = Employee
+        fields = [
+            'marital_status', 'mobile_number', 'id_number',
+            'passport_number', 'nationality', 'residential_address', 'district',
+            'date_of_birth', 'sex', 'image', 'user_group',
+            'duty_country', 'duty_station', 'department', 'job_title',
+            'appointment_date', 'contract_type', 'cost_centre', 'grade',
+            'gross_salary', 'currency', 'tin_number', 'social_security',
+            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
+            'first_account_number', 'second_account_number', 'first_bank_percentage',
+            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
+            'kin_relationship', 'employment_status',
+        ]
+
+
+class TerminationForm(forms.ModelForm):
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all())
+    notice_date = forms.DateTimeField(
+        widget=forms.TextInput(
+            attrs={'type': 'date'}
+        ),
+        required=False
+    )
+    exit_date = forms.DateTimeField(
+        widget=forms.TextInput(
+            attrs={'type': 'date'}
+        ),
+        required=False
+    )
+    termination_date = forms.DateTimeField(
+        widget=forms.TextInput(
+            attrs={'type': 'date'}
+        ),
+        required=False
+    )
+    days_given = forms.IntegerField(required=False)
+    employable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
+    reason = forms.Textarea()
+
+    class Meta:
+        model = TerminatedEmployees
+        fields = ['employee', 'notice_date', 'exit_date', 'termination_date', 'days_given', 'employable', 'reason']

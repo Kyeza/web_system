@@ -112,10 +112,27 @@
                     Payroll
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">PAYROLL
+                        PERIODS</a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-create' %}">
+                        <small>Add Payroll Period</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">
+                        <small>Close Payroll Period</small>
+                    </a>
+                    <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">PAYROLL
+                        GENERATOR</a>
+                    <a class="dropdown-item" href="{% url 'payroll:open-payroll-period-list' %}">
+                        <small>Process Payroll</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">
+                        <small>Edit Payroll</small>
+                    </a>
+                    <a class="dropdown-item disabled"
+                       style="font-weight: bolder; color: rgba(93,97,99,0.83);">REPORTS</a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">
+                        <small>Payroll Reports</small>
+                    </a>
                 </div>
             </li>
             <li class="nav-item dropdown">

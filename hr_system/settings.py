@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'payroll.apps.PayrollConfig',
     'support_data.apps.SupportDataConfig',
+    'reports.apps.ReportsConfig',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
