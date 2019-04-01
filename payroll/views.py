@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from .models import PayrollCenter, PayrollPeriod, EarningDeductionType
+from .models import PayrollCenter, PayrollPeriod, EarningDeductionType, PayrollCenterEds
 
 
 @login_required
@@ -81,3 +81,25 @@ class EarningAndDeductionDetailView(LoginRequiredMixin, DetailView):
 class EarningAndDeductionListView(LoginRequiredMixin, ListView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
+    paginate_by = 10
+
+
+class PayrollCenterEdsCreate(LoginRequiredMixin, CreateView):
+    model = PayrollCenterEds
+    fields = ['payroll_center', 'ed_type']
+
+
+class PayrollCenterEdsUpdate(LoginRequiredMixin, UpdateView):
+    model = PayrollCenterEds
+    fields = ['payroll_center', 'ed_type']
+
+
+class PayrollCenterEdsDetailView(LoginRequiredMixin, DetailView):
+    model = PayrollCenterEds
+    fields = ['payroll_center', 'ed_type']
+
+
+class PayrollCenterEdsListView(LoginRequiredMixin, ListView):
+    model = PayrollCenterEds
+    fields = ['payroll_center', 'ed_type']
+    paginate_by = 10

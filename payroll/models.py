@@ -121,5 +121,8 @@ class PayrollCenterEds(models.Model):
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
     ed_type = models.ForeignKey(EarningDeductionType, on_delete=models.SET_NULL, null=True)
 
+    def get_absolute_url(self):
+        return reverse('payroll:payroll-center-eds-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return f'{self.payroll_center.name}-{self.ed_type.ed_type}'
