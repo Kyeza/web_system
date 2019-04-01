@@ -71,10 +71,13 @@ class EarningDeductionCategory(models.Model):
 class EarningDeductionType(models.Model):
     """docstring for EarningDeductionTypes"""
     ed_type = models.CharField(max_length=100)
-    description = models.CharField(max_length=150)
-    ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING)
+    description = models.CharField(max_length=150, null=True, blank=True)
+    ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING, null=True, blank=True)
     recurrent = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     taxable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
+
+    def get_absolute_url(self):
+        return reverse('payroll:ed-type-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.ed_type
