@@ -81,6 +81,10 @@ def user_update_profile(request, pk=None):
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             profile_update_form.save()
+
+            # add user to PayrollProcessor
+            add_user_to_payroll_processor(profile_user)
+
             messages.success(request, 'Employee has been updated')
             return redirect('users:edit-employee')
     else:
