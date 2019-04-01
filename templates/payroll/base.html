@@ -48,44 +48,10 @@
         @media screen and (max-width: 1024px) {
             div.dropdown-multicol {
                 display: flex;
-                flex-direction: row;
-                padding: 0;
-                max-width: 710px;
-                font-size: 13px;
-            }
-
-            div.dropdown-multicol > div {
-                width: 21%;
-                margin: 0;
-                padding: 0;
-                border-left: 1px solid #B4B4B4;
-            }
-
-            div.dropdown-multicol > div > a {
-                margin: auto 0 auto -10px;
-                padding: auto 0 auto 0;
-            }
-
-            div.dropdown-multicol > div.wider > a {
-                margin: auto 0 auto -10px;
-                padding: auto 0 auto 0;
-            }
-
-            div.dropdown-multicol > div.wider {
-                width: 37%;
-                margin: 0;
-                padding: 0;
-                border-left: 1px solid #B4B4B4;
-            }
-        }
-
-        @media screen and (max-width: 705px) {
-            div.dropdown-multicol {
-                display: flex;
                 flex-direction: column;
                 padding: 0;
-                max-width: 650px;
-                font-size: 12px;
+                max-width: 400px;
+                font-size: 13px;
             }
 
             div.dropdown-multicol > div {
@@ -106,8 +72,52 @@
                 display: flex;
                 flex-direction: column;
                 padding: 0;
-                max-width: 650px;
+                max-width: 735px;
                 font-size: 13px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 705px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 672px;
+                font-size: 12px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 414px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 381px;
+                font-size: 15px;
             }
 
             div.dropdown-multicol > div {
@@ -128,8 +138,52 @@
                 display: flex;
                 flex-direction: column;
                 padding: 0;
-                max-width: 380px;
+                max-width: 378px;
                 font-size: 15px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 375px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 342px;
+                font-size: 12px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 360px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 327px;
+                font-size: 12px;
             }
 
             div.dropdown-multicol > div {
@@ -150,8 +204,8 @@
                 display: flex;
                 flex-direction: column;
                 padding: 0;
-                max-width: 290px;
-                font-size: 10px;
+                max-width: 287px;
+                font-size: 12px;
             }
 
             div.dropdown-multicol > div {
@@ -312,7 +366,8 @@
                             </a>
                         </div>
                         <div>
-                            <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">
+                            <a class="dropdown-item dropdown-header"
+                               style="font-weight: bolder; color: rgba(93,97,99,0.83);">
                                 Tax Settings
                             </a>
                             <a class="dropdown-item" href="{% url 'support_data:tax-bracket-create' %}">
@@ -325,8 +380,30 @@
                                 Edit LST Rates
                             </a>
                         </div>
+                        <div>
+                            <a class="dropdown-item dropdown-header"
+                               style="font-weight: bolder; color: rgba(93,97,99,0.83);">
+                                Email Messages
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-create' %}">
+                                Birthday Messages
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-list' %}">
+                                Escalation Messages
+                            </a>
+                        </div>
                         <div style="border-bottom: none">
-                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">
+                                <div class="d-flex flex-row">
+                                    <div class="p-2 rounded-circle flex-fill"
+                                         style="background-color: #4f4f4f; width: 20px; height:20px">
+                                    </div>
+                                    <div class="p-2 d-flex flex-column flex-fill">
+                                        <div class="p-2 dropdown-header">Help Menu</div>
+                                        <div class="p-2 dropdown-text">Add help notes</div>
+                                    </div>
+                                </div>
+                            </a>
                             <a class="dropdown-item" href="#">Another action</a>
                             <a class="dropdown-item" href="#">Something else here</a>
                         </div>
