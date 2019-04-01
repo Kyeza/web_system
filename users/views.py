@@ -101,14 +101,40 @@ def add_user_to_payroll_processor(user):
     if user_status == 'APPROVED' or user_status == 'REACTIVATED':
         if payroll_periods:
             open_payroll_period = payroll_periods.filter(status='OPEN').first()
-            user_payroll_center = user.employee.payroll_center
-            payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
-            for pc_ed_type in payroll_center_ed_types:
-                user_process = PayrollProcessors(employee=user.employee,
-                                                 earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
-                                                 earning_and_deductions_type=pc_ed_type.ed_type,
-                                                 amount=0, payroll_period=open_payroll_period)
-                user_process.save()
+            if open_payroll_period:
+                user_payroll_center = user.employee.payroll_center
+                payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
+
+                # get existing user processors if they exists
+                existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=user.employee) \
+                    .filter(payroll_period=open_payroll_period)
+                # if ed_types for the employees payroll center exit
+                if payroll_center_ed_types:
+                    if existing_user_payroll_processors:
+                        # PayrollCenterEdTypes can change, hence in case there is one not in the processor
+                        # associated with that user, then create it
+                        for pc_ed_type in payroll_center_ed_types:
+                            if existing_user_payroll_processors.filter(earning_and_deductions_type=pc_ed_type.ed_type):
+                                # if that ed_type already has a processor associated with the user leave it and
+                                # continue
+                                continue
+                            else:
+                                # else create it
+                                user_process = PayrollProcessors(employee=user.employee,
+                                                                 earning_and_deductions_category=pc_ed_type.ed_type \
+                                                                 .ed_category,
+                                                                 earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                 amount=0, payroll_period=open_payroll_period)
+                                user_process.save()
+
+                    else:
+                        # if its a new user in the payroll period, create processors for that user/employee
+                        for pc_ed_type in payroll_center_ed_types:
+                            user_process = PayrollProcessors(employee=user.employee,
+                                                             earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
+                                                             earning_and_deductions_type=pc_ed_type.ed_type,
+                                                             amount=0, payroll_period=open_payroll_period)
+                            user_process.save()
 
 
 @login_required
@@ -123,7 +149,10 @@ def approve_employee(request, pk=None):
         print(f'Profile Form is valid: {profile_update_form.is_valid()}')
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
-            profile_update_form.save()
+            employee_profile = profile_update_form.save(commit=False)
+            # change employee status to approved before saving to db and adding them to payroll processors
+            employee_profile.employment_status = 'APPROVED'
+            employee_profile.save()
 
             # add user to PayrollProcessor
             add_user_to_payroll_processor(profile_user)
@@ -139,7 +168,7 @@ def approve_employee(request, pk=None):
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
     }
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/_approve_employee.html', context)
 
 
 class RecruitedEmployeeListView(LoginRequiredMixin, ListView):

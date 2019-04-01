@@ -14,21 +14,25 @@
                     <th>Email</th>
                     <th>Mobile No</th>
                     <th>Department</th>
-                    <th>Employee status</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for employee in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'users:approve-employee' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
+                            <a href="{% url 'users:user-detail' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
                         </td>
                         <td>{{ employee.job_title }}</td>
                         <td>{{ employee.id_number }}</td>
                         <td>{{ employee.user.email }}</td>
                         <td>{{ employee.mobile_number }}</td>
                         <td>{{ employee.department }}</td>
-                        <td class="text-warning">{{ employee.employment_status }}</td>
+                        <td>
+                            <a class="btn btn-primary" href="{% url 'users:approve-employee' pk=employee.id %}">
+                                APPROVE/ REJECT
+                            </a>
+                        </td>
                     </tr>
                 {% empty %}
                     <p class="text-center">No "Employees" pending for approval</p>
