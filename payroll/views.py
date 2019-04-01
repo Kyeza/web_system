@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from .models import PayrollCenter, PayrollPeriod, EarningDeductionType, PayrollCenterEds
+from .models import PayrollCenter, PayrollPeriod, EarningDeductionType, PayrollCenterEds, LSTRates
 
 
 @login_required
@@ -103,3 +103,8 @@ class PayrollCenterEdsListView(LoginRequiredMixin, ListView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
     paginate_by = 10
+
+
+class LSTListView(LoginRequiredMixin, ListView):
+    model = LSTRates
+    fields = ['lower_boundary', 'upper_boundary', 'fixed_amount', 'rate', 'country']

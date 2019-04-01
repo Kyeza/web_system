@@ -29,13 +29,142 @@
     <style>
         /* Columns */
         div.dropdown-multicol {
-            width: 55em;
+            display: flex;
+            flex-direction: row;
+            width: 850px;
+            font-size: 11px;
         }
 
-        div.dropdown-multicol > div.dropdown-col {
-            display: inline-block;
-            width: 19%;
-            font-size: 12px;
+        div.dropdown-multicol > div {
+            width: 23%;
+            border-left: 1px solid #B4B4B4;
+        }
+
+        div.dropdown-multicol > div.wider {
+            width: 31%;
+            border-left: 1px solid #B4B4B4;
+        }
+
+        @media screen and (max-width: 1024px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: row;
+                padding: 0;
+                max-width: 710px;
+                font-size: 13px;
+            }
+
+            div.dropdown-multicol > div {
+                width: 21%;
+                margin: 0;
+                padding: 0;
+                border-left: 1px solid #B4B4B4;
+            }
+
+            div.dropdown-multicol > div > a {
+                margin: auto 0 auto -10px;
+                padding: auto 0 auto 0;
+            }
+
+            div.dropdown-multicol > div.wider > a {
+                margin: auto 0 auto -10px;
+                padding: auto 0 auto 0;
+            }
+
+            div.dropdown-multicol > div.wider {
+                width: 37%;
+                margin: 0;
+                padding: 0;
+                border-left: 1px solid #B4B4B4;
+            }
+        }
+
+        @media screen and (max-width: 705px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 650px;
+                font-size: 12px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 650px;
+                font-size: 13px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 411px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 380px;
+                font-size: 15px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            div.dropdown-multicol {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                max-width: 290px;
+                font-size: 10px;
+            }
+
+            div.dropdown-multicol > div {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
+
+            div.dropdown-multicol > div.wider {
+                border-bottom: 1px solid #B4B4B4;
+                border-left: none;
+                min-width: 100%;
+            }
         }
 
         div.content-section {
@@ -152,46 +281,55 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Support Data
                 </a>
-                <div class="dropdown-menu dropdown-multicol" aria-labelledby="navbarDropdown">
-                    <div class="dropdown-col">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    <div class="dropdown-col">
-                        <a class="dropdown-item" href="{% url 'support_data:organization-create' %}">
-                            Add Organization
-                        </a>
-                        <a class="dropdown-item" href="{% url 'support_data:organization-list' %}">Edit Organization</a>
-                        <a class="dropdown-item" href="{% url 'payroll:payroll-center-create' %}">Add Payroll Center</a>
-                        <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">Edit Payroll Center</a>
-                        <a class="dropdown-item" href="{% url 'payroll:ed-type-create' %}">
-                            Add Earning and<br> Deductions
-                        </a>
-                        <a class="dropdown-item" href="{% url 'payroll:ed-type-list' %}">
-                            Edit Earning and<br> Deductions
-                        </a>
-                        <a class="dropdown-item" href="{% url 'payroll:payroll-center-eds-create' %}">
-                            Add Payroll Earning<br> and Deductions
-                        </a>
-                        <a class="dropdown-item" href="{% url 'payroll:payroll-center-eds-list' %}">
-                            Edit Payroll Earning<br> and Deductions
-                        </a>
-                    </div>
-                    <div class="dropdown-col">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    <div class="dropdown-col">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    <div class="dropdown-col">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-multicol">
+                        <div style="border-left: none">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                        <div class="wider">
+                            <a class="dropdown-item" href="{% url 'support_data:organization-create' %}">
+                                Add Organization
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:organization-list' %}">Edit
+                                Organization</a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-create' %}">Add Payroll
+                                Center</a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">Edit Payroll
+                                Center</a>
+                            <a class="dropdown-item" href="{% url 'payroll:ed-type-create' %}">
+                                Add Earning and Deductions
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:ed-type-list' %}">
+                                Edit Earning and Deductions
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-eds-create' %}">
+                                Add Payroll Earning and Deductions
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-eds-list' %}">
+                                Edit Payroll Earning and Deductions
+                            </a>
+                        </div>
+                        <div>
+                            <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">
+                                Tax Settings
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-create' %}">
+                                Add Tax Bracket
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-list' %}">
+                                Edit Tax Bracket
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:lst-list' %}">
+                                Edit LST Rates
+                            </a>
+                        </div>
+                        <div style="border-bottom: none">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
                     </div>
                 </div>
             </li>

@@ -101,5 +101,8 @@ class Tax(models.Model):
     fixed_amount = models.DecimalField(max_digits=7, decimal_places=2)
     year = models.IntegerField(choices=TAX_YEAR_CHOICES, default=datetime.datetime.now().year)
 
+    def get_absolute_url(self):
+        return reverse('support_data:tax-bracket-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.country
