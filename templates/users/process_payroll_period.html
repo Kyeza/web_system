@@ -11,9 +11,6 @@
                 <tr>
                     <th>Staff</th>
                     <th>Gross Earnings</th>
-                    <th>LST</th>
-                    <th>PAYE</th>
-                    <th>NSSF</th>
                     <th>Total deductions</th>
                     <th>Net pay</th>
                 </tr>
@@ -23,9 +20,6 @@
                     <tr>
                         <td>{{ user_report.employee.user.get_full_name }}</td>
                         <td>{{ user_report.gross_earnings }}</td>
-                        <td>{{ user_report.lst }}</td>
-                        <td>{{ user_report.paye }}</td>
-                        <td>{{ user_report.nssf }}</td>
                         <td>{{ user_report.total_deductions }}</td>
                         <td>{{ user_report.net_pay }}</td>
                     </tr>

@@ -259,6 +259,7 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
         return Employee.objects.filter(employment_status='Rejected').order_by('-appointment_date')
 
 
+@login_required
 def process_payroll_period(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
 
@@ -294,6 +295,7 @@ def process_payroll_period(request, pk):
         # calculating gross earnings
         if ge_data:
             for inst in ge_data:
+                print(f'{inst.earning_and_deductions_type.ed_type}-{inst.amount}')
                 if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
@@ -370,7 +372,7 @@ def process_payroll_period(request, pk):
 
         net_pay = gross_earnings - total_deductions
 
-        report_exists = PayrollPeriodReport.objects.first(employee=employee) \
+        report_exists = PayrollPeriodReport.objects.filter(employee=employee) \
             .filter(payroll_period=payroll_period).first()
 
         if report_exists is None:
@@ -394,6 +396,7 @@ def process_payroll_period(request, pk):
     return render(request, 'users/process_payroll_period.html', context)
 
 
+@login_required
 def terminate_employee(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
     form = TerminationForm(instance=employee)
