@@ -71,10 +71,13 @@ class EarningDeductionCategory(models.Model):
 class EarningDeductionType(models.Model):
     """docstring for EarningDeductionTypes"""
     ed_type = models.CharField(max_length=100)
-    description = models.CharField(max_length=150)
-    ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING)
+    description = models.CharField(max_length=150, null=True, blank=True)
+    ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING, null=True, blank=True)
     recurrent = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     taxable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
+
+    def get_absolute_url(self):
+        return reverse('payroll:ed-type-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.ed_type
@@ -117,6 +120,9 @@ class PAYERates(models.Model):
 class PayrollCenterEds(models.Model):
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
     ed_type = models.ForeignKey(EarningDeductionType, on_delete=models.SET_NULL, null=True)
+
+    def get_absolute_url(self):
+        return reverse('payroll:payroll-center-eds-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return f'{self.payroll_center.name}-{self.ed_type.ed_type}'
