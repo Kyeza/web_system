@@ -7,13 +7,7 @@
   <component name="ChangeListManager">
     <list id="f972a0f8-a103-47e4-a92e-88dc19219d9d" name="- Changes on approval route" comment="" />
     <list default="true" id="aa2be6a0-d65d-477f-bf89-2f9b11223f6f" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/migrations/0001_initial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/migrations/0002_payrollperiodreport_employee.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8c0b859a-952c-40bd-89ba-fc01241ec042.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/8c0b859a-952c-40bd-89ba-fc01241ec042.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
     </list>
     <ignored path="D:\projects-work-space\PycharmProjects\hr_system\.idea\shelf/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -57,7 +51,17 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="0001_initial.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/users/migrations/0001_initial.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="131">
+              <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -122,7 +126,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/support_data/organization_list.html" />
         <option value="$PROJECT_DIR$/templates/users/_approved_employee_list.html" />
         <option value="$PROJECT_DIR$/templates/users/_rejected_employee_list.html" />
         <option value="$PROJECT_DIR$/templates/users/_terminated_employee_list.html" />
@@ -173,6 +176,7 @@
         <option value="$PROJECT_DIR$/Procfile" />
         <option value="$PROJECT_DIR$/hr_system/settings.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/users/migrations/0001_initial.py" />
       </list>
     </option>
   </component>
@@ -431,16 +435,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="manage.py@hr_system" order="13" visible="true" weight="0.32792208" />
+      <window_info anchor="bottom" id="manage.py@hr_system" order="13" visible="true" weight="0.32792208" />
       <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.50075644" side_tool="true" weight="0.32954547" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32954547" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.4301948" />
       <window_info anchor="bottom" x="1" y="31" width="681" height="706" id="Run" order="2" weight="0.42045453" />
       <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49924356" weight="0.32954547" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2246596" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2246596" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="4" visible="true" weight="0.19288956" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32792208" />
@@ -515,7 +520,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://8c0b859a-952c-40bd-89ba-fc01241ec042/schema/hr_system_db/table/users_user" />
     <entry file="file://$PROJECT_DIR$/users/utils.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -761,6 +765,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="324">
           <caret line="33" column="17" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/migrations/0001_initial.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
         </state>
       </provider>
     </entry>
