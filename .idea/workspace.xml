@@ -5,20 +5,11 @@
     <option name="CUSTOM_SCOPE_NAME" value="All Places" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa2be6a0-d65d-477f-bf89-2f9b11223f6f" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/payroll/lstrates_list.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/support_data/tax_detail.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/support_data/tax_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/support_data/tax_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/support_data/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/support_data/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/support_data/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/payroll/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/base.html" afterDir="false" />
-    </list>
     <list id="f972a0f8-a103-47e4-a92e-88dc19219d9d" name="- Changes on approval route" comment="" />
+    <list default="true" id="aa2be6a0-d65d-477f-bf89-2f9b11223f6f" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hr_system/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/settings.py" afterDir="false" />
+    </list>
     <ignored path="D:\projects-work-space\PycharmProjects\hr_system\.idea\shelf/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -69,38 +60,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/payroll/base.html">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="172">
-              <caret line="314" column="98" selection-start-line="314" selection-start-column="98" selection-end-line="314" selection-end-column="98" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/support_data/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/support_data/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="388">
-              <caret line="50" column="16" selection-start-line="50" selection-start-column="16" selection-end-line="50" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tax_list.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/support_data/tax_list.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="5" column="51" selection-start-line="5" selection-start-column="51" selection-end-line="5" selection-end-column="51" />
+            <state relative-caret-position="226">
+              <caret line="84" column="8" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -176,7 +140,6 @@
         <option value="$PROJECT_DIR$/templates/users/_rejected_employee_list.html" />
         <option value="$PROJECT_DIR$/templates/users/_terminated_employee_list.html" />
         <option value="$PROJECT_DIR$/payroll/constants.py" />
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/8c0b859a-952c-40bd-89ba-fc01241ec042/console.sql" />
         <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_form.html" />
         <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_detail.html" />
         <option value="$PROJECT_DIR$/templates/payroll/forms.py" />
@@ -186,7 +149,6 @@
         <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_list.html" />
         <option value="$PROJECT_DIR$/templates/users/perocess_payroll_period.html" />
         <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" />
-        <option value="$PROJECT_DIR$/hr_system/settings.py" />
         <option value="$PROJECT_DIR$/reports/admin.py" />
         <option value="$PROJECT_DIR$/users/urls.py" />
         <option value="$PROJECT_DIR$/templates/users/_terminate_employee.html" />
@@ -211,12 +173,14 @@
         <option value="$PROJECT_DIR$/payroll/urls.py" />
         <option value="$PROJECT_DIR$/payroll/views.py" />
         <option value="$PROJECT_DIR$/support_data/models.py" />
-        <option value="$PROJECT_DIR$/templates/payroll/base.html" />
-        <option value="$PROJECT_DIR$/support_data/urls.py" />
         <option value="$PROJECT_DIR$/support_data/views.py" />
         <option value="$PROJECT_DIR$/templates/support_data/tax_detail.html" />
         <option value="$PROJECT_DIR$/templates/support_data/tax_form.html" />
         <option value="$PROJECT_DIR$/templates/support_data/tax_list.html" />
+        <option value="$PROJECT_DIR$/support_data/urls.py" />
+        <option value="$PROJECT_DIR$/templates/payroll/base.html" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/8c0b859a-952c-40bd-89ba-fc01241ec042/console.sql" />
+        <option value="$PROJECT_DIR$/hr_system/settings.py" />
       </list>
     </option>
   </component>
@@ -252,38 +216,6 @@
             </path>
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="payroll" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="support_data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="payroll" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="support_data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -303,7 +235,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -439,12 +371,25 @@
       <option name="project" value="LOCAL" />
       <updated>1554112609825</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates">
+      <created>1554145430383</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1554145430383</updated>
+    </task>
+    <task id="LOCAL-00012" summary="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates">
+      <created>1554162060847</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1554162060847</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="manage.py@hr_system" order="13" weight="0.32792208" />
@@ -453,11 +398,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.4301948" />
-      <window_info active="true" anchor="bottom" x="1" y="31" width="681" height="706" id="Run" order="2" visible="true" weight="0.42045453" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32954547" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21558245" />
+      <window_info anchor="bottom" x="1" y="31" width="681" height="706" id="Run" order="2" weight="0.42045453" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.32954547" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21558245" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="right" id="Database" order="4" weight="0.19288956" />
+      <window_info anchor="right" id="Database" order="4" visible="true" weight="0.19288956" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -491,7 +436,8 @@
     <MESSAGE value="- Improved Payroll processing calculations" />
     <MESSAGE value="- Templates for creating, editing, detail and list Ed Types" />
     <MESSAGE value="- Templates for creating, editing, detail and list Payroll center Ed types" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Templates for creating, editing, detail and list Payroll center Ed types" />
+    <MESSAGE value="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -512,20 +458,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://8c0b859a-952c-40bd-89ba-fc01241ec042/schema/hr_system_db/table/payroll_payrollperiod">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/core/handlers/exception.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="33" selection-start-line="33" selection-end-line="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/utils/deprecation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="604">
@@ -623,13 +555,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="9" column="84" selection-start-line="9" selection-start-column="84" selection-end-line="9" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="63" column="25" lean-forward="true" selection-start-line="63" selection-start-column="25" selection-end-line="63" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -842,20 +767,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="314" column="98" selection-start-line="314" selection-start-column="98" selection-end-line="314" selection-end-column="98" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/support_data/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/support_data/tax_detail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
@@ -881,6 +792,43 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="5" column="51" selection-start-line="5" selection-start-column="51" selection-end-line="5" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/support_data/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/8c0b859a-952c-40bd-89ba-fc01241ec042/console.sql">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/payroll/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="398" column="80" selection-start-line="398" selection-start-column="80" selection-end-line="398" selection-end-column="80" />
+          <folding>
+            <element signature="e#1405#2025#0#HTML" />
+            <element signature="e#2036#2656#0#HTML" />
+            <element signature="e#1096#1256#0#HTML" />
+            <element signature="e#3296#3916#0#HTML" />
+            <element signature="e#2035#2655#0#HTML" />
+            <element signature="e#3926#4546#0#HTML" />
+            <element signature="e#5186#5806#0#HTML" />
+            <element signature="e#2665#3285#0#HTML" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="84" column="8" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
         </state>
       </provider>
     </entry>
