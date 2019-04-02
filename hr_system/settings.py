@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+import django_heroku
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -140,3 +141,5 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'payroll:index'
 
 AUTH_USER_MODEL = 'users.User'
+
+django_heroku.settings(locals())
