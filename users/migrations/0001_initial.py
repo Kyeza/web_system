@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        # ('auth', '0013_remove_group_group'),
+        ('auth', '0013_remove_group_group'),
         ('payroll', '0001_initial'),
         ('support_data', '0001_initial'),
     ]
