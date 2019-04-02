@@ -7,71 +7,7 @@
   <component name="ChangeListManager">
     <list id="f972a0f8-a103-47e4-a92e-88dc19219d9d" name="- Changes on approval route" comment="" />
     <list default="true" id="aa2be6a0-d65d-477f-bf89-2f9b11223f6f" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/reports/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/migrations/0002_payrollperiodreport_employee.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/-_Changes_on_approval_route.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/js/vendor/jquery/jquery.js" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/js/vendor/jquery/jquery.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/db/backends/postgis/adapter.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/db/backends/postgis/adapter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/db/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/db/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/forms/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/forms/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/geoip2/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/geoip2/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/geos/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/geos/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/templates/gis/admin/openlayers.js" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/templates/gis/admin/openlayers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/templates/gis/admin/osm.js" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/templates/gis/admin/osm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/templates/gis/openlayers.html" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/gis/templates/gis/openlayers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/fields/array.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/fields/array.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/fields/jsonb.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/fields/jsonb.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/fields/ranges.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/fields/ranges.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/forms/ranges.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/forms/ranges.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/signals.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/contrib/postgres/signals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/core/checks/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/core/checks/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/core/paginator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/core/paginator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/core/serializers/pyyaml.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/core/serializers/pyyaml.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/base/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/base/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/base/operations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/base/operations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/mysql/introspection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/mysql/introspection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/oracle/introspection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/oracle/introspection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql/creation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql/creation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql/operations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql/operations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/creation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/creation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/features.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/features.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/introspection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/introspection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/operations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/operations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/schema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/postgresql_psycopg2/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/sqlite3/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/sqlite3/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/sqlite3/introspection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/backends/sqlite3/introspection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/migrations/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/migrations/serializer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/migrations/writer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/migrations/writer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/models/lookups.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/models/lookups.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/db/models/sql/datastructures.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/db/models/sql/datastructures.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/forms/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/forms/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/forms/fields.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/forms/fields.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/forms/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/forms/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/template/backends/jinja2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/template/backends/jinja2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/template/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/template/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/templatetags/tz.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/templatetags/tz.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/utils/decorators.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/utils/decorators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/utils/lru_cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/utils/lru_cache.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/django/utils/timezone.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/django/utils/timezone.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scripts/django-admin.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Scripts/django-admin.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hr_system/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190401_1159.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/migrations/0002_auto_20190331_2201.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
     </list>
     <ignored path="D:\projects-work-space\PycharmProjects\hr_system\.idea\shelf/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -110,6 +46,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="67">
+              <caret line="128" column="41" selection-start-line="128" selection-start-column="41" selection-end-line="128" selection-end-column="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="process_payroll_period.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/users/process_payroll_period.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -119,11 +64,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/reports/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
+            <state relative-caret-position="180">
+              <caret line="10" column="66" lean-forward="true" selection-start-line="10" selection-start-column="66" selection-end-line="10" selection-end-column="66" />
             </state>
           </provider>
         </entry>
@@ -238,12 +183,12 @@
         <option value="$PROJECT_DIR$/support_data/urls.py" />
         <option value="$PROJECT_DIR$/templates/payroll/base.html" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/8c0b859a-952c-40bd-89ba-fc01241ec042/console.sql" />
-        <option value="$PROJECT_DIR$/hr_system/settings.py" />
         <option value="$PROJECT_DIR$/reports/admin.py" />
         <option value="$PROJECT_DIR$/reports/apps.py" />
         <option value="$PROJECT_DIR$/reports/constants.py" />
         <option value="$PROJECT_DIR$/reports/views.py" />
         <option value="$PROJECT_DIR$/reports/models.py" />
+        <option value="$PROJECT_DIR$/hr_system/settings.py" />
       </list>
     </option>
   </component>
@@ -276,6 +221,11 @@
           <expand>
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -469,6 +419,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="manage.py@hr_system" order="13" weight="0.32792208" />
@@ -476,9 +427,9 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32954547" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.4301948" />
-      <window_info active="true" anchor="bottom" x="1" y="31" width="681" height="706" id="Run" order="2" visible="true" weight="0.42045453" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32954547" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2246596" />
+      <window_info anchor="bottom" x="1" y="31" width="681" height="706" id="Run" order="2" weight="0.42045453" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.32954547" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2246596" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="4" weight="0.19288956" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32792208" />
@@ -729,13 +680,6 @@
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/e2024894-0c2a-4bf5-b2fc-df27640df371/console.sql">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="81" selection-start-line="81" selection-end-line="89" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/reports/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -781,8 +725,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/reports/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
+        <state relative-caret-position="180">
+          <caret line="10" column="66" lean-forward="true" selection-start-line="10" selection-start-column="66" selection-end-line="10" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="67">
+          <caret line="128" column="41" selection-start-line="128" selection-start-column="41" selection-end-line="128" selection-end-column="41" />
         </state>
       </provider>
     </entry>
