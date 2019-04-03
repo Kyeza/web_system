@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 
@@ -7,7 +8,7 @@ from payroll.models import Currency, PayrollCenter, Bank
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
-from .models import Employee, User, TerminatedEmployees
+from .models import Employee, TerminatedEmployees
 
 
 class StaffCreationForm(UserCreationForm):
@@ -16,7 +17,7 @@ class StaffCreationForm(UserCreationForm):
 
     class Meta:
         """docstring for Meta"""
-        model = User
+        model = get_user_model()
         fields = ('username', 'first_name', 'last_name',
                   'email', 'password1', 'password2',
                   )
@@ -28,7 +29,7 @@ class StaffUpdateForm(forms.ModelForm):
 
     class Meta:
         """docstring for Meta"""
-        model = User
+        model = get_user_model()
         fields = ('username', 'first_name', 'last_name',
                   'email',
                   )
@@ -51,9 +52,9 @@ class ProfileCreationForm(forms.ModelForm):
     # bio-data fields
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
     date_of_birth = forms.DateField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        )
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={'type': 'date'})
     )
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
     marital_status = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.Select())

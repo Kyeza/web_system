@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal">
-    <data-source name="@localhost" uuid="4faaa0be-ca33-48fe-9071-2eedbcccfc98">
+    <data-source name="@localhost" uuid="bd969ae2-825a-4742-9699-47191db7146d">
       <database-info product="MySQL" version="5.7.23" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
         <extra-name-characters>#@</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
@@ -10,23 +10,6 @@
       <secret-storage>master_key</secret-storage>
       <user-name>root</user-name>
       <introspection-schemas>*:payroll_schema</introspection-schemas>
-    </data-source>
-    <data-source name="@localhost [2]" uuid="8fcc6d70-2b94-4ba6-a8a8-13658323b5ad">
-      <database-info product="MySQL" version="5.7.14-google-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
-        <extra-name-characters>#@</extra-name-characters>
-        <identifier-quote-string>`</identifier-quote-string>
-      </database-info>
-      <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
-      <secret-storage>master_key</secret-storage>
-      <user-name>root</user-name>
-      <introspection-schemas>*:payroll_schema</introspection-schemas>
-    </data-source>
-    <data-source name="Django default" uuid="0ece6941-db23-459d-ae39-b691f5c9d9a1">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
-      <secret-storage>master_key</secret-storage>
-      <first-sync>true</first-sync>
-      <user-name>root</user-name>
-      <introspection-schemas>*:</introspection-schemas>
     </data-source>
   </component>
 </project>

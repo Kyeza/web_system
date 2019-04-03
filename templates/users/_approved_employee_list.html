@@ -4,11 +4,18 @@
 {% block content %}
     <div class="content-section">
         <legend class="border-bottom mb-4">Approved Staff List</legend>
-        <div class="table-responsive-md">
-            <table class="table table-sm table-borderless table-hover">
+        <div class="table-responsive">
+            <table class="table table-md table-borderless table-hover">
                 <thead class="thead-dark">
                 <tr>
                     <th>Name</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                     <th>Job Title</th>
                     <th>ID Number</th>
                     <th>Email</th>
@@ -16,21 +23,39 @@
                     <th>Department</th>
                     <th>Duty Station</th>
                     <th>Country</th>
+                    <th>TIN No</th>
+                    <th>Passport</th>
+                    <th>Marital Status</th>
+                    <th>Bank name 1</th>
+                    <th>A/C No. 1</th>
+                    <th>First %</th>
+                    <th>Bank name 2</th>
+                    <th>A/C No. 2</th>
+                    <th>Second %</th>
                     <th>Employee status</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for employee in object_list %}
                     <tr>
-                        <td><a href="{% url 'users:user-detail' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
+                        <td colspan="8"><a href="{% url 'users:user-detail' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
                         </td>
-                        <td>{{ employee.job_title }}</td>
+                        <td>{{ employee.job_title }}}</td>
                         <td>{{ employee.id_number }}</td>
                         <td>{{ employee.user.email }}</td>
                         <td>{{ employee.mobile_number }}</td>
                         <td>{{ employee.department }}</td>
                         <td>{{ employee.duty_station }}</td>
                         <td>{{ employee.duty_country }}</td>
+                        <td>{{ employee.tin_number }}</td>
+                        <td>{{ employee.passport_number }}</td>
+                        <td>{{ employee.marital_status }}</td>
+                        <td>{{ employee.bank_1 }}</td>
+                        <td>{{ employee.first_account_number }}</td>
+                        <td>{{ employee.first_bank_percentage }}</td>
+                        <td>{{ employee.bank_2 }}</td>
+                        <td>{{ employee.second_account_number }}</td>
+                        <td>{{ employee.second_bank_percentage }}</td>
                         <td class="text-success">{{ employee.employment_status }}</td>
                     </tr>
                 {% empty %}

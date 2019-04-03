@@ -8,8 +8,8 @@ from django.utils import timezone
 from hr_system.constants import YES_OR_NO_TYPES
 from payroll.models import (PayrollCenter, Bank, Currency, PayrollPeriod, LSTRates, PAYERates,
                             EarningDeductionCategory, EarningDeductionType)
-from support_data.models import Nationality, DutyStation, Department, JobTitle, ContractType, Relationship, Country, \
-    Grade
+from support_data.models import Nationality, DutyStation, Department, JobTitle, ContractType,\
+    Relationship, Country, Grade
 from .constants import MARITAL_STATUS, GENDER, EMP_STATUS
 from .utils import get_image_filename
 

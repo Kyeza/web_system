@@ -31,7 +31,7 @@ def register_employee(request):
             user_profile_instance.user = user_instance
             user_profile_instance.save()
             messages.success(request, 'You have successfully created a new Employee')
-            return redirect('payroll:index')
+            return redirect('users:new-employee')
     else:
         user_creation_form = StaffCreationForm()
         profile_creation_form = ProfileCreationForm()
@@ -375,18 +375,90 @@ def process_payroll_period(request, pk):
         report_exists = PayrollPeriodReport.objects.filter(employee=employee) \
             .filter(payroll_period=payroll_period).first()
 
+        acting_allowance = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=2).first().amount
+        car_transport_allowance = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=3).first().amount
+        duty_risk_allowance = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=6).first().amount
+        overtime_normal_days = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=7).first().amount
+        overtime_holiday = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=8).first().amount
+        housing_allowance = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=9).first().amount
+        bonus = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=10).first().amount
+        income_tax_paye = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=11).first().amount
+        pension_fund = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=12).first().amount
+        lst = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=13).first().amount
+        bank_loan = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=14).first().amount
+        salary_advance = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=15).first().amount
+        salary_arrears = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=18).first().amount
+        other_allowances = period_processes.filter(employee=employee)\
+            .filter(earning_and_deductions_type=23).first().amount
+
         if report_exists is None:
             user_report = PayrollPeriodReport(employee=employee,
+                                              acting_allowance=acting_allowance,
+                                              car_transport_allowance=car_transport_allowance,
+                                              duty_risk_allowance=duty_risk_allowance,
+                                              overtime_normal_days=overtime_normal_days,
+                                              overtime_holiday=overtime_holiday,
+                                              housing_allowance=housing_allowance,
+                                              bonus=bonus,
+                                              income_tax_paye=income_tax_paye,
+                                              pension_fund=pension_fund,
+                                              lst=lst,
+                                              bank_loan=bank_loan,
+                                              salary_advance=salary_advance,
+                                              salary_arrears=salary_arrears,
+                                              other_allowances=23,
+                                              other_deductions=0,
+                                              total_taxable=0,
+                                              total_earning=0,
+                                              gross_salary=gross_earnings,
                                               payroll_period=payroll_period,
-                                              gross_earnings=gross_earnings,
                                               total_deductions=total_deductions,
                                               net_pay=net_pay)
             user_report.save()
         else:
-            report_exists.gross_earnings = gross_earnings
+            report_exists.acting_allowance = acting_allowance
+            report_exists.car_transport_allowance = car_transport_allowance
+            report_exists.duty_risk_allowance = duty_risk_allowance
+            report_exists.overtime_normal_days = overtime_normal_days
+            report_exists.overtime_holiday = overtime_holiday
+            report_exists.housing_allowance = housing_allowance
+            report_exists.bonus = bonus
+            report_exists.income_tax_paye = income_tax_paye
+            report_exists.pension_fund = pension_fund
+            report_exists.lst = lst
+            report_exists.bank_loan = bank_loan
+            report_exists.salary_advance = salary_advance
+            report_exists.salary_arrears = salary_arrears
+            report_exists.other_allowances = 0
+            report_exists.other_deductions = 0
+            report_exists.total_taxable = 0
+            report_exists.total_earning = 0
+            report_exists.net_pay = net_pay
+            report_exists.gross_salary = gross_earnings
             report_exists.total_deductions = total_deductions
             report_exists.net_pay = net_pay
-            report_exists.save(update_fields=['gross_earnings', 'total_deductions', 'net_pay'])
+            report_exists.payroll_period = payroll_period
+
+            report_exists.save(update_fields=[
+                'acting_allowance', 'car_transport_allowance', 'duty_risk_allowance',
+                'overtime_normal_days', 'overtime_holiday', 'housing_allowance',
+                'bonus', 'income_tax_paye', 'pension_fund', 'lst', 'bank_loan',
+                'salary_advance', 'salary_arrears', 'other_allowances', 'other_deductions',
+                'total_taxable', 'total_earning', 'gross_salary', 'total_deductions',
+                'net_pay', 'payroll_period'])
 
     period_report = PayrollPeriodReport.objects.filter(payroll_period=payroll_period)
     context = {

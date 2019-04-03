@@ -30,16 +30,16 @@ ALLOWED_HOSTS = ['127.0.0.1', 'payroll-236416.appspot.com']
 
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
-    'payroll.apps.PayrollConfig',
-    'support_data.apps.SupportDataConfig',
-    'reports.apps.ReportsConfig',
-    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'payroll.apps.PayrollConfig',
+    'support_data.apps.SupportDataConfig',
+    'reports.apps.ReportsConfig',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [

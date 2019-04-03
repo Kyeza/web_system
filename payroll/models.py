@@ -26,8 +26,9 @@ class PayrollCenter(models.Model):
 
 class PayrollPeriod(models.Model):
     """docstring for PayrollPeriod"""
+    month = datetime.datetime.now().month
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
-    month = models.IntegerField(choices=MONTHS, default=datetime.datetime.now().month)
+    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[month-1][1])
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year)
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None)
     status = models.CharField(max_length=6, choices=OPEN_OR_CLOSED, default=OPEN_OR_CLOSED[1][0])
