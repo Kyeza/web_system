@@ -1,36 +1,31 @@
-{% extends 'payroll/base.html' %}
+{% extends 'payroll/../base.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
     <div class="content-section">
-        <legend class="border-bottom mb-4">Terminated Employees</legend>
+        <legend class="border-bottom mb-4">Employees' Birthdays</legend>
         <div class="table-responsive-md">
-            <table class="table table-sm table-borderless table-hover">
+            <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                 <tr>
                     <th>Name</th>
-                    <th>Job Title</th>
-                    <th>ID Number</th>
-                    <th>Email</th>
-                    <th>Mobile No</th>
-                    <th>Department</th>
-                    <th>Employee status</th>
+                    <th>Birthday</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for employee in object_list %}
                     <tr>
-                        <td><a href="{% url 'users:user-detail' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
+                        <td>
+                            <a href="{% url 'users:user-detail' pk=employee.id %}">
+                                {{ employee.user.get_full_name }}
+                            </a>
                         </td>
-                        <td>{{ employee.job_title }}</td>
-                        <td>{{ employee.id_number }}</td>
-                        <td>{{ employee.user.email }}</td>
-                        <td>{{ employee.mobile_number }}</td>
-                        <td>{{ employee.department }}</td>
-                        <td class="text-danger">{{ employee.employment_status }}</td>
+                        <td>{{ employee.date_of_birth|date:'d M, Y' }}</td>
+                        <td><a class="btn btn-sm btn-primary" href="#">SEND MAIL</a></td>
                     </tr>
                 {% empty %}
-                    <p class="text-center">No terminated "Employees"</p>
+                    <p class="text-center">No "Employees" yet</p>
                 {% endfor %}
                 </tbody>
             </table>

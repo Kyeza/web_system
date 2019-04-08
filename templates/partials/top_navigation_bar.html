@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-red py-1">
+    <a class="navbar-brand mr-auto" href="{% url 'payroll:index' %}"><strong>HR SYSTEM</strong></a>
+    <i class="fas fa-search"></i>
+
+    <!-- Profile image on navbar -->
+    <div class="btn-group">
+        <img class="rounded-circle nav-img" src="#" alt="" data-toggle="dropdown" aria-haspopup="true"
+             aria-expanded="false">
+        <div class="dropdown-menu dropdown-menu-right">
+            <h1 class="dropdown-header">Welcome</h1>
+            <a class="dropdown-item" href="{% url 'users:user-profile' %}">My Profile</a>
+            <button class="dropdown-item" type="button">Reset Password</button>
+            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+    <div class="input-group d-none">
+        <div class="input-group-prepend">
+            <button id="cls-btn" class="btn btn-light nav-btn" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <input id="search-input" type="text" class="form-control">
+        <div class="input-group-append">
+            <button class="btn btn-light nav-btn" type="button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+</nav>

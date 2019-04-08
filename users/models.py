@@ -8,7 +8,7 @@ from django.utils import timezone
 from hr_system.constants import YES_OR_NO_TYPES
 from payroll.models import (PayrollCenter, Bank, Currency, PayrollPeriod, LSTRates, PAYERates,
                             EarningDeductionCategory, EarningDeductionType)
-from support_data.models import Nationality, DutyStation, Department, JobTitle, ContractType,\
+from support_data.models import Nationality, DutyStation, Department, JobTitle, ContractType, \
     Relationship, Country, Grade
 from .constants import MARITAL_STATUS, GENDER, EMP_STATUS
 from .utils import get_image_filename
@@ -25,9 +25,9 @@ class Employee(models.Model):
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS)
     image = models.ImageField(default='default.png', upload_to=get_image_filename, blank=True)
     mobile_number = models.CharField(max_length=12, blank=True, null=True)
-    date_of_birth = models.DateTimeField(default=timezone.now)
+    date_of_birth = models.DateField(default=timezone.now)
     sex = models.CharField(max_length=6, choices=GENDER)
-    id_number = models.IntegerField('ID Number')
+    id_number = models.CharField('ID Number', max_length=30)
     passport_number = models.CharField(max_length=16, blank=True, null=True)
     residential_address = models.CharField('Residential address', max_length=30, blank=True, null=True)
     district = models.CharField(max_length=30, blank=True, null=True)
@@ -40,7 +40,7 @@ class Employee(models.Model):
     department = models.ForeignKey(Department, on_delete=models.DO_NOTHING, null=True, blank=True)
     job_title = models.ForeignKey(JobTitle, on_delete=models.DO_NOTHING, null=True, blank=True)
     contract_type = models.ForeignKey(ContractType, on_delete=models.DO_NOTHING, null=True, blank=True)
-    appointment_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    appointment_date = models.DateField(default=timezone.now, null=True, blank=True)
     social_security = models.CharField('Pays Social Security', max_length=3, choices=YES_OR_NO_TYPES, null=True,
                                        blank=True)
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.DO_NOTHING, null=True)
@@ -57,6 +57,8 @@ class Employee(models.Model):
     kin_phone_number = models.CharField(max_length=12, null=True, blank=True)
     kin_email = models.EmailField(null=True, blank=True)
     kin_relationship = models.ForeignKey(Relationship, on_delete=models.DO_NOTHING, null=True, blank=True)
+    dr_ac_code = models.CharField(max_length=30, null=True, blank=True)
+    cr_ac_code = models.CharField(max_length=30, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True)
 
     def clean_payroll_center(self):
@@ -66,6 +68,10 @@ class Employee(models.Model):
     def clean_gross_salary(self):
         if self.gross_salary is None:
             raise ValidationError("Please enter employee 'Gross salary'.")
+
+    # TODO: add phone number validator
+    def clean_phone_number(self):
+        pass
 
     def clean(self):
         self.clean_payroll_center()
@@ -80,7 +86,7 @@ class Employee(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return f'{self.user.username.capitalize()} Employee'
+        return f'{self.user.get_full_name()}'
 
 
 class PayrollProcessors(models.Model):
@@ -103,9 +109,8 @@ class PayrollProcessors(models.Model):
 
 class TerminatedEmployees(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    notice_date = models.DateTimeField(default=timezone.now, null=True)
-    exit_date = models.DateTimeField(default=timezone.now, null=True)
-    termination_date = models.DateTimeField(default=timezone.now, null=True)
+    notice_date = models.DateField(default=timezone.now, null=True)
+    exit_date = models.DateField(default=timezone.now, null=True)
     days_given = models.IntegerField(null=True)
     employable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
     reason = models.TextField()

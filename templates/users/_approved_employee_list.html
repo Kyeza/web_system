@@ -1,61 +1,98 @@
-{% extends 'payroll/base.html' %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block content %}
     <div class="content-section">
         <legend class="border-bottom mb-4">Approved Staff List</legend>
         <div class="table-responsive">
-            <table class="table table-md table-borderless table-hover">
+            <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Name</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>Job Title</th>
-                    <th>ID Number</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Date Of Birth</th>
+                    <th>Sex</th>
+                    <th>Marital status</th>
+                    <th>Mobile No.</th>
                     <th>Email</th>
-                    <th>Mobile No</th>
-                    <th>Department</th>
-                    <th>Duty Station</th>
-                    <th>Country</th>
-                    <th>TIN No</th>
+                    <th>ID No.</th>
                     <th>Passport</th>
-                    <th>Marital Status</th>
-                    <th>Bank name 1</th>
-                    <th>A/C No. 1</th>
-                    <th>First %</th>
-                    <th>Bank name 2</th>
-                    <th>A/C No. 2</th>
-                    <th>Second %</th>
-                    <th>Employee status</th>
+                    <th>Nationality</th>
+                    <th>Residential address</th>
+                    <th>District</th>
+                    <th>Duty country</th>
+                    <th>Duty station</th>
+                    <th>Department</th>
+                    <th>Job title</th>
+                    <th>Appointment date</th>
+                    <th>Contract type</th>
+                    <th>Cost centre</th>
+                    <th>Grade</th>
+                    <th>Gross salary</th>
+                    <th>Currency</th>
+                    <th>TIN No.</th>
+                    <th>Social security</th>
+                    <th>Social security No.</th>
+                    <th>Payroll Center</th>
+                    <th>Bank 1</th>
+                    <th>A/C 1</th>
+                    <th>Bank 1 %age</th>
+                    <th>Bank 2</th>
+                    <th>A/C 2</th>
+                    <th>Bank 2 %age</th>
+                    <th>Kin full name</th>
+                    <th>Kin phone no.</th>
+                    <th>Kin email</th>
+                    <th>Relationship</th>
+                    <th>DR A/C code</th>
+                    <th>CR A/C code</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for employee in object_list %}
                     <tr>
-                        <td colspan="8"><a href="{% url 'users:user-detail' pk=employee.pk %}">{{ employee.user.get_full_name }}</a>
+                        <td>
+                            <a href="{% url 'users:user-detail' pk=employee.pk %}">{{ employee.user.first_name }}</a>
                         </td>
-                        <td>{{ employee.job_title }}}</td>
-                        <td>{{ employee.id_number }}</td>
-                        <td>{{ employee.user.email }}</td>
-                        <td>{{ employee.mobile_number }}</td>
-                        <td>{{ employee.department }}</td>
-                        <td>{{ employee.duty_station }}</td>
-                        <td>{{ employee.duty_country }}</td>
-                        <td>{{ employee.tin_number }}</td>
-                        <td>{{ employee.passport_number }}</td>
+                        <td>{{ employee.user.last_name }}</td>
+                        <td>{{ employee.date_of_birth|date:'d/m/Y' }}</td>
+                        <td>{{ employee.sex }}</td>
                         <td>{{ employee.marital_status }}</td>
+                        <td>{{ employee.mobile_number }}</td>
+                        <td>{{ employee.user.email }}</td>
+                        <td>{{ employee.id_number }}</td>
+                        <td>{{ employee.passport_number }}</td>
+                        <td>{{ employee.nationality }}</td>
+                        <td>{{ employee.residential_address }}</td>
+                        <td>{{ employee.district }}</td>
+                        <td>{{ employee.duty_country }}</td>
+                        <td>{{ employee.duty_station }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.job_title }}</td>
+                        <td>{{ employee.appointment_date|date:'d M, Y' }}</td>
+                        <td>{{ employee.contract_type }}</td>
+                        <td>{{ employee.cost_centre }}</td>
+                        <td>{{ employee.grade }}</td>
+                        <td>{{ employee.gross_salary|intcomma }}</td>
+                        <td>{{ employee.currency }}</td>
+                        <td>{{ employee.tin_number }}</td>
+                        <td>{{ employee.social_security }}</td>
+                        <td>{{ employee.social_security_number }}</td>
+                        <td>{{ employee.payroll_center }}</td>
                         <td>{{ employee.bank_1 }}</td>
                         <td>{{ employee.first_account_number }}</td>
                         <td>{{ employee.first_bank_percentage }}</td>
                         <td>{{ employee.bank_2 }}</td>
                         <td>{{ employee.second_account_number }}</td>
                         <td>{{ employee.second_bank_percentage }}</td>
+                        <td>{{ employee.kin_full_name }}</td>
+                        <td>{{ employee.kin_phone_number }}</td>
+                        <td>{{ employee.kin_email }}</td>
+                        <td>{{ employee.kin_relationship }}</td>
+                        <td>{{ employee.dr_ac_code }}</td>
+                        <td>{{ employee.cr_ac_code }}</td>
                         <td class="text-success">{{ employee.employment_status }}</td>
                     </tr>
                 {% empty %}

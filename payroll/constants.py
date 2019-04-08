@@ -8,8 +8,3 @@ month_str = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY',
              'NOVEMBER', 'DECEMBER']
 
 MONTHS = [(month_str[month-1], month_str[month-1]) for month in range(1, 13)]
-
-OPEN_OR_CLOSED = (
-    ('OPEN', 'Open'),
-    ('CLOSED', 'Closed')
-)

@@ -1,4 +1,4 @@
-{% extends "payroll/base.html" %}
+{% extends "payroll/../base.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -20,20 +20,24 @@
                         <ul class="nav nav-tabs" id="infoTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="bio-data-tab" data-toggle="tab" href="#bio-data"
-                                   role="tab" aria-controls="home" aria-selected="true">BIO DATA</a>
+                                   role="tab" aria-controls="bio-data" aria-selected="true">BIO DATA</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="work-info-tab" data-toggle="tab" href="#work-info"
-                                   role="tab" aria-controls="profile" aria-selected="false">WORK INFO</a>
+                                   role="tab" aria-controls="work-info" aria-selected="false">WORK INFO</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="payroll-info-tab" data-toggle="tab" href="#payroll-info"
-                                   role="tab" aria-controls="contact" aria-selected="false">PAYROLL INFO</a>
+                                   role="tab" aria-controls="payroll-info" aria-selected="false">PAYROLL INFO</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="emergency-contact-tab" data-toggle="tab"
                                    href="#emergency-contact"
-                                   role="tab" aria-controls="contact" aria-selected="false">EMERGENCY CONTACT</a>
+                                   role="tab" aria-controls="emergency-contact" aria-selected="false">EMERGENCY CONTACT</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="codes-tab" data-toggle="tab" href="#codes"
+                                   role="tab" aria-controls="codes" aria-selected="false">DR/CR CODES</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="infoTabContent">
@@ -198,6 +202,19 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {#                            DR/CR CODE TABS#}
+                            <div class="tab-pane fade" id="codes" role="tabpanel"
+                                 aria-labelledby="codes-tab">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_update_form.dr_ac_code|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-0">
+                                        {{ profile_update_form.cr_ac_code|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </fieldset>
                     <div class="form-group">
@@ -216,8 +233,6 @@
                     <div class="border p-2 rounded">
                         Current status: <span class="text-success">{{ profile_user.employee.employment_status }}</span>
                     </div>
-                    <a class="btn btn-danger btn-block mt-4"
-                       href="{% url 'users:terminate-employee' profile_user.id %}">TERMINATE</a>
                 </fieldset>
             </div>
         </div>

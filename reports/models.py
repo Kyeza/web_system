@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from payroll.models import PayrollPeriod
 from users.models import Employee
@@ -28,9 +27,6 @@ class PayrollPeriodReport(models.Model):
     gross_salary = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     total_deductions = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     net_pay = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-
-    # def get_absolute_url(self):
-    #     return reverse('payroll:payroll-period-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return f'{self.employee.user.user_name} report'

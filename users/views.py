@@ -10,7 +10,7 @@ from django.views.generic.list import ListView
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
 from reports.models import PayrollPeriodReport
-from users.models import Employee, PayrollProcessors
+from users.models import Employee, PayrollProcessors, TerminatedEmployees
 from .forms import (StaffCreationForm, ProfileCreationForm,
                     StaffUpdateForm, ProfileUpdateForm,
                     EmployeeApprovalForm, TerminationForm)
@@ -75,9 +75,7 @@ def user_update_profile(request, pk=None):
 
     if request.method == 'POST':
         user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
-        print(f'User Form is valid: {user_update_form.is_valid()}')
         profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile_user.employee)
-        print(f'Profile Form is valid: {profile_update_form.is_valid()}')
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             profile_update_form.save()
@@ -99,32 +97,32 @@ def user_update_profile(request, pk=None):
     return render(request, 'users/profile.html', context)
 
 
-def add_user_to_payroll_processor(user):
-    user_status = user.employee.employment_status
-    payroll_periods = user.employee.payroll_center.payrollperiod_set.all()
+def add_user_to_payroll_processor(instance):
+    user_status = instance.employee.employment_status
+    payroll_periods = instance.employee.payroll_center.payrollperiod_set.all()
     if user_status == 'APPROVED' or user_status == 'REACTIVATED':
         if payroll_periods:
             open_payroll_period = payroll_periods.filter(status='OPEN').first()
             if open_payroll_period:
-                user_payroll_center = user.employee.payroll_center
+                user_payroll_center = instance.employee.payroll_center
                 payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
 
-                # get existing user processors if they exists
-                existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=user.employee) \
+                # get existing instance processors if they exists
+                existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
                     .filter(payroll_period=open_payroll_period)
                 # if ed_types for the employees payroll center exit
                 if payroll_center_ed_types:
                     if existing_user_payroll_processors:
                         # PayrollCenterEdTypes can change, hence in case there is one not in the processor
-                        # associated with that user, then create it
+                        # associated with that instance, then create it
                         for pc_ed_type in payroll_center_ed_types:
                             if existing_user_payroll_processors.filter(earning_and_deductions_type=pc_ed_type.ed_type):
-                                # if that ed_type already has a processor associated with the user leave it and
+                                # if that ed_type already has a processor associated with the instance leave it and
                                 # continue
                                 continue
                             else:
                                 # else create it
-                                user_process = PayrollProcessors(employee=user.employee,
+                                user_process = PayrollProcessors(employee=instance.employee,
                                                                  earning_and_deductions_category=pc_ed_type.ed_type \
                                                                  .ed_category,
                                                                  earning_and_deductions_type=pc_ed_type.ed_type,
@@ -132,13 +130,21 @@ def add_user_to_payroll_processor(user):
                                 user_process.save()
 
                     else:
-                        # if its a new user in the payroll period, create processors for that user/employee
+                        # if its a new instance in the payroll period, create processors for that instance/employee
                         for pc_ed_type in payroll_center_ed_types:
-                            user_process = PayrollProcessors(employee=user.employee,
+                            user_process = PayrollProcessors(employee=instance.employee,
                                                              earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
                                                              earning_and_deductions_type=pc_ed_type.ed_type,
                                                              amount=0, payroll_period=open_payroll_period)
                             user_process.save()
+
+
+@login_required
+def reject_employee(request, pk=None):
+    employee = get_object_or_404(Employee, pk=pk)
+    employee.employment_status = 'REJECTED'
+    employee.save(update_fields=['employment_status'])
+    return render(request, 'users/_approved_employee_list.html')
 
 
 @login_required
@@ -148,12 +154,11 @@ def approve_employee(request, pk=None):
 
     if request.method == 'POST':
         user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
-        print(f'User Form is valid: {user_update_form.is_valid()}')
         profile_update_form = EmployeeApprovalForm(request.POST, request.FILES, instance=profile_user.employee)
-        print(f'Profile Form is valid: {profile_update_form.is_valid()}')
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             employee_profile = profile_update_form.save(commit=False)
+
             # change employee status to approved before saving to db and adding them to payroll processors
             employee_profile.employment_status = 'APPROVED'
             employee_profile.save()
@@ -219,7 +224,7 @@ class ApprovedEmployeeListView(LoginRequiredMixin, ListView):
 
 class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
     model = Employee
-    template_name = 'users/_terminated_employee_list.html'
+    template_name = 'users/_terminate_employee_list.html'
     fields = [
         'marital_status', 'mobile_number', 'id_number',
         'passport_number', 'nationality', 'residential_address', 'district',
@@ -256,7 +261,17 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Rejected').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='REJECTED').order_by('appointment_date')
+
+
+class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
+    model = TerminatedEmployees
+    template_name = 'users/_separated_employee_list.html'
+    fields = ['employee', 'notice_date', 'exit_date', 'days_given', 'employable', 'reason']
+    paginate_by = 10
+
+    def get_queryset(self):
+        return TerminatedEmployees.objects.all().order_by('notice_date')
 
 
 @login_required
@@ -295,7 +310,6 @@ def process_payroll_period(request, pk):
         # calculating gross earnings
         if ge_data:
             for inst in ge_data:
-                print(f'{inst.earning_and_deductions_type.ed_type}-{inst.amount}')
                 if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
@@ -375,33 +389,33 @@ def process_payroll_period(request, pk):
         report_exists = PayrollPeriodReport.objects.filter(employee=employee) \
             .filter(payroll_period=payroll_period).first()
 
-        acting_allowance = period_processes.filter(employee=employee)\
+        acting_allowance = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=2).first().amount
-        car_transport_allowance = period_processes.filter(employee=employee)\
+        car_transport_allowance = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=3).first().amount
-        duty_risk_allowance = period_processes.filter(employee=employee)\
+        duty_risk_allowance = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=6).first().amount
-        overtime_normal_days = period_processes.filter(employee=employee)\
+        overtime_normal_days = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=7).first().amount
-        overtime_holiday = period_processes.filter(employee=employee)\
+        overtime_holiday = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=8).first().amount
-        housing_allowance = period_processes.filter(employee=employee)\
+        housing_allowance = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=9).first().amount
-        bonus = period_processes.filter(employee=employee)\
+        bonus = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=10).first().amount
-        income_tax_paye = period_processes.filter(employee=employee)\
+        income_tax_paye = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=11).first().amount
-        pension_fund = period_processes.filter(employee=employee)\
+        pension_fund = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=12).first().amount
-        lst = period_processes.filter(employee=employee)\
+        lst = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=13).first().amount
-        bank_loan = period_processes.filter(employee=employee)\
+        bank_loan = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=14).first().amount
-        salary_advance = period_processes.filter(employee=employee)\
+        salary_advance = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=15).first().amount
-        salary_arrears = period_processes.filter(employee=employee)\
+        salary_arrears = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=18).first().amount
-        other_allowances = period_processes.filter(employee=employee)\
+        other_allowances = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type=23).first().amount
 
         if report_exists is None:
@@ -419,7 +433,7 @@ def process_payroll_period(request, pk):
                                               bank_loan=bank_loan,
                                               salary_advance=salary_advance,
                                               salary_arrears=salary_arrears,
-                                              other_allowances=23,
+                                              other_allowances=other_allowances,
                                               other_deductions=0,
                                               total_taxable=0,
                                               total_earning=0,
@@ -471,10 +485,43 @@ def process_payroll_period(request, pk):
 @login_required
 def terminate_employee(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
-    form = TerminationForm(instance=employee)
+
+    if request.method == 'POST':
+        form = TerminationForm(request.POST)
+        if form.is_valid():
+            employee.employment_status = 'TERMINATED'
+            employee.save(update_fields=['employment_status'])
+            instance = form.save(commit=False)
+            instance.employee = employee
+            instance.save()
+            messages.success(request, 'Employee terminated successfully')
+            return redirect('users:terminate-employee-list')
+    else:
+        form = TerminationForm(initial={'employee': employee})
 
     context = {
         'employee': employee,
         'form': form,
     }
     return render(request, 'users/_terminate_employee_form.html', context)
+
+
+class EmployeeBirthdayList(LoginRequiredMixin, ListView):
+    model = Employee
+    template_name = 'users/_employee_birthday_list.html'
+    fields = [
+        'marital_status', 'mobile_number', 'id_number',
+        'passport_number', 'nationality', 'residential_address', 'district',
+        'date_of_birth', 'sex', 'image', 'user_group',
+        'duty_country', 'duty_station', 'department', 'job_title',
+        'appointment_date', 'contract_type', 'cost_centre', 'grade',
+        'gross_salary', 'currency', 'tin_number', 'social_security',
+        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
+        'first_account_number', 'second_account_number', 'first_bank_percentage',
+        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
+        'kin_relationship'
+    ]
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Employee.objects.filter(employment_status='APPROVED').order_by('appointment_date')

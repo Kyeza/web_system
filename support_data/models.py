@@ -12,6 +12,9 @@ class Country(models.Model):
     country_name = models.CharField(max_length=36)
     country_code = models.CharField(max_length=3)
 
+    def get_absolute_url(self):
+        return reverse('support_data:country-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.country_name
 
@@ -20,6 +23,9 @@ class Nationality(models.Model):
     """docstring for Nationality"""
     country = models.OneToOneField(Country, on_delete=models.CASCADE, primary_key=True)
     country_nationality = models.CharField(max_length=36)
+
+    def get_absolute_url(self):
+        return reverse('support_data:nationality-detail-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.country_nationality
@@ -31,6 +37,9 @@ class DutyStation(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     description = models.CharField(max_length=150)
 
+    def get_absolute_url(self):
+        return reverse('support_data:duty-station-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.duty_station
 
@@ -40,6 +49,9 @@ class Department(models.Model):
     department = models.CharField(max_length=30)
     description = models.CharField(max_length=150)
 
+    def get_absolute_url(self):
+        return reverse('support_data:department-detail-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.department
 
@@ -48,6 +60,9 @@ class JobTitle(models.Model):
     """docstring for JobTitle"""
     job_title = models.CharField(max_length=200)
     description = models.CharField(max_length=150)
+
+    def get_absolute_url(self):
+        return reverse('support_data:job-title-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.job_title
@@ -59,6 +74,9 @@ class ContractType(models.Model):
     contract_expiry = models.IntegerField(default=0)
     leave_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     leave_days_entitled = models.IntegerField(default=0)
+
+    def get_absolute_url(self):
+        return reverse('support_data:contract-type-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.contract_type

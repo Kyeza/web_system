@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'payroll.apps.PayrollConfig',
     'support_data.apps.SupportDataConfig',
     'reports.apps.ReportsConfig',
@@ -75,9 +76,6 @@ WSGI_APPLICATION = 'hr_system.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-# import pymysql  # noqa: 402
-# pymysql.connect('localhost', 'root', 'Kam12345', 'payroll_schema')
 
 # [START db_setup]
 if os.getenv('GAE_APPLICATION', None):

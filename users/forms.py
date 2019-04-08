@@ -48,6 +48,9 @@ class ProfileCreationForm(forms.ModelForm):
         self.fields['kin_email'].label = "Email"
         self.fields['kin_phone_number'].label = "Phone"
         self.fields['kin_relationship'].label = "Relationship"
+        self.fields['dr_ac_code'].label = "DR A/C code"
+        self.fields['cr_ac_code'].label = "CR A/C code"
+        self.fields['tin_number'].label = "TIN number"
 
     # bio-data fields
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
@@ -71,10 +74,10 @@ class ProfileCreationForm(forms.ModelForm):
     department = forms.ModelChoiceField(queryset=Department.objects.all(), required=False)
     job_title = forms.ModelChoiceField(queryset=JobTitle.objects.all(), required=False)
     appointment_date = forms.DateField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        ),
-        required=False,
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={'type': 'date'}),
+        required=False
     )
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
     cost_centre = forms.CharField(required=False)
@@ -113,7 +116,7 @@ class ProfileCreationForm(forms.ModelForm):
             'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
             'first_account_number', 'second_account_number', 'first_bank_percentage',
             'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship'
+            'kin_relationship', 'dr_ac_code', 'cr_ac_code'
         ]
 
 
@@ -136,6 +139,9 @@ class ProfileUpdateForm(forms.ModelForm):
         self.fields['kin_phone_number'].label = "Phone"
         self.fields['kin_relationship'].label = "Relationship"
         self.fields['employment_status'].label = "Change status"
+        self.fields['dr_ac_code'].label = "DR A/C code"
+        self.fields['cr_ac_code'].label = "CR A/C code"
+        self.fields['tin_number'].label = "TIN number"
 
     # bio-data fields
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), disabled=True)
@@ -159,7 +165,7 @@ class ProfileUpdateForm(forms.ModelForm):
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
     cost_centre = forms.CharField(required=False)
     grade = forms.ModelChoiceField(queryset=Grade.objects.all(), required=False)
-    gross_salary = forms.DecimalField(max_digits=9, decimal_places=2, required=False)
+    gross_salary = forms.DecimalField(max_digits=9, decimal_places=2, required=False, widget=forms.NumberInput())
     currency = forms.ModelChoiceField(queryset=Currency.objects.all(), required=False)
     tin_number = forms.IntegerField(required=False)
 
@@ -195,7 +201,7 @@ class ProfileUpdateForm(forms.ModelForm):
             'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
             'first_account_number', 'second_account_number', 'first_bank_percentage',
             'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'employment_status',
+            'kin_relationship', 'employment_status', 'dr_ac_code', 'cr_ac_code'
         ]
 
 
@@ -215,28 +221,22 @@ class EmployeeApprovalForm(ProfileUpdateForm):
             'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
             'first_account_number', 'second_account_number', 'first_bank_percentage',
             'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'employment_status',
+            'kin_relationship', 'employment_status', 'dr_ac_code', 'cr_ac_code'
         ]
 
 
 class TerminationForm(forms.ModelForm):
-    employee = forms.ModelChoiceField(queryset=Employee.objects.all())
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all(), required=False, disabled=True)
     notice_date = forms.DateTimeField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        ),
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={'type': 'date'}),
         required=False
     )
     exit_date = forms.DateTimeField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        ),
-        required=False
-    )
-    termination_date = forms.DateTimeField(
-        widget=forms.TextInput(
-            attrs={'type': 'date'}
-        ),
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={'type': 'date'}),
         required=False
     )
     days_given = forms.IntegerField(required=False)
@@ -245,4 +245,4 @@ class TerminationForm(forms.ModelForm):
 
     class Meta:
         model = TerminatedEmployees
-        fields = ['employee', 'notice_date', 'exit_date', 'termination_date', 'days_given', 'employable', 'reason']
+        fields = ['employee', 'notice_date', 'exit_date', 'days_given', 'employable', 'reason']

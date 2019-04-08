@@ -1,4 +1,4 @@
-{% extends 'payroll/base.html' %}
+{% extends 'payroll/../base.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -7,7 +7,37 @@
             {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Terminate Employee</legend>
-                {{ form|crispy }}
+                <div class="form-row">
+                    <div class="form-group col-md-6 mb-0">
+                        {{ form.employee|as_crispy_field }}
+                    </div>
+                    <div class="form-group col-md-6 mb-0">
+                        {{ form.days_given|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6 mb-0">
+                        {{ form.reason|as_crispy_field }}
+                    </div>
+                    <div class="form-group col-md-6 mb-0">
+                        <div class="form-row">
+                            <div class="form-group col-md-12 mb-0">
+                                {{ form.notice_date|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12 mb-0">
+                                {{ form.exit_date|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12 mb-0">
+                                {{ form.employable|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-success" type="submit">SUBMIT</button>

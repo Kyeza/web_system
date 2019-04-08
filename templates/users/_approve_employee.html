@@ -1,4 +1,4 @@
-{% extends "payroll/base.html" %}
+{% extends "payroll/../base.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -202,7 +202,7 @@
                     </fieldset>
                     <div class="form-group">
                         <button class="btn btn-success" type="submit">APPROVE</button>
-                        <a class="btn btn-warning" href="#">REJECT</a>
+                        <a class="btn btn-warning" href="{% url 'users:reject-employee' profile_user.employee.pk %}">REJECT</a>
                         <a class="btn btn-danger" href="{% url 'users:employee-approval' %}">CANCEL</a>
                     </div>
                 </div>

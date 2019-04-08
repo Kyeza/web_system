@@ -4,9 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
+from hr_system import settings
 from hr_system.constants import YES_OR_NO_TYPES
 from support_data.models import Country, Organization
-from .constants import MONTHS, PAYROLL_YEARS, OPEN_OR_CLOSED
+from .constants import MONTHS, PAYROLL_YEARS
 
 
 class PayrollCenter(models.Model):
@@ -25,36 +26,44 @@ class PayrollCenter(models.Model):
 
 
 class PayrollPeriod(models.Model):
+    KV_MONTH = {
+        'JANUARY': 1,
+        'FEBRUARY': 2,
+        'MARCH': 3,
+        'APRIL': 4,
+        'MAY': 5,
+        'JUNE': 6,
+        'JULY': 7,
+        'AUGUST': 8,
+        'SEPTEMBER': 9,
+        'OCTOBER': 10,
+        'NOVEMBER': 11,
+        'DECEMBER': 12,
+    }
+
     """docstring for PayrollPeriod"""
     month = datetime.datetime.now().month
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
-    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[month-1][1])
+    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[month - 1][1])
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year)
-    payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None)
-    status = models.CharField(max_length=6, choices=OPEN_OR_CLOSED, default=OPEN_OR_CLOSED[1][0])
+    payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
+    status = models.CharField(max_length=6, default='OPEN')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def get_absolute_url(self):
         return reverse('payroll:payroll-period-detail', kwargs={'pk': self.pk})
 
     def clean(self):
-        if self.status == 'OPEN':
-            open_periods = []
-            center_payroll_periods = self.payroll_center.payrollperiod_set.all()
-
-            if center_payroll_periods:
-                for period in center_payroll_periods:
-                    if period.status == 'OPEN':
-                        open_periods.append(period)
-                if len(open_periods) >= 1:
-                    raise ValidationError(f'Can not set "Status: {self.status}", \nonly one  '
-                                          f'Payroll period can be open at a time')
+        if self.payroll_key is None:
+            payroll_key = f'Y{self.year}M{self.KV_MONTH[self.month]}C{self.payroll_center_id}'
+            if PayrollPeriod.objects.filter(payroll_key=payroll_key):
+                raise ValidationError(f'Pay roll period for this month already created')
+            else:
+                self.payroll_key = payroll_key
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.full_clean()
-        if self.payroll_key is None:
-            self.payroll_key = f'Y{self.year}M{self.month}C{self.payroll_center_id}'
-
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
@@ -90,6 +99,9 @@ class Bank(models.Model):
     sort_code = models.CharField(max_length=100)
     description = models.CharField(max_length=150)
 
+    def get_absolute_url(self):
+        return reverse('payroll:bank-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.bank
 
@@ -98,6 +110,9 @@ class Currency(models.Model):
     """docstring for Currency"""
     currency = models.CharField(max_length=150)
     description = models.CharField(max_length=150)
+
+    def get_absolute_url(self):
+        return reverse('payroll:currency-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.currency

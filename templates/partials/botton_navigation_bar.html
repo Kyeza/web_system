@@ -1,0 +1,163 @@
+<nav id="bottom-nav" class="navbar navbar-expand-lg navbar-light bg-light py-0 shadow">
+    <a class="navbar-brand ml-10" href="#">
+        <i class="fas fa-home"></i>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown action">
+                <a class="nav-link dropdown-header" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Staff <span class="sr-only">(current)</span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'users:new-employee' %}">Add New Employee</a>
+                    <a class="dropdown-item" href="{% url 'users:edit-employee' %}">Edit Employee</a>
+                    <a class="dropdown-item" href="{% url 'users:employee-approval' %}">New Employee Approval</a>
+                    <a class="dropdown-item" href="{% url 'users:rejected-employee-list' %}">Rejected New Employee</a>
+                    <a class="dropdown-item" href="{% url 'users:separated-employee' %}">Separated Employees</a>
+                    <a class="dropdown-item" href="{% url 'users:terminate-employee-list' %}">Terminate Employee</a>
+                    <a class="dropdown-item" href="{% url 'users:employee-birthday-list' %}">Employee Birthdays</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-header" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Payroll
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">PAYROLL
+                        PERIODS</a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-create' %}">
+                        <small>Add Payroll Period</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'payroll:close-payroll-period-list' %}">
+                        <small>Close Payroll Period</small>
+                    </a>
+                    <a class="dropdown-item disabled" style="font-weight: bolder; color: rgba(93,97,99,0.83);">PAYROLL
+                        GENERATOR</a>
+                    <a class="dropdown-item" href="{% url 'payroll:open-payroll-period-list' %}">
+                        <small>Process Payroll</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-period-list' %}">
+                        <small>Edit Payroll</small>
+                    </a>
+                    <a class="dropdown-item disabled"
+                       style="font-weight: bolder; color: rgba(93,97,99,0.83);">REPORTS</a>
+                    <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">
+                        <small>Payroll Reports</small>
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-header" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Reports
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-header" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Support Data
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-multicol">
+                        <div style="border-left: none">
+                            <a class="dropdown-item" href="#">Country of Origin</a>
+                            <a class="dropdown-item" href="#">Nationality</a>
+                            <a class="dropdown-item" href="#">Duty Station</a>
+                            <a class="dropdown-item" href="#">Departments</a>
+                            <a class="dropdown-item" href="#">Job Titles</a>
+                            <a class="dropdown-item" href="#">Contract Types</a>
+                        </div>
+                        <div class="wider">
+                            <a class="dropdown-item" href="{% url 'support_data:organization-create' %}">
+                                Add Organization
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:organization-list' %}">Edit
+                                Organization</a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-create' %}">Add Payroll
+                                Center</a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-list' %}">Edit Payroll
+                                Center</a>
+                            <a class="dropdown-item" href="{% url 'payroll:ed-type-create' %}">
+                                Add Earning and Deductions
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:ed-type-list' %}">
+                                Edit Earning and Deductions
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-eds-create' %}">
+                                Add Payroll Earning and Deductions
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-eds-list' %}">
+                                Edit Payroll Earning and Deductions
+                            </a>
+                        </div>
+                        <div>
+                            <a class="dropdown-item" href="#">Public Holidays</a>
+                            <a class="dropdown-item" href="#">Bank</a>
+                            <a class="dropdown-item" href="#">Currencies</a>
+                            <a class="dropdown-item" href="#">Grade</a>
+                            <a class="dropdown-item" href="#">Payroll Center</a>
+                        </div>
+                        <div>
+                            <a class="dropdown-item dropdown-header"
+                               style="font-weight: bolder; color: rgba(93,97,99,0.83);">
+                                Tax Settings
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-create' %}">
+                                Add Tax Bracket
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-list' %}">
+                                Edit Tax Bracket
+                            </a>
+                            <a class="dropdown-item" href="{% url 'payroll:lst-list' %}">
+                                Edit LST Rates
+                            </a>
+                        </div>
+                        <div>
+                            <a class="dropdown-item dropdown-header"
+                               style="font-weight: bolder; color: rgba(93,97,99,0.83);">
+                                Email Messages
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-create' %}">
+                                Birthday Messages
+                            </a>
+                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-list' %}">
+                                Escalation Messages
+                            </a>
+                        </div>
+                        <div style="border-bottom: none">
+                            <a class="dropdown-item" href="#">
+                                <div class="d-flex flex-row">
+                                    <div class="p-2 rounded-circle flex-fill"
+                                         style="background-color: #4f4f4f; width: 20px; height:20px">
+                                    </div>
+                                    <div class="p-2 d-flex flex-column flex-fill">
+                                        <div class="p-2 dropdown-header">Help Menu</div>
+                                        <div class="p-2 dropdown-text">Add help notes</div>
+                                    </div>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link dropdown-header" href="#">Submit Feedback</a>
+            </li>
+        </ul>
+    </div>
+</nav>
