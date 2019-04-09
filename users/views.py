@@ -102,41 +102,43 @@ def add_user_to_payroll_processor(instance):
     payroll_periods = instance.employee.payroll_center.payrollperiod_set.all()
     if user_status == 'APPROVED' or user_status == 'REACTIVATED':
         if payroll_periods:
-            open_payroll_period = payroll_periods.filter(status='OPEN').first()
+            open_payroll_period = payroll_periods.filter(status='OPEN').all()
             if open_payroll_period:
-                user_payroll_center = instance.employee.payroll_center
-                payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
+                for payroll_period in open_payroll_period:
+                    user_payroll_center = instance.employee.payroll_center
+                    payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
 
-                # get existing instance processors if they exists
-                existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
-                    .filter(payroll_period=open_payroll_period)
-                # if ed_types for the employees payroll center exit
-                if payroll_center_ed_types:
-                    if existing_user_payroll_processors:
-                        # PayrollCenterEdTypes can change, hence in case there is one not in the processor
-                        # associated with that instance, then create it
-                        for pc_ed_type in payroll_center_ed_types:
-                            if existing_user_payroll_processors.filter(earning_and_deductions_type=pc_ed_type.ed_type):
-                                # if that ed_type already has a processor associated with the instance leave it and
-                                # continue
-                                continue
-                            else:
-                                # else create it
+                    # get existing instance processors if they exists
+                    existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
+                        .filter(payroll_period=payroll_period)
+                    # if ed_types for the employees payroll center exit
+                    if payroll_center_ed_types:
+                        if existing_user_payroll_processors:
+                            # PayrollCenterEdTypes can change, hence in case there is one not in the processor
+                            # associated with that instance, then create it
+                            for pc_ed_type in payroll_center_ed_types:
+                                if existing_user_payroll_processors.filter(
+                                        earning_and_deductions_type=pc_ed_type.ed_type):
+                                    # if that ed_type already has a processor associated with the instance leave it and
+                                    # continue
+                                    continue
+                                else:
+                                    # else create it
+                                    user_process = PayrollProcessors(employee=instance.employee,
+                                                                     earning_and_deductions_category=pc_ed_type.ed_type \
+                                                                     .ed_category,
+                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                     amount=0, payroll_period=payroll_period)
+                                    user_process.save()
+
+                        else:
+                            # if its a new instance in the payroll period, create processors for that instance/employee
+                            for pc_ed_type in payroll_center_ed_types:
                                 user_process = PayrollProcessors(employee=instance.employee,
-                                                                 earning_and_deductions_category=pc_ed_type.ed_type \
-                                                                 .ed_category,
+                                                                 earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
                                                                  earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                 amount=0, payroll_period=open_payroll_period)
+                                                                 amount=0, payroll_period=payroll_period)
                                 user_process.save()
-
-                    else:
-                        # if its a new instance in the payroll period, create processors for that instance/employee
-                        for pc_ed_type in payroll_center_ed_types:
-                            user_process = PayrollProcessors(employee=instance.employee,
-                                                             earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
-                                                             earning_and_deductions_type=pc_ed_type.ed_type,
-                                                             amount=0, payroll_period=open_payroll_period)
-                            user_process.save()
 
 
 @login_required
@@ -240,7 +242,7 @@ class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='APPROVED').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='TERMINATED').order_by('-appointment_date')
 
 
 class RejectedEmployeeListView(LoginRequiredMixin, ListView):
@@ -302,6 +304,7 @@ def process_payroll_period(request, pk):
     # getting updated payroll processors in case any employees have been removed
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
 
+    # TODO: DONT OVERWRITE EDTYPES THAT ARE ALREADY THERE
     for employee in employees_to_process:
         gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
         ge_data = period_processes.filter(employee=employee) \
@@ -386,6 +389,10 @@ def process_payroll_period(request, pk):
 
         net_pay = gross_earnings - total_deductions
 
+        for n in PayrollPeriodReport.objects.all():
+            if n.employee.employment_status == 'TERMINATED':
+                n.delete()
+
         report_exists = PayrollPeriodReport.objects.filter(employee=employee) \
             .filter(payroll_period=payroll_period).first()
 
@@ -428,7 +435,7 @@ def process_payroll_period(request, pk):
                                               housing_allowance=housing_allowance,
                                               bonus=bonus,
                                               income_tax_paye=income_tax_paye,
-                                              pension_fund=pension_fund,
+                                              pension_fund=nssf_5,
                                               lst=lst,
                                               bank_loan=bank_loan,
                                               salary_advance=salary_advance,
@@ -451,7 +458,7 @@ def process_payroll_period(request, pk):
             report_exists.housing_allowance = housing_allowance
             report_exists.bonus = bonus
             report_exists.income_tax_paye = income_tax_paye
-            report_exists.pension_fund = pension_fund
+            report_exists.pension_fund = nssf_5
             report_exists.lst = lst
             report_exists.bank_loan = bank_loan
             report_exists.salary_advance = salary_advance

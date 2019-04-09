@@ -73,12 +73,12 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <div class="dropdown-multicol">
                         <div style="border-left: none">
-                            <a class="dropdown-item" href="#">Country of Origin</a>
-                            <a class="dropdown-item" href="#">Nationality</a>
-                            <a class="dropdown-item" href="#">Duty Station</a>
-                            <a class="dropdown-item" href="#">Departments</a>
-                            <a class="dropdown-item" href="#">Job Titles</a>
-                            <a class="dropdown-item" href="#">Contract Types</a>
+                            <a class="dropdown-item" href="{% url 'support_data:country-list' %}">Country of Origin</a>
+                            <a class="dropdown-item" href="{% url 'support_data:nationality-list' %}">Nationality</a>
+                            <a class="dropdown-item" href="{% url 'support_data:duty-station-list' %}">Duty Station</a>
+                            <a class="dropdown-item" href="{% url 'support_data:department-list' %}">Departments</a>
+                            <a class="dropdown-item" href="{% url 'support_data:job-title-list' %}">Job Titles</a>
+                            <a class="dropdown-item" href="{% url 'support_data:contract-type-list' %}">Contract Types</a>
                         </div>
                         <div class="wider">
                             <a class="dropdown-item" href="{% url 'support_data:organization-create' %}">
@@ -105,9 +105,9 @@
                         </div>
                         <div>
                             <a class="dropdown-item" href="#">Public Holidays</a>
-                            <a class="dropdown-item" href="#">Bank</a>
-                            <a class="dropdown-item" href="#">Currencies</a>
-                            <a class="dropdown-item" href="#">Grade</a>
+                            <a class="dropdown-item" href="{% url 'payroll:bank-list' %}">Bank</a>
+                            <a class="dropdown-item" href="{% url 'payroll:currency-list' %}">Currencies</a>
+                            <a class="dropdown-item" href="{% url 'support_data:grade-list' %}">Grade</a>
                             <a class="dropdown-item" href="#">Payroll Center</a>
                         </div>
                         <div>

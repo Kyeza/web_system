@@ -107,7 +107,7 @@ class CountryOriginListView(LoginRequiredMixin, ListView):
 
 class NationalityCreate(LoginRequiredMixin, CreateView):
     model = Nationality
-    fields = ['country_id', 'country_nationality']
+    fields = ['country', 'country_nationality']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -117,7 +117,7 @@ class NationalityCreate(LoginRequiredMixin, CreateView):
 
 class NationalityUpdate(LoginRequiredMixin, UpdateView):
     model = Nationality
-    fields = ['country_id', 'country_nationality']
+    fields = ['country', 'country_nationality']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -127,18 +127,18 @@ class NationalityUpdate(LoginRequiredMixin, UpdateView):
 
 class NationalityDetailView(LoginRequiredMixin, DetailView):
     model = Nationality
-    fields = ['country_id', 'country_nationality']
+    fields = ['country', 'country_nationality']
 
 
 class NationalityListView(LoginRequiredMixin, ListView):
     model = Nationality
-    fields = ['country_id', 'country_nationality']
+    fields = ['country', 'country_nationality']
     paginate_by = 10
 
 
 class DutyStationCreate(LoginRequiredMixin, CreateView):
     model = DutyStation
-    fields = ['duty_station', 'description', 'country_id']
+    fields = ['duty_station', 'description', 'country']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -148,7 +148,7 @@ class DutyStationCreate(LoginRequiredMixin, CreateView):
 
 class DutyStationUpdate(LoginRequiredMixin, UpdateView):
     model = DutyStation
-    fields = ['duty_station', 'description', 'country_id']
+    fields = ['duty_station', 'description', 'country']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -158,12 +158,12 @@ class DutyStationUpdate(LoginRequiredMixin, UpdateView):
 
 class DutyStationDetailView(LoginRequiredMixin, DetailView):
     model = DutyStation
-    fields = ['duty_station', 'description', 'country_id']
+    fields = ['duty_station', 'description', 'country']
 
 
 class DutyStationListView(LoginRequiredMixin, ListView):
     model = DutyStation
-    fields = ['duty_station', 'description', 'country_id']
+    fields = ['duty_station', 'description', 'country']
     paginate_by = 10
 
 
@@ -262,7 +262,7 @@ class ContractTypeListView(LoginRequiredMixin, ListView):
 
 class GradeCreate(LoginRequiredMixin, CreateView):
     model = Grade
-    fields = ['currency', 'description']
+    fields = ['grade', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -272,7 +272,7 @@ class GradeCreate(LoginRequiredMixin, CreateView):
 
 class GradeUpdate(LoginRequiredMixin, UpdateView):
     model = Grade
-    fields = ['currency', 'description']
+    fields = ['grade', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -282,10 +282,10 @@ class GradeUpdate(LoginRequiredMixin, UpdateView):
 
 class GradeDetailView(LoginRequiredMixin, DetailView):
     model = Grade
-    fields = ['currency', 'description']
+    fields = ['grade', 'description']
 
 
 class GradeListView(LoginRequiredMixin, ListView):
     model = Grade
-    fields = ['currency', 'description']
+    fields = ['grade', 'description']
     paginate_by = 10
