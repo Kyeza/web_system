@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from django.core.paginator import Paginator
 
 from payroll.forms import PayrollPeriodCreationForm
 from .models import PayrollCenter, PayrollPeriod, EarningDeductionType, PayrollCenterEds, LSTRates, Bank, Currency
@@ -41,6 +42,12 @@ class PayrollCenterDetailView(LoginRequiredMixin, DetailView):
 
 class PayrollCenterListView(LoginRequiredMixin, ListView):
     model = PayrollCenter
+    paginate_by = 10
+
+
+class PayrollCenterStaffListView(LoginRequiredMixin, ListView):
+    model = PayrollCenter
+    template_name = 'payroll/payroll_center_staff_list.html'
     paginate_by = 10
 
 

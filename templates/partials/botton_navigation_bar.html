@@ -104,11 +104,10 @@
                             </a>
                         </div>
                         <div>
-                            <a class="dropdown-item" href="#">Public Holidays</a>
                             <a class="dropdown-item" href="{% url 'payroll:bank-list' %}">Bank</a>
                             <a class="dropdown-item" href="{% url 'payroll:currency-list' %}">Currencies</a>
                             <a class="dropdown-item" href="{% url 'support_data:grade-list' %}">Grade</a>
-                            <a class="dropdown-item" href="#">Payroll Center</a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-staff-list' %}">Payroll Center Staff</a>
                         </div>
                         <div>
                             <a class="dropdown-item dropdown-header"
@@ -130,11 +129,8 @@
                                style="font-weight: bolder; color: rgba(93,97,99,0.83);">
                                 Email Messages
                             </a>
-                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-create' %}">
+                            <a class="dropdown-item" href="#">
                                 Birthday Messages
-                            </a>
-                            <a class="dropdown-item" href="{% url 'support_data:tax-bracket-list' %}">
-                                Escalation Messages
                             </a>
                         </div>
                         <div style="border-bottom: none">

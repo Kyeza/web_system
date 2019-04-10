@@ -13,8 +13,10 @@
             <table class="table table-sm table-borderless table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Payroll Center</th>
+
                     <th>Country</th>
+                    <th>Payroll Center</th>
+                    <th>No. of Staff</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -23,6 +25,7 @@
                     <tr>
                         <td>{{ payroll_center.name }}</td>
                         <td>{{ payroll_center.country }}</td>
+                        <td>{{ payroll_center.employee_set.count }}</td>
                         <td>
                             <a class="btn btn-primary btn-sm"
                                href="{% url 'payroll:payroll-center-detail' payroll_center.pk %}">View</a>

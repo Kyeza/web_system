@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 from .views import (PayrollCenterCreate, PayrollCenterUpdate, PayrollCenterListView, PayrollCenterDetailView,
                     PayrollPeriodCreate, PayrollPeriodDetailView, PayrollPeriodListView, PayrollPeriodUpdate,
-                    PayrollPeriodForProcessing, LSTListView, PayrollPeriodCloseListView,
+                    PayrollPeriodForProcessing, LSTListView, PayrollPeriodCloseListView, PayrollCenterStaffListView,
                     EarningAndDeductionCreate, EarningAndDeductionUpdate, EarningAndDeductionDetailView,
                     EarningAndDeductionListView, BankCreate, BankUpdate, BankDetailView, BankListView,
                     PayrollCenterEdsCreate, PayrollCenterEdsUpdate, PayrollCenterEdsDetailView,
@@ -40,4 +40,5 @@ urlpatterns = [
     path('bank<int:pk>/edit/', BankUpdate.as_view(), name='bank-update'),
     path('banks/', BankListView.as_view(), name='bank-list'),
     path('bank/<int:pk>/', BankDetailView.as_view(), name='bank-detail'),
+    path('payroll/payroll_center/staff/', PayrollCenterStaffListView.as_view(), name='payroll-center-staff-list'),
 ]
