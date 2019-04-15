@@ -8,7 +8,7 @@ from payroll.models import Currency, PayrollCenter, Bank
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
-from .models import Employee, TerminatedEmployees
+from .models import Employee, TerminatedEmployees, CostCentre, Project, SOF, DEA, EmployeeProject
 
 
 class StaffCreationForm(UserCreationForm):
@@ -80,7 +80,6 @@ class ProfileCreationForm(forms.ModelForm):
         required=False
     )
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
-    cost_centre = forms.CharField(required=False)
     grade = forms.ModelChoiceField(queryset=Grade.objects.all(), required=False)
     gross_salary = forms.DecimalField(max_digits=9, decimal_places=2, required=False)
     currency = forms.ModelChoiceField(queryset=Currency.objects.all(), required=False)
@@ -163,7 +162,6 @@ class ProfileUpdateForm(forms.ModelForm):
     job_title = forms.ModelChoiceField(queryset=JobTitle.objects.all(), required=False)
     appointment_date = forms.DateField(disabled=True)
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
-    cost_centre = forms.CharField(required=False)
     grade = forms.ModelChoiceField(queryset=Grade.objects.all(), required=False)
     gross_salary = forms.DecimalField(max_digits=9, decimal_places=2, required=False, widget=forms.NumberInput())
     currency = forms.ModelChoiceField(queryset=Currency.objects.all(), required=False)
@@ -246,3 +244,44 @@ class TerminationForm(forms.ModelForm):
     class Meta:
         model = TerminatedEmployees
         fields = ['employee', 'notice_date', 'exit_date', 'days_given', 'employable', 'reason']
+
+
+class EmployeeProjectForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeProject
+        fields = [
+            'employee', 'cost_center', 'project_code', 'sof_code', 'dea_code', 'contribution_percentage'
+        ]
+
+
+class CostCentreForm(forms.ModelForm):
+    class Meta:
+        model = CostCentre
+        fields = [
+            'cost_centre', 'description'
+        ]
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = [
+            'cost_centre', 'project_code', 'project_name'
+        ]
+
+
+class SOFForm(forms.ModelForm):
+    class Meta:
+        model = SOF
+        fields = [
+            'project_code', 'sof_code', 'sof_name'
+        ]
+
+
+class DEAForm(forms.ModelForm):
+    class Meta:
+        model = DEA
+
+        fields = [
+            'sof_code', 'dea_code', 'dea_name'
+        ]

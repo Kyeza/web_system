@@ -25,6 +25,11 @@ class PayrollCenter(models.Model):
         return self.name
 
 
+class Account(models.Model):
+    account_code = models.IntegerField()
+    account_name = models.CharField(max_length=150)
+
+
 class PayrollPeriod(models.Model):
     KV_MONTH = {
         'JANUARY': 1,
@@ -42,13 +47,20 @@ class PayrollPeriod(models.Model):
     }
 
     """docstring for PayrollPeriod"""
-    month = datetime.datetime.now().month
+    _month = datetime.datetime.now().month
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
-    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[month - 1][1])
+    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[_month - 1][1])
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year)
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
     status = models.CharField(max_length=6, default='OPEN')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    def to_dict(self):
+        return {
+            'id': self.pk, 'payroll_center': str(self.payroll_center),
+            'month': self.month, 'year': self.year, 'payroll_key': self.payroll_key,
+            'status': self.status
+        }
 
     def get_absolute_url(self):
         return reverse('payroll:payroll-period-detail', kwargs={'pk': self.pk})
@@ -85,6 +97,8 @@ class EarningDeductionType(models.Model):
     ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING, null=True, blank=True)
     recurrent = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     taxable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
+    account_code = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, default=None, blank=True)
+    export = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, default=YES_OR_NO_TYPES[1][0], null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('payroll:ed-type-detail', kwargs={'pk': self.pk})

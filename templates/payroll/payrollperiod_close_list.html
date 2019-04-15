@@ -1,9 +1,26 @@
 {% extends 'payroll/../base.html' %}
 {% load crispy_forms_tags %}
-
 {% block content %}
+    <div class="modal fade" id="modalCloseConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"  style="color: red; font-size: 14px"
+                        id="exampleModalLabel">Are you sure you want to close this Payroll Period?</h5>
+                </div>
+                <div class="modal-body">
+                    <h5 id="payroll_period"></h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a id="period_path" class="btn btn-primary" href="">Save changes</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="content-section">
-        <h3 class="border-bottom mb-4">Payroll Periods</h3>
+        <h3 class="border-bottom mb-4">{{ title }}</h3>
         <div class="table-responsive-md">
             <table class="table table-sm table-borderless table-hover">
                 <thead class="thead-dark">
@@ -27,8 +44,16 @@
                         <td>{{ payroll_period.year }}</td>
                         <td>{{ payroll_period.status }}</td>
                         <td>
-                            <a class="btn btn-info" class="open-modal"
-                               data-url="{% url 'payroll:close-payroll-period' payroll_period.id %} }}" >CLOSE</a>
+                            {% if payroll_period.status == 'OPEN' %}
+                                <form name="form" action="#" id="form_period_{{ payroll_period.id }}" method="POST">
+                                    {% csrf_token %}
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input name="id" id="period_id_submit" type="text" value="{{ payroll_period.id }}"
+                                           hidden="hidden"/>
+                                    <button id="{{ payroll_period.id }}" type="button"
+                                            class="btn btn-sm btn-warning close_period">CLOSE</button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% empty %}
@@ -62,22 +87,34 @@
             {% endif %}
         </div>
     </div>
-
-    <!-- Modal -->
-    <div id="modal-div"></div>
-
-    <script>
-        var modalDiv = $('#modal-div');
-
-        $('.open-modal').on('click', function () {
-            $.ajax({
-                type: 'GET',
-                url: $(this).attr('data-url'),
-                success: function (data) {
-                    modalDiv.html(data);
-                    $('#close_period').modal('show');
-                }
-            })
-        })
-    </script>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        $(function () {
+            $('.close_period').on('click', function () {
+                let id = $(this).attr('id');
+                let periodUrl = '/payroll/payroll_period/close/'+id;
+
+                $.ajax({
+                    url: periodUrl,
+                    type: 'POST',
+                    data: $('#form_period_'+id).serialize(),
+                    success: function (response) {
+                        console.log(response);
+                        $('.close_period').trigger("reset");
+                        openModal(response);
+                    },
+                    error: function () {
+                        console.log('Something went wrong here')
+                    }
+                })
+            })
+        });
+
+        function openModal(data) {
+            $('#payroll_period').text(data.payroll_center + ' PAYROLL PERIOD FOR ' + data.month);
+            $('#period_path').attr('href', '/payroll/payroll_period/close/'+data.id);
+            $('#modalCloseConfirm').modal('show');
+        }
+    </script>
+{% endblock scripts %}

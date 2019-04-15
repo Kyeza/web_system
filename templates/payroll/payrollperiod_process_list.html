@@ -1,9 +1,9 @@
-{% extends 'payroll/../base.html' %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
     <div class="content-section">
-        <h3 class="border-bottom mb-4">Payroll Periods</h3>
+        <h3 class="border-bottom mb-4">{{ title }}</h3>
         <div class="table-responsive">
             <table class="table table-sm table-borderless table-hover">
                 <thead class="thead-dark">
@@ -12,6 +12,7 @@
                     <th>Payroll center</th>
                     <th>Month</th>
                     <th>Year</th>
+                    <th>LST</th>
                     <th>Action</th>
                     <th>Status</th>
                 </tr>
@@ -25,7 +26,16 @@
                         <td>{{ payroll_period.payroll_center }}</td>
                         <td>{{ payroll_period.month }}</td>
                         <td>{{ payroll_period.year }}</td>
-                        <td><a class="btn btn-primary" href="{% url 'users:process_payroll-period' payroll_period.id %}">Process</a></td>
+                        <td>
+                            <label class="switch">
+                                <input id="process_lst_{{ payroll_period.id }}" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <a id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll"
+                               href="#">Process</a>
+                        </td>
                         <td>{{ payroll_period.status }}</td>
                     </tr>
                 {% empty %}
@@ -60,3 +70,61 @@
         </div>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script>
+
+
+        $(function () {
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    let cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            let csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $('.process-payroll').on('click', function () {
+                let id = $(this).attr('id');
+                let processUrl = '/users/payroll_period/' + id + '/process/';
+                let processLST = document.getElementById('process_lst_'+id);
+                let LSTValue;
+                if (processLST.checked === true) {
+                    LSTValue = 'True'
+                } else {
+                    LSTValue = 'False'
+                }
+
+                let data = {
+                    'process_lst': LSTValue
+                };
+
+                $.post(processUrl, data, function () {
+                    console.log('Success');
+                });
+            })
+        });
+    </script>
+{% endblock scripts %}

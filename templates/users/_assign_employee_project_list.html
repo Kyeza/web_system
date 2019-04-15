@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="content-section">
+        <div class="d-flex flex-row-reverse">
+            <div class="p-2">
+                <form action="{% url 'users:employee-assign-project' %}" method="GET">
+                    <input type="text" name="q">
+                    <input type="submit" value="Search">
+                </form>
+            </div>
+        </div>
+        <h3 class="border-bottom mb-4">Assign Projects</h3>
+        <div class="table-responsive-md">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Job Title</th>
+                    <th>ID Number</th>
+                    <th>Email</th>
+                    <th>Mobile No</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for employee in object_list %}
+                    <tr>
+                        <td>{{ employee.user.get_full_name }}</td>
+                        <td>{{ employee.job_title }}</td>
+                        <td>{{ employee.id_number }}</td>
+                        <td>{{ employee.user.email }}</td>
+                        <td>{{ employee.mobile_number }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td class="text-success">{{ employee.employment_status }}</td>
+                        {% if employee.employeeproject_set.count > 0 %}
+                            <td>
+                                <a class="btn btn-disabled border btn-sm"
+                                   href="#"
+                                   style="color: #777777">
+                                    ASSIGN PROJECT
+                                </a>
+                            </td>
+                        {% else %}
+                            <td><a class="btn btn-primary btn-sm"
+                                   href="{% url 'users:employee-project-creation' pk=employee.pk %}">
+                                ASSIGN PROJECT
+                            </a></td>
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <p class="text-center">No "Employees" yet</p>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-row justify-content-end">
+            {% if is_paginated %}
+
+                {% if page_obj.has_previous %}
+                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
+                    <a class="btn btn-outline-primary mb-4"
+                       href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

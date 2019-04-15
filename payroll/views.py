@@ -1,10 +1,12 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
-from django.core.paginator import Paginator
 
 from payroll.forms import PayrollPeriodCreationForm
 from .models import PayrollCenter, PayrollPeriod, EarningDeductionType, PayrollCenterEds, LSTRates, Bank, Currency
@@ -62,6 +64,8 @@ class PayrollPeriodCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        messages.success(self.request, f'Payroll Period for {form.instance.payroll_center} month of'
+                                       f' {form.instance.month} has been opened')
         return super().form_valid(form)
 
 
@@ -84,6 +88,11 @@ class PayrollPeriodListView(LoginRequiredMixin, ListView):
     model = PayrollPeriod
     fields = ['payroll_center', 'month', 'year', 'status']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Payroll Periods'
+        return context
+
 
 class PayrollPeriodCloseListView(LoginRequiredMixin, ListView):
     model = PayrollPeriod
@@ -91,16 +100,25 @@ class PayrollPeriodCloseListView(LoginRequiredMixin, ListView):
     fields = ['payroll_center', 'month', 'year', 'status']
     paginate_by = 10
 
-    def get_queryset(self):
-        return PayrollPeriod.objects.filter(status="OPEN").order_by('month')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Close Payroll Period'
+        return context
 
 
-# TODO: Work on closing a Payroll Period
 def close_payroll_period(request, pk):
-    payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-    print(f'{request.method} - {payroll_period.pk} - {payroll_period.payroll_center}')
-
-    return render(request, 'payroll/modal.html', {'payroll_period': payroll_period})
+    if request.method == 'POST' and request.is_ajax():
+        ID = request.POST.get('id')
+        payroll_period = get_object_or_404(PayrollPeriod, pk=ID)
+        response = JsonResponse(payroll_period.to_dict())
+        return response
+    else:
+        payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
+        payroll_period.status = 'CLOSED'
+        payroll_period.save(update_fields=['status'])
+        messages.success(request, f'Payroll Period for {payroll_period.payroll_center} month of'
+                                  f' {payroll_period.month} has been closed') 
+        return redirect('payroll:close-payroll-period-list')
 
 
 class PayrollPeriodForProcessing(LoginRequiredMixin, ListView):
@@ -108,6 +126,11 @@ class PayrollPeriodForProcessing(LoginRequiredMixin, ListView):
     template_name = 'payroll/payrollperiod_process_list.html'
     fields = ['payroll_center', 'month', 'year', 'status']
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Process Payroll Period'
+        return context
 
     def get_queryset(self):
         return PayrollPeriod.objects.filter(status='OPEN').all().order_by('id')

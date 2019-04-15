@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load users_extras %}
+{% load humanize %}
+
+{% block content %}
+    <div class="content-section">
+        <h5 class="border-bottom mb-4">
+            {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
+        </h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Staff</th>
+                    {% for staff in employees_to_process %}
+                        {% if forloop.first %}
+                            {% for processor in period_processes|user_data:staff|category:1 %}
+                                <th>{{ processor.earning_and_deductions_type.ed_type.capitalize }}</th>
+                            {% endfor %}
+                            {% for processor in period_processes|user_data:staff|category:2 %}
+                                <th>{{ processor.earning_and_deductions_type.ed_type.capitalize }}</th>
+                            {% endfor %}
+                            {% for processor in period_processes|user_data:staff|category:3 %}
+                                <th>{{ processor.earning_and_deductions_type.ed_type.capitalize }}</th>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for staff in employees_to_process %}
+                    <tr>
+                        <td>{{ staff.user.get_full_name }}</td>
+                        {% for data in period_processes|user_data:staff|category:1 %}
+                            <td>{{ data.amount|intcomma }}</td>
+                        {% endfor %}
+                        {% for data in period_processes|user_data:staff|category:2 %}
+                            <td>{{ data.amount|intcomma }}</td>
+                        {% endfor %}
+                        {% for data in period_processes|user_data:staff|category:3 %}
+                            <td>{{ data.amount|intcomma }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-row justify-content-end">
+            {% if is_paginated %}
+
+                {% if page_obj.has_previous %}
+                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
+                    <a class="btn btn-outline-primary mb-4"
+                       href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

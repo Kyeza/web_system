@@ -5,15 +5,33 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
-from reports.models import PayrollPeriodReport
-from users.models import Employee, PayrollProcessors, TerminatedEmployees
-from .forms import (StaffCreationForm, ProfileCreationForm,
-                    StaffUpdateForm, ProfileUpdateForm,
-                    EmployeeApprovalForm, TerminationForm)
+from users.models import Employee, PayrollProcessors, TerminatedEmployees, CostCentre, Project, SOF, DEA, \
+    EmployeeProject
+from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
+    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
+
+
+def search_form(request):
+    object_list = []
+    message = ''
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+        employees = Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+        object_list = employees.filter(user_group__user_set__first_name__icontains=q)
+    else:
+        message = 'You submitted an empty form.'
+
+    context = {
+        'object_list': object_list,
+        'message': message,
+    }
+    return render(request, 'users/_approved_employee_list.html', context)
 
 
 @login_required
@@ -221,7 +239,35 @@ class ApprovedEmployeeListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+        employees = Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+        query = self.request.GET.get('q')
+        if query:
+            try:
+                if employees.filter(user__first_name__icontains=query):
+                    return employees.filter(user__first_name__icontains=query)
+                elif employees.filter(user__last_name__icontains=query):
+                    return employees.filter(user__last_name__icontains=query)
+                elif employees.filter(user__email__icontains=query):
+                    return employees.filter(user__email__icontains=query)
+                elif employees.filter(mobile_number=query):
+                    return employees.filter(mobile_number=query)
+                elif employees.filter(contract_type=query):
+                    return employees.filter(contract_type__icontains=query)
+                elif employees.filter(duty_country=query):
+                    return employees.filter(duty_country=query)
+                elif employees.filter(job_title__icontains=query):
+                    return employees.filter(job_title__icontains=query)
+                elif employees.filter(nationality=query):
+                    return employees.filter(nationality=query)
+                elif employees.filter(department=query):
+                    return employees.filter(department=query)
+                elif employees.filter(bank_1=query):
+                    return employees.filter(bank_1=query)
+                else:
+                    return employees
+            except ValueError:
+                return employees
+        return employees
 
 
 class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
@@ -280,6 +326,18 @@ class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
 def process_payroll_period(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
 
+    process_lst = None
+    if request.method == 'GET':
+        process_lst = request.GET.get('process_lst')
+
+    print(process_lst)
+
+    if Employee.objects.all():
+        for employee in Employee.objects.all():
+            if employee.employment_status == 'APPROVED':
+                user = employee.user
+                add_user_to_payroll_processor(user)
+
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
     employees_in_period = []
 
@@ -290,6 +348,7 @@ def process_payroll_period(request, pk):
         else:
             employees_in_period.append(process.employee)
 
+    employees_to_process = []
     if employees_in_period:
         employees_to_process = list(set(employees_in_period))
     else:
@@ -389,104 +448,12 @@ def process_payroll_period(request, pk):
 
         net_pay = gross_earnings - total_deductions
 
-        for n in PayrollPeriodReport.objects.all():
-            if n.employee.employment_status == 'TERMINATED':
-                n.delete()
-
-        report_exists = PayrollPeriodReport.objects.filter(employee=employee) \
-            .filter(payroll_period=payroll_period).first()
-
-        acting_allowance = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=2).first().amount
-        car_transport_allowance = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=3).first().amount
-        duty_risk_allowance = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=6).first().amount
-        overtime_normal_days = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=7).first().amount
-        overtime_holiday = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=8).first().amount
-        housing_allowance = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=9).first().amount
-        bonus = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=10).first().amount
-        income_tax_paye = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=11).first().amount
-        pension_fund = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=12).first().amount
-        lst = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=13).first().amount
-        bank_loan = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=14).first().amount
-        salary_advance = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=15).first().amount
-        salary_arrears = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=18).first().amount
-        other_allowances = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=23).first().amount
-
-        if report_exists is None:
-            user_report = PayrollPeriodReport(employee=employee,
-                                              acting_allowance=acting_allowance,
-                                              car_transport_allowance=car_transport_allowance,
-                                              duty_risk_allowance=duty_risk_allowance,
-                                              overtime_normal_days=overtime_normal_days,
-                                              overtime_holiday=overtime_holiday,
-                                              housing_allowance=housing_allowance,
-                                              bonus=bonus,
-                                              income_tax_paye=income_tax_paye,
-                                              pension_fund=nssf_5,
-                                              lst=lst,
-                                              bank_loan=bank_loan,
-                                              salary_advance=salary_advance,
-                                              salary_arrears=salary_arrears,
-                                              other_allowances=other_allowances,
-                                              other_deductions=0,
-                                              total_taxable=0,
-                                              total_earning=0,
-                                              gross_salary=gross_earnings,
-                                              payroll_period=payroll_period,
-                                              total_deductions=total_deductions,
-                                              net_pay=net_pay)
-            user_report.save()
-        else:
-            report_exists.acting_allowance = acting_allowance
-            report_exists.car_transport_allowance = car_transport_allowance
-            report_exists.duty_risk_allowance = duty_risk_allowance
-            report_exists.overtime_normal_days = overtime_normal_days
-            report_exists.overtime_holiday = overtime_holiday
-            report_exists.housing_allowance = housing_allowance
-            report_exists.bonus = bonus
-            report_exists.income_tax_paye = income_tax_paye
-            report_exists.pension_fund = nssf_5
-            report_exists.lst = lst
-            report_exists.bank_loan = bank_loan
-            report_exists.salary_advance = salary_advance
-            report_exists.salary_arrears = salary_arrears
-            report_exists.other_allowances = 0
-            report_exists.other_deductions = 0
-            report_exists.total_taxable = 0
-            report_exists.total_earning = 0
-            report_exists.net_pay = net_pay
-            report_exists.gross_salary = gross_earnings
-            report_exists.total_deductions = total_deductions
-            report_exists.net_pay = net_pay
-            report_exists.payroll_period = payroll_period
-
-            report_exists.save(update_fields=[
-                'acting_allowance', 'car_transport_allowance', 'duty_risk_allowance',
-                'overtime_normal_days', 'overtime_holiday', 'housing_allowance',
-                'bonus', 'income_tax_paye', 'pension_fund', 'lst', 'bank_loan',
-                'salary_advance', 'salary_arrears', 'other_allowances', 'other_deductions',
-                'total_taxable', 'total_earning', 'gross_salary', 'total_deductions',
-                'net_pay', 'payroll_period'])
-
-    period_report = PayrollPeriodReport.objects.filter(payroll_period=payroll_period)
     context = {
         'payroll_period': payroll_period,
-        'period_report': period_report,
+        'period_processes': period_processes,
+        'employees_to_process': employees_to_process,
     }
-    return render(request, 'users/process_payroll_period.html', context)
+    return render(request, 'reports/summary_report.html', context)
 
 
 @login_required
@@ -532,3 +499,192 @@ class EmployeeBirthdayList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Employee.objects.filter(employment_status='APPROVED').order_by('appointment_date')
+
+
+class AssignProjectListView(LoginRequiredMixin, ListView):
+    model = Employee
+    template_name = 'users/_assign_employee_project_list.html'
+    fields = [
+        'marital_status', 'mobile_number', 'id_number',
+        'passport_number', 'nationality', 'residential_address', 'district',
+        'date_of_birth', 'sex', 'image', 'user_group',
+        'duty_country', 'duty_station', 'department', 'job_title',
+        'appointment_date', 'contract_type', 'cost_centre', 'grade',
+        'gross_salary', 'currency', 'tin_number', 'social_security',
+        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
+        'first_account_number', 'second_account_number', 'first_bank_percentage',
+        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
+        'kin_relationship'
+    ]
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+
+
+def employee_project_creation(request, pk=None):
+    employee = get_object_or_404(Employee, pk=pk)
+    project = employee.employeeproject_set.first()
+
+    initial_data = {
+        'employee': employee,
+    }
+
+    staff_form = None
+    if request.method == 'POST':
+        employee_proj_form = EmployeeProjectForm(request.POST, initial=initial_data)
+
+        if employee_proj_form.is_valid():
+            instance = employee_proj_form.save(commit=False)
+            instance.created_by = request.user
+            instance.save()
+            messages.success(request, 'Employee successfully assigned Project')
+            return redirect('users:employee-project-list')
+    else:
+        staff_form = ProfileUpdateForm(instance=employee)
+        if project:
+            employee_proj_form = EmployeeProjectForm(instance=project)
+        else:
+            employee_proj_form = EmployeeProjectForm(initial=initial_data)
+
+    context = {
+        'staff_form': staff_form,
+        'employee_proj_form': employee_proj_form,
+    }
+
+    return render(request, 'users/employee_project_form.html', context)
+
+
+class CostCentreCreate(LoginRequiredMixin, CreateView):
+    model = CostCentre
+    fields = ['cost_centre', 'description']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create Cost Centre'
+        return context
+
+
+class CostCentreUpdate(LoginRequiredMixin, UpdateView):
+    model = CostCentre
+    fields = ['cost_centre', 'description']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Cost Centre'
+        return context
+
+
+class CostCentreDetailView(LoginRequiredMixin, DetailView):
+    model = CostCentre
+    fields = ['cost_centre', 'description']
+
+
+class CostCentreListView(LoginRequiredMixin, ListView):
+    model = CostCentre
+    fields = ['cost_centre', 'description']
+    paginate_by = 10
+
+
+class ProjectCreate(LoginRequiredMixin, CreateView):
+    model = Project
+    fields = ['project_code', 'project_name', 'cost_centre']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create Project'
+        return context
+
+
+class ProjectUpdate(LoginRequiredMixin, UpdateView):
+    model = Project
+    fields = ['project_code', 'project_name', 'cost_centre']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Project'
+        return context
+
+
+class ProjectDetailView(LoginRequiredMixin, DetailView):
+    model = Project
+    fields = ['project_code', 'project_name', 'cost_centre']
+
+
+class ProjectListView(LoginRequiredMixin, ListView):
+    model = Project
+    fields = ['project_code', 'project_name', 'cost_centre']
+    paginate_by = 10
+
+
+class SOFCreate(LoginRequiredMixin, CreateView):
+    model = SOF
+    fields = ['sof_code', 'sof_name', 'project_code']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create SOF'
+        return context
+
+
+class SOFUpdate(LoginRequiredMixin, UpdateView):
+    model = SOF
+    fields = ['sof_code', 'sof_name', 'project_code']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit SOF'
+        return context
+
+
+class SOFDetailView(LoginRequiredMixin, DetailView):
+    model = SOF
+    fields = ['sof_code', 'sof_name', 'project_code']
+
+
+class SOFListView(LoginRequiredMixin, ListView):
+    model = SOF
+    fields = ['sof_code', 'sof_name', 'project_code']
+    paginate_by = 10
+
+
+class DEACreate(LoginRequiredMixin, CreateView):
+    model = DEA
+    fields = ['dea_code', 'dea_name', 'sof_code']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create DEA'
+        return context
+
+
+class DEAUpdate(LoginRequiredMixin, UpdateView):
+    model = DEA
+    fields = ['dea_code', 'dea_name', 'sof_code']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit DEA'
+        return context
+
+
+class DEADetailView(LoginRequiredMixin, DetailView):
+    model = DEA
+    fields = ['dea_code', 'dea_name', 'sof_code']
+
+
+class DEAListView(LoginRequiredMixin, ListView):
+    model = DEA
+    fields = ['dea_code', 'dea_name', 'sof_code']
+    paginate_by = 10
+
+
+class EmployeeProjectsDetailView(LoginRequiredMixin, DetailView):
+    model = EmployeeProject
+    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'created_by']
+
+
+class EmployeeProjectsListView(LoginRequiredMixin, ListView):
+    model = EmployeeProject
+    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'created_by']
+    paginate_by = 10

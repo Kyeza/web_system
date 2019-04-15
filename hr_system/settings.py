@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'support_data.apps.SupportDataConfig',
     'reports.apps.ReportsConfig',
     'crispy_forms',
+    'django_tables2',
+    'django_filters',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [

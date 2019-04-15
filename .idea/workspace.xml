@@ -1,25 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AnalysisUIOptions">
-    <option name="SCOPE_TYPE" value="8" />
-    <option name="CUSTOM_SCOPE_NAME" value="All Places" />
-  </component>
   <component name="ChangeListManager">
-    <list id="f972a0f8-a103-47e4-a92e-88dc19219d9d" name="- Changes on approval route" comment="" />
-    <list default="true" id="aa2be6a0-d65d-477f-bf89-2f9b11223f6f" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/payroll/currency_detail.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/payroll/currency_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/payroll/currency_list.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/payroll/payroll_center_staff_list.html" afterDir="false" />
+    <list default="true" id="79351c83-eb59-4908-bbec-bed896d2ba75" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190411_1401.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/payroll/migrations/0003_account.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/payroll/migrations/0004_auto_20190412_1713.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/payroll/migrations/0005_auto_20190412_1715.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/reports/summary_report.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/tables/employee_table.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/_assign_employee_project_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/costcentre_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/costcentre_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/costcentre_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/dea_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/dea_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/dea_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/employee_project_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/employeeproject_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/employeeproject_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/project_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/project_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/project_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/sof_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/sof_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/sof_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/filters.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/templatetags/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/templatetags/users_extras.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hr_system/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190403_1035.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0003_auto_20190403_1043.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0004_auto_20190403_1052.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0005_auto_20190405_1942.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0006_payrollperiod_created_by.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0002_employeeproject_created_by.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/payroll/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/payroll/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0002_payrollperiodreport_employee.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0002_auto_20190411_1401.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0003_auto_20190403_1136.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0004_auto_20190403_1232.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0005_payrollperiodreport_payroll_period.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/support_data/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/payroll/payrollcenter_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollcenter_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/payroll/payrollcenter_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollcenter_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/payroll/payrollcenter_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollcenter_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/partials/custom_css.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/custom_css.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/payroll/payrollperiod_close_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollperiod_close_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/payroll/payrollperiod_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollperiod_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/users/_approved_employee_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_approved_employee_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/users/_terminate_employee_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_terminate_employee_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/users/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/migrations/0002_auto_20190406_1443.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/migrations/0003_auto_20190407_0854.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/migrations/0004_remove_terminatedemployees_termination_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
-    <ignored path="D:\projects-work-space\PycharmProjects\hr_system\.idea\shelf/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,164 +73,24 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <option name="HIDDEN_KINDS">
-      <set />
-    </option>
-    <expand>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
-      </path>
-    </expand>
-    <select />
-  </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="botton_navigation_bar.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/partials/botton_navigation_bar.html">
+    <leaf>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/users/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="54">
-              <caret line="105" column="29" selection-start-line="105" selection-start-column="29" selection-end-line="105" selection-end-column="29" />
+              <caret line="339" lean-forward="true" selection-start-line="339" selection-end-line="339" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-        <option value="HTML File" />
-      </list>
-    </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>du</find>
-      <find>cost</find>
-      <find>gros</find>
-      <find>curre</find>
-      <find>social</find>
-      <find>ba</find>
-      <find>AUTH_USER_MODEL</find>
-      <find>from django.contrib.auth.models import User</find>
-      <find>Contract</find>
-      <find>kin_phone_n</find>
-      <find>django/contrib/admin/templates/admin</find>
-      <find>user-detail</find>
-      <find>id_number</find>
-      <find>NO</find>
-      <find>ChoiceField</find>
-      <find>_terminated_employee_list.html</find>
-      <find>('auth', '0013_remove_group_group')</find>
-      <find>Payro</find>
-      <find>MONTHS</find>
-      <find>User</find>
-      <find>required=False</find>
-      <find>attrs={'style': 'border: none'}</find>
-      <find>models</find>
-      <find>codes</find>
-      <find>Date</find>
-      <find>user</find>
-      <find>payroll/../base.html</find>
-      <find>open_payroll_period</find>
-      <find>bank</find>
-      <find>PayrollCenterStaffListView</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>'NO'</replace>
-      <replace>attrs={'style': 'border: none; outline: none;'}</replace>
-      <replace>forms</replace>
-    </replaceStrings>
-    <dirStrings>
-      <dir>django/contrib/admin/templates/admin</dir>
-      <dir>D:\projects-work-space\PycharmProjects\hr_system\templates\payroll</dir>
-    </dirStrings>
-  </component>
-  <component name="Git.Rebase.Settings">
-    <option name="ONTO" value="refs/heads/develop" />
-  </component>
   <component name="Git.Settings">
-    <option name="PREVIOUS_COMMIT_AUTHORS">
-      <list>
-        <option value="Kyeza Arnold &lt;kyezaarnold63@gmail.com&gt;" />
-      </list>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="master" />
-      </map>
-    </option>
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/templates/users/_terminated_employee_list.html" />
-        <option value="$PROJECT_DIR$/templates/users/profile.html" />
-        <option value="$PROJECT_DIR$/templates/users/_terminate_employee_list.html" />
-        <option value="$PROJECT_DIR$/users/forms.py" />
-        <option value="$PROJECT_DIR$/templates/users/_approve_employee.html" />
-        <option value="$PROJECT_DIR$/templates/users/_recruited_employee_list.html" />
-        <option value="$PROJECT_DIR$/templates/users/_rejected_employee_list.html" />
-        <option value="$PROJECT_DIR$/templates/partials/custom_css.html" />
-        <option value="$PROJECT_DIR$/templates/users/_separated_employee_list.html" />
-        <option value="$PROJECT_DIR$/users/urls.py" />
-        <option value="$PROJECT_DIR$/templates/users/_employee_birthday_list.html" />
-        <option value="$PROJECT_DIR$/users/models.py" />
-        <option value="$PROJECT_DIR$/payroll/models.py" />
-        <option value="$PROJECT_DIR$/support_data/models.py" />
-        <option value="$PROJECT_DIR$/templates/support_data/country_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/contracttype_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/contracttype_detail.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/country_detail.html" />
-        <option value="$PROJECT_DIR$/support_data/urls.py" />
-        <option value="$PROJECT_DIR$/templates/support_data/department_detail.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/department_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/dutystation_detail.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/dutystation_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/grade_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/grade_detail.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/jobtitle_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/nationality_form.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/nationality_detail.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/country_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/jobtitle_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/grade_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/dutystation_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/contracttype_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/nationality_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/department_list.html" />
-        <option value="$PROJECT_DIR$/templates/support_data/jobtitle_detail.html" />
-        <option value="$PROJECT_DIR$/support_data/views.py" />
-        <option value="$PROJECT_DIR$/users/views.py" />
-        <option value="$PROJECT_DIR$/templates/payroll/bank_list.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/bank_detail.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/bank_form.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/currency_list.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/currency_form.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/currency_detail.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/payrollcenter_form.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/payrollcenter_list.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/payrollcenter_detail.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/payrollcenter_staff_list.html" />
-        <option value="$PROJECT_DIR$/payroll/views.py" />
-        <option value="$PROJECT_DIR$/payroll/urls.py" />
-        <option value="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" />
-      </list>
-    </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
@@ -201,9 +107,7 @@
     <option name="width" value="1382" />
     <option name="height" value="754" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -216,23 +120,6 @@
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="payroll" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="support_data" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -241,32 +128,11 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultHtmlFileTemplate" value="HTML File" />
-    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/urls.py&#10;bo&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/partials/botton_navigation_bar.html&#10;vi&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/views.py&#10;url&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/urls.py&#10;views&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/views.py&#10;bot&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/partials/botton_navigation_bar.html&#10;urls&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/urls.py&#10;Grad&#9;null&#9;null&#10;view&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/views.py&#10;ur&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/support_data/urls.py&#10;vie&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/support_data/views.py&#10;mode&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/models.py&#10;u&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/urls.py&#10;form&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;mo&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;setting&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/hr_system/settings.py&#10;app&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/_approved_employee_list.html&#10;model&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;forms&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;user/re&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/register.html&#10;regi&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/Lib/site-packages/django/apps/registry.py&#10;profil&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/profile.html&#10;base.ht&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/payroll/base.html&#10;constan&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/constants.py&#10;models&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/models.py&#10;bas&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/Lib/site-packages/django/db/backends/mysql/base.py&#10;constants&#9;null&#9;null&#10;base&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/Lib/site-packages/django/db/backends/mysql/base.py&#10;ba&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/payroll/base.html&#10;v&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/views.py&#10;profi&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/profile.html&#10;MODELS&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/payroll/models.py&#10;profile&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/profile.html&#10;VIEW&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/views.py&#10;MODE&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;for&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;Contra&#9;null&#9;null&#10;FORM&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;Employ&#9;null&#9;null&#10;Emplo&#9;null&#9;null&#10;regis&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/register.html&#10;pr&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/profile.html" />
+    <property name="SearchEverywhereHistoryKey" value="views&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/views.py" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
-    <property name="database.console.LAST_STATE" value="false" />
-    <property name="last_opened_file_path" value="D:/df" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="reference.idesettings.debugger.python" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\templates\payroll" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\templates\support_data" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\reports" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\templates\users" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\templates" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\payroll\static" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\payroll" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\hr_system" />
-      <recent name="D:\projects-work-space\PycharmProjects\hr_system\static\payroll" />
-    </key>
+    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -329,179 +195,39 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="aa2be6a0-d65d-477f-bf89-2f9b11223f6f" name="Default" comment="" />
-      <created>1552557223463</created>
+      <changelist id="79351c83-eb59-4908-bbec-bed896d2ba75" name="Default" comment="" />
+      <created>1555315898890</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1552557223463</updated>
+      <updated>1555315898890</updated>
     </task>
-    <task id="LOCAL-00001" summary="- Fixed Circular import issue on PayrollProcessor model&#10;- Fixed user editing duplication causing IntegrityException">
-      <created>1553724776839</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1553724776839</updated>
-    </task>
-    <task id="LOCAL-00002" summary="- User can add and view, edit Payroll Periods&#10;- Added payroll validation that requires only one Payroll perios can be on in a Payroll center.">
-      <created>1553845800795</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1553845800796</updated>
-    </task>
-    <task id="LOCAL-00003" summary="- User is automatically add to the PayrollProcessors after being approved">
-      <created>1553849153466</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1553849153466</updated>
-    </task>
-    <task id="LOCAL-00004" summary="- On registration user receives alert incase Payroll center and Gross salary are not provided">
-      <created>1554023594203</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1554023594204</updated>
-    </task>
-    <task id="LOCAL-00005" summary="- Worked on the payroll processing functionality&#10;- calculating gross earning&#10;- calculating LST&#10;- calculating PAYE&#10;- calculating NSSF 10%&#10;- calculating NSS 5%&#10;- calculating total deductions&#10;- calculating net pay">
-      <created>1554055052252</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1554055052252</updated>
-    </task>
-    <task id="LOCAL-00006" summary="- User can be approved&#10;- User can be added to payroll processor if approved">
-      <created>1554104184014</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1554104184014</updated>
-    </task>
-    <task id="LOCAL-00007" summary="- User can be edited&#10;- User processors are updated in case of any changes in the payroll_center_ed_types">
-      <created>1554105022619</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1554105022619</updated>
-    </task>
-    <task id="LOCAL-00008" summary="- Improved Payroll processing calculations">
-      <created>1554108701909</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1554108701909</updated>
-    </task>
-    <task id="LOCAL-00009" summary="- Templates for creating, editing, detail and list Ed Types">
-      <created>1554110982903</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1554110982903</updated>
-    </task>
-    <task id="LOCAL-00010" summary="- Templates for creating, editing, detail and list Payroll center Ed types">
-      <created>1554112609825</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1554112609825</updated>
-    </task>
-    <task id="LOCAL-00011" summary="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates">
-      <created>1554145430383</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1554145430383</updated>
-    </task>
-    <task id="LOCAL-00012" summary="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates">
-      <created>1554162060847</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1554162060847</updated>
-    </task>
-    <task id="LOCAL-00013" summary="-Tried deploying to heroku">
-      <created>1554222128779</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1554222128779</updated>
-    </task>
-    <task id="LOCAL-00014" summary="- Working app version uploaded to GCP">
-      <created>1554272246689</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1554272246689</updated>
-    </task>
-    <task id="LOCAL-00015" summary="- Worked on processing report">
-      <created>1554292548749</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1554292548749</updated>
-    </task>
-    <task id="LOCAL-00016" summary="- Worked on Support data forms">
-      <created>1554701711184</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1554701711184</updated>
-    </task>
-    <task id="LOCAL-00017" summary="- Worked on Support data forms v1">
-      <created>1554833551111</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1554833551111</updated>
-    </task>
-    <task id="LOCAL-00018" summary="- Worked on Support data forms: Bank edit, create, view and list templates">
-      <created>1554834582722</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1554834582722</updated>
-    </task>
-    <option name="localTasksCounter" value="19" />
     <servers />
-  </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32954547" />
-      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.5015129" side_tool="true" weight="0.39123377" />
-      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32954547" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.4301948" />
-      <window_info active="true" anchor="bottom" x="1" y="31" width="681" height="706" id="Run" order="2" sideWeight="0.49848714" visible="true" weight="0.39123377" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49924356" weight="0.32954547" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20953101" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="right" id="Database" order="4" visible="true" weight="0.20272315" />
-      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Python Console" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24962178" />
+      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="SciView" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49924356" weight="0.45454547" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39935064" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="SQL Generator" order="15" weight="0.32954547" />
-      <window_info anchor="bottom" id="Messages" order="15" weight="0.32954547" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Database Console" order="14" sideWeight="0.49924356" weight="0.32305196" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32792208" />
-      <window_info anchor="bottom" id="manage.py@hr_system" order="13" weight="0.27435064" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -510,421 +236,23 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="- Fixed Circular import issue on PayrollProcessor model&#10;- Fixed user editing duplication causing IntegrityException" />
-    <MESSAGE value="- User can add and view, edit Payroll Periods&#10;- Added payroll validation that requires only one Payroll perios can be on in a Payroll center." />
-    <MESSAGE value="- User is automatically add to the PayrollProcessors after being approved" />
-    <MESSAGE value="- On registration user receives alert incase Payroll center and Gross salary are not provided" />
-    <MESSAGE value="- Worked on the payroll processing functionality&#10;- calculating gross earning&#10;- calculating LST&#10;- calculating PAYE&#10;- calculating NSSF 10%&#10;- calculating NSS 5%&#10;- calculating total deductions&#10;- calculating net pay" />
-    <MESSAGE value="- User can be approved&#10;- User can be added to payroll processor if approved" />
-    <MESSAGE value="- User can be edited&#10;- User processors are updated in case of any changes in the payroll_center_ed_types" />
-    <MESSAGE value="- Improved Payroll processing calculations" />
-    <MESSAGE value="- Templates for creating, editing, detail and list Ed Types" />
-    <MESSAGE value="- Templates for creating, editing, detail and list Payroll center Ed types" />
-    <MESSAGE value="- Templates for creating, editing, detail and list Payroll center Tax Brackets&#10;- List view for LST rates" />
-    <MESSAGE value="-Tried deploying to heroku" />
-    <MESSAGE value="- Working app version uploaded to GCP" />
-    <MESSAGE value="- Worked on processing report" />
-    <MESSAGE value="- Worked on Support data forms" />
-    <MESSAGE value="- Worked on Support data forms v1" />
-    <MESSAGE value="- Worked on Support data forms: Bank edit, create, view and list templates" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Worked on Support data forms: Bank edit, create, view and list templates" />
-  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/payroll/views.py</url>
-          <line>99</line>
-          <option name="timeStamp" value="131" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/users/views.py</url>
-          <line>145</line>
-          <option name="timeStamp" value="134" />
+          <line>326</line>
+          <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
-      <breakpoints-dialog>
-        <breakpoints-dialog />
-      </breakpoints-dialog>
-      <default-breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </default-breakpoints>
-      <option name="time" value="140" />
+      <option name="time" value="2" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/users/_employee_birthday_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="25" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/core/handlers/exception.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="103">
-          <caret line="33" selection-start-line="33" selection-end-line="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/utils/deprecation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="93" selection-start-line="93" selection-end-line="93" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/core/handlers/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="112" selection-start-line="112" selection-end-line="112" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/users/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="71" column="13" selection-start-line="71" selection-start-column="13" selection-end-line="71" selection-end-column="13" />
-          <folding>
-            <element signature="e#4582#4682#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/payroll/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="104" column="22" lean-forward="true" selection-start-line="104" selection-start-column="22" selection-end-line="104" selection-end-column="22" />
-          <folding>
-            <element signature="e#3293#3357#0" expanded="true" />
-            <element signature="e#3656#3720#0" expanded="true" />
-            <element signature="e#3643#3659#0" expanded="true" />
-            <element signature="e#3972#4036#0" expanded="true" />
-            <element signature="e#3856#3876#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://c391587a-99e1-41fb-a5a6-e7c49d22ffa4/schema/payroll_schema/table/support_data_contracttype">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/contracttype_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="103" lean-forward="true" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/contracttype_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="8" selection-start-line="10" selection-start-column="8" selection-end-line="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/country_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="81" selection-start-line="13" selection-start-column="81" selection-end-line="13" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/department_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/department_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="8" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="10" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/dutystation_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/dutystation_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="79" selection-start-line="9" selection-start-column="79" selection-end-line="9" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/country_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="8" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="10" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/grade_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="71" selection-start-line="7" selection-start-column="71" selection-end-line="7" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/jobtitle_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/grade_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/nationality_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/nationality_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/grade_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/dutystation_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/nationality_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="29" column="76" selection-start-line="29" selection-start-column="76" selection-end-line="29" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/support_data/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/department_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="50" selection-start-line="5" selection-start-column="50" selection-end-line="5" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/country_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="16" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="107" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/contracttype_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/jobtitle_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="71" selection-start-line="7" selection-start-column="71" selection-end-line="7" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/support_data/jobtitle_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-72">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://c391587a-99e1-41fb-a5a6-e7c49d22ffa4/schema/payroll_schema/table/payroll_payrollperiod">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollcentereds_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-108" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollperiod_list.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/auth/decorators.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/support_data/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1638">
-          <caret line="106" column="4" selection-start-line="106" selection-start-column="4" selection-end-line="106" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://c391587a-99e1-41fb-a5a6-e7c49d22ffa4/schema/payroll_schema/table/users_payrollprocessors">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://c391587a-99e1-41fb-a5a6-e7c49d22ffa4/schema/payroll_schema/table/payroll_payrollcentereds">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/users/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-107">
-          <caret line="297" column="33" lean-forward="true" selection-start-line="297" selection-start-column="33" selection-end-line="297" selection-end-column="33" />
-          <folding>
-            <element signature="e#2992#4027#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/support_data/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="264" column="20" selection-start-line="264" selection-start-column="20" selection-end-line="264" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/bank_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="71" selection-start-line="8" selection-start-column="71" selection-end-line="8" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/bank_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="13" column="73" selection-start-line="13" selection-start-column="73" selection-end-line="13" selection-end-column="73" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/bank_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-144">
-          <caret line="14" column="20" lean-forward="true" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/currency_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="77" selection-start-line="13" selection-start-column="77" selection-end-line="13" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollcenter_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="83" selection-start-line="13" selection-start-column="83" selection-end-line="13" selection-end-column="83" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/currency_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="14" lean-forward="true" selection-start-line="6" selection-start-column="8" selection-end-line="10" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/currency_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="12" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="10" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollcenter_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollcenter_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="6" column="8" lean-forward="true" selection-start-line="6" selection-start-column="8" selection-end-line="10" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/payroll/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="428">
-          <caret line="42" column="111" lean-forward="true" selection-start-line="42" selection-start-column="86" selection-end-line="42" selection-end-column="111" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payroll_center_staff_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="27" column="64" selection-start-line="27" selection-start-column="64" selection-end-line="27" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/payroll/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="49" column="60" lean-forward="true" selection-start-line="49" selection-start-column="60" selection-end-line="49" selection-end-column="60" />
-          <folding>
-            <element signature="e#787#905#0" expanded="true" />
-            <element signature="e#1108#1224#0" expanded="true" />
-            <element signature="e#1842#1960#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/partials/botton_navigation_bar.html">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
-          <caret line="105" column="29" selection-start-line="105" selection-start-column="29" selection-end-line="105" selection-end-column="29" />
+          <caret line="339" lean-forward="true" selection-start-line="339" selection-end-line="339" />
         </state>
       </provider>
     </entry>
