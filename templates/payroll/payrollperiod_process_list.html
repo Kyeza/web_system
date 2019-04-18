@@ -33,8 +33,9 @@
                             </label>
                         </td>
                         <td>
-                            <a id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll"
-                               href="#">Process</a>
+                            <button id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll">
+                                Process
+                            </button>
                         </td>
                         <td>{{ payroll_period.status }}</td>
                     </tr>
@@ -72,8 +73,6 @@
 {% endblock content %}
 {% block scripts %}
     <script>
-
-
         $(function () {
             function getCookie(name) {
                 let cookieValue = null;
@@ -107,6 +106,7 @@
             });
 
             $('.process-payroll').on('click', function () {
+                console.log('Processing....');
                 let id = $(this).attr('id');
                 let processUrl = '/users/payroll_period/' + id + '/process/';
                 let processLST = document.getElementById('process_lst_'+id);
@@ -121,8 +121,13 @@
                     'process_lst': LSTValue
                 };
 
-                $.post(processUrl, data, function () {
+                $.post(processUrl, data, function (response) {
                     console.log('Success');
+                    let context = JSON.stringify(response);
+                    window.location.href = '/users/payroll_period/'
+                        + response.id + '/process/'
+                        + context;
+
                 });
             })
         });

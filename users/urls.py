@@ -22,6 +22,7 @@ urlpatterns = [
     path('reject_employee/<int:pk>', views.reject_employee, name='reject-employee'),
     path('new_employee_approval/<int:pk>/edit/', views.approve_employee, name='approve-employee'),
     path('payroll_period/<int:pk>/process/', views.process_payroll_period, name='process_payroll-period'),
+    path('payroll_period/<int:pk>/process/<context>', views.process_payroll_period, name='process_payroll-period'),
     path('terminate_employee/<int:pk>/', views.terminate_employee, name='terminate-employee'),
     path('employee/assign/project/', AssignProjectListView.as_view(), name='employee-assign-project'),
     path('employee/assign/project/<int:pk>', views.employee_project_creation, name='employee-project-creation'),
