@@ -1,5 +1,5 @@
 from django.contrib import admin
 
-from .models import PayrollPeriodReport
+from .models import ExTraSummaryReportInfo
 
-admin.site.register(PayrollPeriodReport)
+admin.site.register(ExTraSummaryReportInfo)

@@ -4,11 +4,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 
 from hr_system.constants import YES_OR_NO_TYPES
-from payroll.models import Currency, PayrollCenter, Bank
+from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
-from .models import Employee, TerminatedEmployees, CostCentre, Project, SOF, DEA, EmployeeProject
+from .models import Employee, TerminatedEmployees, CostCentre, Project, SOF, DEA, EmployeeProject, PayrollProcessors
 
 
 class StaffCreationForm(UserCreationForm):
@@ -285,3 +285,30 @@ class DEAForm(forms.ModelForm):
         fields = [
             'sof_code', 'dea_code', 'dea_name'
         ]
+
+
+class ProcessUpdateForm(forms.ModelForm):
+    earning_and_deductions_type = forms.ModelChoiceField(
+        queryset=EarningDeductionType.objects.all(),
+        widget=forms.Select(
+            attrs={
+                'style':
+                    'border: none; outline: none; text-align: left; margin: 0;' +
+                    '-webkit-appearance: none; -moz-appearance: none;' +
+                    'text-indent: 1px; text-overflow: \' \'; background-color: transparent;',
+            }
+        ),
+        disabled=True
+    )
+
+    amount = forms.DecimalField(
+        required=False,
+        widget=forms.NumberInput(
+            attrs={'style': 'border: none; outline: none; text-align: right; margin: 0;'}
+        )
+    )
+
+    class Meta:
+        model = PayrollProcessors
+        fields = ['payroll_key', 'employee', 'payroll_period', 'earning_and_deductions_type',
+                  'earning_and_deductions_category', 'amount']

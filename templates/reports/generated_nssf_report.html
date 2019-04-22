@@ -1,0 +1,53 @@
+{% load users_extras %}
+{% load reports_extras %}
+{% load humanize %}
+
+{% for period, data in results.items %}
+    <h4 class="border-top pt-4 mb-2 text-center">
+        {{ period.payroll_center }}
+    </h4>
+    <h5 class="border-bottom mb-5 text-center">
+        {{ report }} REPORT FOR PERIOD
+        <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th>No.</th>
+                <th>Agresso ID</th>
+                <th>NSSF No.</th>
+                <th>Name</th>
+                <th>Duty Station</th>
+                <th>Job Title</th>
+                {% for staff in data|get_distinct_employee_set %}
+                    {% if forloop.first %}
+                        {% for processor in data|user_data:staff|category:3 %}
+                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                <th>Total NSSF</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for staff in data|get_distinct_employee_set %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ staff.id_number }}</td>
+                    <td>{{ staff.social_security_number }}</td>
+                    <td>{{ staff.user.get_full_name }}</td>
+                    <td>{{ staff.duty_station }}</td>
+                    <td>{{ staff.job_title }}</td>
+                    {% for info in data|user_data:staff|category:3 %}
+                        <td>{{ info.amount|intcomma }}</td>
+                    {% endfor %}
+                    {% with data|user_data:staff|category:3|total_amount as total %}
+                        <td>{{ total }}</td>
+                    {% endwith %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}

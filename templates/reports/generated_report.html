@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="content-section">
+        <div class="d-flex flex-row-reverse mt-3 mb-1">
+            <button id="ignore-print" class="btn btn-sm btn-warning">PRINT/ PDF</button>
+        </div>
+        <div class="pdf landscape">
+            {% if report == 'NSSF' %}
+                {% include 'reports/generated_nssf_report.html' %}
+            {% elif report == 'SUMMARY' %}
+                {% include 'reports/generated_summary_report.html' %}
+            {% elif report == 'PAYE' %}
+                {% include 'reports/generated_paye_report.html' %}
+            {% elif report == 'Pay Slip' %}
+                {% include 'reports/generated_payslip_report.html' %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.14.0/printThis.js"></script>
+    <script>
+        $('#ignore-print').click(function () {
+            $('.pdf').printThis();
+        })
+    </script>
+{% endblock scripts %}

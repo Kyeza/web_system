@@ -1,0 +1,67 @@
+{% load users_extras %}
+{% load reports_extras %}
+{% load humanize %}
+
+{% for period, data in results.items %}
+    <h4 class="border-top pt-4 mb-2 text-center">
+        {{ period.payroll_center }}
+    </h4>
+    <h5 class="border-bottom mb-5 text-center">
+        {{ report }} REPORT FOR PERIOD
+        <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th>No.</th>
+                <th>Agresso/Staff ID</th>
+                <th>Duty Station</th>
+                <th>Name</th>
+                <th>Job Title</th>
+                {% for staff in data|get_distinct_employee_set %}
+                    {% if forloop.first %}
+                        {% for processor in data|user_data:staff|category:1 %}
+                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                        {% endfor %}
+                        {% for processor in data|user_data:staff|category:3 %}
+                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                <th>Total Deductions</th>
+                <th>Net Pay</th>
+                <th>Pay Method</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for staff in data|get_distinct_employee_set %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ staff.id_number }}</td>
+                    <td>{{ staff.duty_station }}</td>
+                    <td>
+                        <a href="{% url 'reports:generate-payslip' period.id staff.id %}">
+                            {{ staff.user.get_full_name }}
+                        </a>
+                    </td>
+                    <td>{{ staff.job_title }}</td>
+                    {% for info in data|user_data:staff|category:1 %}
+                        <td>{{ info.amount|intcomma }}</td>
+                    {% endfor %}
+                    {% for info in data|user_data:staff|category:3 %}
+                        <td>{{ info.amount|intcomma }}</td>
+                    {% endfor %}
+                    {% with period|report_key:staff as key %}
+                        {% for user_report in user_reports|extra_info:key %}
+                            <td>{{ user_report.total_deductions|intcomma }}</td>
+                            <td>{{ user_report.net_pay|intcomma }}</td>
+                        {%  endfor %}
+                    {% endwith %}
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}

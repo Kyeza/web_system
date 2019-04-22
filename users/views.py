@@ -9,10 +9,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
-from django.core import serializers
 
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
+from reports.models import ExTraSummaryReportInfo
 from users.models import Employee, PayrollProcessors, TerminatedEmployees, CostCentre, Project, SOF, DEA, \
     EmployeeProject
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
@@ -131,7 +131,7 @@ def add_user_to_payroll_processor(instance):
                     # get existing instance processors if they exists
                     existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
                         .filter(payroll_period=payroll_period)
-                    # if ed_types for the employees payroll center exit
+                    # if ed_types for the employees payroll center exist
                     if payroll_center_ed_types:
                         if existing_user_payroll_processors:
                             # PayrollCenterEdTypes can change, hence in case there is one not in the processor
@@ -154,10 +154,20 @@ def add_user_to_payroll_processor(instance):
                         else:
                             # if its a new instance in the payroll period, create processors for that instance/employee
                             for pc_ed_type in payroll_center_ed_types:
-                                user_process = PayrollProcessors(employee=instance.employee,
-                                                                 earning_and_deductions_category=pc_ed_type.ed_type.ed_category,
-                                                                 earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                 amount=0, payroll_period=payroll_period)
+                                if pc_ed_type.ed_type == 'Basic Salary':
+                                    user_process = PayrollProcessors(employee=instance.employee,
+                                                                     earning_and_deductions_category=pc_ed_type
+                                                                     .ed_type.ed_category,
+                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                     amount=instance.employee.gross_salary,
+                                                                     payroll_period=payroll_period)
+                                else:
+                                    user_process = PayrollProcessors(employee=instance.employee,
+                                                                     earning_and_deductions_category=pc_ed_type
+                                                                     .ed_type.ed_category,
+                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                     amount=0,
+                                                                     payroll_period=payroll_period)
                                 user_process.save()
 
 
@@ -325,9 +335,9 @@ class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
 
 
 @login_required
-def process_payroll_period(request, pk, context=None):
-    context
+def process_payroll_period(request, pk):
     if request.method == 'POST' and request.is_ajax():
+        global response
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
         process_lst = request.POST.get('process_lst')
 
@@ -336,24 +346,30 @@ def process_payroll_period(request, pk, context=None):
                 if employee.employment_status == 'APPROVED':
                     user = employee.user
                     add_user_to_payroll_processor(user)
+        else:
+            response = {
+                'status': 'Failed',
+                'message': 'There are currently no Employees in the system',
+            }
 
         period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
-        employees_in_period = []
 
         # removing any terminated employees before processing
-        for process in period_processes:
-            if process.employee.employment_status == 'TERMINATED':
-                process.delete()
+        employees_in_period = []
+        if Employee.objects.all():
+            if period_processes:
+                for process in period_processes:
+                    if process.employee.employment_status == 'TERMINATED':
+                        process.delete()
+                    else:
+                        employees_in_period.append(process.employee)
             else:
-                employees_in_period.append(process.employee)
+                response = {
+                    'status': 'Failed',
+                    'message': 'There are currently no Employees for this Payroll Period',
+                }
 
-        employees_to_process = []
-        if employees_in_period:
-            employees_to_process = list(set(employees_in_period))
-        else:
-            # redirecting to list of payroll periods in case there are no employee to process
-            messages.info(request, 'There are no users in Payroll period to process')
-            return redirect('payroll:open-payroll-period-list')
+        employees_to_process = list(set(employees_in_period))
 
         earnings = EarningDeductionCategory.objects.get(pk=1)
         deductions = EarningDeductionCategory.objects.get(pk=2)
@@ -362,7 +378,6 @@ def process_payroll_period(request, pk, context=None):
         # getting updated payroll processors in case any employees have been removed
         period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
 
-        # TODO: DONT OVERWRITE EDTYPES THAT ARE ALREADY THERE
         for employee in employees_to_process:
             gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
             ge_data = period_processes.filter(employee=employee) \
@@ -378,10 +393,11 @@ def process_payroll_period(request, pk, context=None):
 
             # calculating LST
             fixed_lst = 0
-            for lst_brac in LSTRates.objects.all():
-                if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary)):
-                    fixed_lst = lst_brac.fixed_amount / 4
-                    break
+            if process_lst:
+                for lst_brac in LSTRates.objects.all():
+                    if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary)):
+                        fixed_lst = lst_brac.fixed_amount / 4
+                        break
             lst = fixed_lst
             ge_minus_lst = gross_earnings - lst
 
@@ -407,22 +423,23 @@ def process_payroll_period(request, pk, context=None):
                 employee_paye_processor.save(update_fields=['amount'])
 
             # update LST if exists in payroll center
-            employee_lst_processor = period_processes.filter(employee=employee) \
-                .filter(earning_and_deductions_type=13).first()
-            if employee_paye_processor:
-                employee_lst_processor.amount = lst
-                employee_lst_processor.save(update_fields=['amount'])
+            if process_lst:
+                employee_lst_processor = period_processes.filter(employee=employee) \
+                    .filter(earning_and_deductions_type=13).first()
+                if employee_paye_processor:
+                    employee_lst_processor.amount += lst
+                    employee_lst_processor.save(update_fields=['amount'])
 
             # update NSSF 10% if exists in payroll center
             employee_nssf_10_processor = period_processes.filter(employee=employee) \
-                .filter(earning_and_deductions_type=63).first()
+                .filter(earning_and_deductions_type=64).first()
             if employee_nssf_10_processor:
                 employee_nssf_10_processor.amount = nssf_10
                 employee_nssf_10_processor.save(update_fields=['amount'])
 
             # update NSSF 5%_5 if exists in payroll center
             employee_nssf_5_processor = period_processes.filter(employee=employee) \
-                .filter(earning_and_deductions_type=64).first()
+                .filter(earning_and_deductions_type=12).first()
             if employee_nssf_5_processor:
                 employee_nssf_5_processor.amount = nssf_5
                 employee_nssf_5_processor.save(update_fields=['amount'])
@@ -443,25 +460,37 @@ def process_payroll_period(request, pk, context=None):
             # calculating total deductions from statutory deductions
             if tx_data_stat:
                 for inst in tx_data_stat:
-                    total_deductions += inst.amount
+                    if not inst.earning_and_deductions_type.ed_type.__contains__('NSSF'):
+                        total_deductions += inst.amount
 
             net_pay = gross_earnings - total_deductions
 
-            context = {
-                'id': payroll_period.id,
-                'period_processes': serializers.serialize('json', period_processes),
-                'employees_to_process': serializers.serialize('json', employees_to_process),
-            }
+            try:
+                key = f'{payroll_period.payroll_key}S{employee.id}'
+                report = ExTraSummaryReportInfo.objects.get(pk=key)
+                report.net_pay = net_pay
+                report.gross_earning = gross_earnings
+                report.total_deductions = total_deductions
+                report.save(update_fields=['net_pay', 'gross_earning', 'total_deductions'])
 
-            return JsonResponse(context)
+                response = {
+                    'status': 'Success',
+                    'message': 'Successfully process Payroll Period',
+                }
+            except ExTraSummaryReportInfo.DoesNotExist:
+                report = ExTraSummaryReportInfo(employee=employee,
+                                                payroll_period=payroll_period,
+                                                net_pay=net_pay,
+                                                gross_earning=gross_earnings,
+                                                total_deductions=total_deductions)
+                report.save()
 
-        if request.method == 'GET' and request.is_ajax():
-            if context:
-                return render(request, 'reports/summary_report.html', context)
-            else:
-                return redirect('payroll:open-payroll-period-list')
+                response = {
+                    'status': 'Success',
+                    'message': 'Successfully process Payroll Period',
+                }
 
-
+        return JsonResponse(response)
 
 
 @login_required

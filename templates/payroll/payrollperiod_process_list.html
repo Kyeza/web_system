@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block css %}
+    {% include 'partials/users.css' %}
+{% endblock css %}
 {% block content %}
+    <div class="alert alert-info alert-dismissible fade" role="alert">
+        There are currently no Employees in the system
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     <div class="content-section">
         <h3 class="border-bottom mb-4">{{ title }}</h3>
         <div class="table-responsive">
@@ -32,10 +41,11 @@
                                 <span class="slider round"></span>
                             </label>
                         </td>
-                        <td>
-                            <button id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll">
+                        <td class="d-flex">
+                            <button id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll p-2">
                                 Process
                             </button>
+                            <div id="loader{{ payroll_period.id }}" class="p-2 align-self-center"></div>
                         </td>
                         <td>{{ payroll_period.status }}</td>
                     </tr>
@@ -45,30 +55,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="d-flex flex-row justify-content-end">
-            {% if is_paginated %}
-
-                {% if page_obj.has_previous %}
-                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
-                    <a class="btn btn-outline-primary mb-4"
-                       href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
-
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                {% endif %}
-
-            {% endif %}
-        </div>
+        {% include 'partials/pagination.html' %}
     </div>
 {% endblock content %}
 {% block scripts %}
@@ -106,8 +93,13 @@
             });
 
             $('.process-payroll').on('click', function () {
-                console.log('Processing....');
                 let id = $(this).attr('id');
+                let loaderId = '#loader'+id;
+                let btnId = '#'+id;
+                $(btnId).hide();
+                $(loaderId).addClass('loader');
+                console.log('Processing....');
+
                 let processUrl = '/users/payroll_period/' + id + '/process/';
                 let processLST = document.getElementById('process_lst_'+id);
                 let LSTValue;
@@ -122,12 +114,15 @@
                 };
 
                 $.post(processUrl, data, function (response) {
-                    console.log('Success');
-                    let context = JSON.stringify(response);
-                    window.location.href = '/users/payroll_period/'
-                        + response.id + '/process/'
-                        + context;
-
+                    $(loaderId).removeClass('loader');
+                    $(btnId).show();
+                    if(response.status === 'Failed') {
+                        console.log(response.status);
+                        $('.alert').addClass('show');
+                    }else {
+                        console.log(response.status);
+                        window.location.href = '/reports/summary_report/' + id;
+                    }
                 });
             })
         });

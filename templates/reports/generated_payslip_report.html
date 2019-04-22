@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load users_extras %}
+{% load reports_extras %}
+{% load humanize %}
+
+{% block content %}
+    <div class="content-section d-flex justify-content-center">
+        <div class="flex-column">
+            <div class="p-2 mt-3 mb-1 d-flex flex-row-reverse">
+                <button id="ignore-print" class="btn btn-sm btn-warning">PRINT/ PDF</button>
+            </div>
+            <div class="pdf p-2" style="width: 450px">
+                <h4 class="border-top pt-4 mb-2 text-center">
+                    {{ period.payroll_center.organization }}
+                </h4>
+                <h4 class="border-bottom text-center">
+                    Pay Slip
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                        {% for staff in data|get_distinct_employee_set %}
+                            <tr>
+                                <th scope="row">Pay Period:</th>
+                                <td>{{ period.month }} - {{ period.year }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Agresso/Staff ID:</th>
+                                <td>{{ staff.id_number }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Name:</th>
+                                <td>{{ staff.user.get_full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Department:</th>
+                                <td>{{ staff.department }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Duty Station:</th>
+                                <td>{{ staff.duty_station }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Job Title:</th>
+                                <td>{{ staff.job_title }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Grade/Step:</th>
+                                <td>{{ staff.grade }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Bank Name:</th>
+                                <td>{{ staff.bank_1 }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Currency:</th>
+                                <td>{{ staff.currency }}</td>
+                            </tr>
+
+                            <tr>
+                                <th scope="row" colspan="2">
+                                    <h3 class="mt-3 border-top"><strong>Earnings Details</strong></h3>
+                                </th>
+                            </tr>
+                            {% for processor in data|user_data:staff|category:1 %}
+                                <tr>
+                                    <th scope="row">{{ processor.earning_and_deductions_type.ed_type|capfirst }}</th>
+                                    <td class="d-flex justify-content-end borderless">
+                                        {{ processor.amount }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <div class="border-top-3"></div>
+                            {% with period|report_key:staff as key %}
+                                {% for user_report in user_reports|extra_info:key %}
+                                    <tr>
+                                        <th scope="row"><h5>Total Earnings</h5></th>
+                                        <td class="d-flex justify-content-end borderless">
+                                            {{ user_report.gross_earning|intcomma }}
+                                        </td>
+                                    </tr>
+                                {%  endfor %}
+                            {% endwith %}
+                            <div class="border-bottom-3"></div>
+
+                            <tr>
+                                <th scope="row" colspan="2">
+                                    <h3 class="mt-3 border-top"><strong>Deductions Details</strong></h3>
+                                </th>
+                            </tr>
+                            {% for processor in data|user_data:staff|category:2 %}
+                                <tr>
+                                    <th scope="row" class="borderless">{{ processor.earning_and_deductions_type.ed_type|capfirst }}</th>
+                                    <td class="d-flex justify-content-end borderless">
+                                        {{ processor.amount }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% for processor in data|user_data:staff|category:3 %}
+                                <tr>
+                                    <th scope="row">{{ processor.earning_and_deductions_type.ed_type|capfirst }}</th>
+                                    <td class="d-flex justify-content-end borderless">
+                                        {{ processor.amount }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% with period|report_key:staff as key %}
+                                {% for user_report in user_reports|extra_info:key %}
+                                    <tr>
+                                        <th scope="row"><h5>Total Deductions</h5></th>
+                                        <td class="d-flex justify-content-end borderless">
+                                            {{ user_report.total_deductions|intcomma }}
+                                        </td>
+                                    </tr>
+                                {%  endfor %}
+                            {% endwith %}
+
+                            {% with period|report_key:staff as key %}
+                                {% for user_report in user_reports|extra_info:key %}
+                                    <tr>
+                                        <th scope="row"><h4>Net Pay</h4></th>
+                                        <td class="d-flex justify-content-end borderless">
+                                            {{ user_report.net_pay|intcomma }}
+                                        </td>
+                                    </tr>
+                                {%  endfor %}
+                            {% endwith %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.14.0/printThis.js"></script>
+    <script>
+        $('#ignore-print').click(function () {
+            $('.pdf').printThis();
+        })
+    </script>
+{% endblock scripts %}

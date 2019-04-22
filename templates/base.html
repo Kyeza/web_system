@@ -26,7 +26,10 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{% static 'payroll/main.css' %}">
 
-    {% include 'partials/custom_css.html' %}
+    <style>
+        {% include 'partials/custom_css.css' %}
+        {% block css %}{% endblock %}
+    </style>
 </head>
 <body>
 <!-- Top navigation -->
