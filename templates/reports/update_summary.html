@@ -6,9 +6,13 @@
     <div class="content-section">
         <form method="POST">
             {% csrf_token %}
+            {{ e_formset.management_form }}
+            {{ d_formset.management_form }}
+            {{ s_formset.management_form }}
             <fieldset class="form-group">
                 <legend class="border-bottom text-center mb-4">
-                    UPDATING PAYROLL INFORMATION FOR <span style="color: #ff0000">{{ employee.user.get_full_name|upper }}</span>
+                    UPDATING PAYROLL INFORMATION FOR
+                    <span style="color: #ff0000">{{ employee.user.get_full_name|upper }}</span>
                 </legend>
                 <div class="d-flex flex-wrap justify-content-between">
                     <div class="p-2 flex-fill">
@@ -21,7 +25,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for form in earning_forms %}
+                            {% for form in e_formset %}
                                 <tr>
                                     <th scope="row">{{ form.earning_and_deductions_type }}</th>
                                     <td class="d-flex justify-content-end borderless">{{ form.amount }}</td>
@@ -38,7 +42,7 @@
                     </div>
                     <div class="p-2 flex-fill">
                         <h5>Deductions</h5>
-                         <table class="table table-bordered table-sm">
+                        <table class="table table-bordered table-sm">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col"></th>
@@ -46,19 +50,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for form in deductions_forms %}
+                            {% for form in d_formset %}
                                 <tr>
                                     <th scope="row">{{ form.earning_and_deductions_type }}</th>
                                     <td class="d-flex justify-content-end borderless">{{ form.amount }}</td>
                                 </tr>
                             {% endfor %}
-                            {% for form in statutory_forms %}
+                            {% for form in s_formset %}
                                 <tr>
                                     <th scope="row">{{ form.earning_and_deductions_type }}</th>
                                     <td class="d-flex justify-content-end borderless">{{ form.amount }}</td>
                                 </tr>
                             {% endfor %}
-                           <tr>
+                            <tr>
                                 <th scope="row">Total Deductions</th>
                                 <td class="d-flex justify-content-center borderless">
                                     {{ extra_data.total_deductions|intcomma }}
@@ -68,7 +72,7 @@
                         </table>
                     </div>
                 </div>
-                 <div class="d-flex flex-wrap justify-content-between">
+                <div class="d-flex flex-wrap justify-content-between">
                     <div class="p-2 flex-fill">
                         <h5>Summary</h5>
                         <table class="table table-sm">

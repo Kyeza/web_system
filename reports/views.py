@@ -1,6 +1,9 @@
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
-
+from django.forms import formset_factory
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from payroll.models import PayrollPeriod
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
@@ -8,6 +11,7 @@ from .forms import ReportGeneratorForm
 from .models import ExTraSummaryReportInfo
 
 
+@login_required
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
@@ -32,39 +36,75 @@ def display_summary_report(request, pk):
     return render(request, 'reports/summary_report.html', context)
 
 
+# noinspection PyPep8Naming
+@login_required
 def update_summary_report(request, pp, user):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pp)
     employee = get_object_or_404(Employee, pk=user)
-    proc_key = f'P{payroll_period.id}S{employee.id}'
-    processors = PayrollProcessors.objects.filter(payroll_key__startswith=proc_key)
-    earnings_processors = processors.filter(earning_and_deductions_category=1).all()
-    deductions_processors = processors.filter(earning_and_deductions_category=2).all()
-    statutory_processors = processors.filter(earning_and_deductions_category=3).all()
+    processors = PayrollProcessors.objects.filter(payroll_key__startswith=f'P{payroll_period.id}S{employee.id}')
 
-    info_key = f'{payroll_period.payroll_key}S{employee.id}'
-    extra_data = ExTraSummaryReportInfo.objects.filter(key=info_key).first()
+    # Categories: earning, deductions and statutory
+    cat_e = processors.filter(earning_and_deductions_category=1).all()
+    cat_d = processors.filter(earning_and_deductions_category=2).all()
+    cat_s = processors.filter(earning_and_deductions_category=3).all()
+
+    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.id}').first()
+
+    # creating initial data for formsets
+    e_data = [processor.to_dict() for processor in cat_e]
+    d_data = [processor.to_dict() for processor in cat_d]
+    s_data = [processor.to_dict() for processor in cat_s]
+
+    # creating initial display formsets
+    e_FormSet = formset_factory(ProcessUpdateForm, max_num=len(e_data), extra=0)
+    d_FormSet = formset_factory(ProcessUpdateForm, max_num=len(d_data), extra=0)
+    s_FormSet = formset_factory(ProcessUpdateForm, max_num=len(s_data), extra=0)
 
     if request.method == 'POST':
-        earnings_forms = [ProcessUpdateForm(request.POST, instance=form) for form in earnings_processors]
-        deductions_forms = [ProcessUpdateForm(request.POST, instance=form) for form in deductions_processors]
-        statutory_forms = [ProcessUpdateForm(request.POST, instance=form) for form in statutory_processors]
+        e_formset = e_FormSet(request.POST, initial=e_data, prefix='earnings')
+        d_formset = d_FormSet(request.POST, initial=d_data, prefix='deductions')
+        s_formset = s_FormSet(request.POST, initial=s_data, prefix='statutory')
+
+        if e_formset.is_valid() and d_formset.is_valid() and s_formset.is_valid():
+            for form in e_formset:
+                f = form.save(commit=False)
+                f.employee = employee
+                f.payroll_period = payroll_period
+                f.earning_and_deductions_category_id = 1
+                f.save()
+            for form in d_formset:
+                f = form.save(commit=False)
+                f.employee = employee
+                f.payroll_period = payroll_period
+                f.earning_and_deductions_category_id = 2
+                f.save()
+            for form in s_formset:
+                f = form.save(commit=False)
+                f.employee = employee
+                f.payroll_period = payroll_period
+                f.earning_and_deductions_category_id = 3
+                f.save()
+
+            return HttpResponseRedirect(reverse('users:process_payroll-period', args=(payroll_period.id,)))
+
     else:
-        earnings_forms = [ProcessUpdateForm(instance=form) for form in earnings_processors]
-        deductions_forms = [ProcessUpdateForm(instance=form) for form in deductions_processors]
-        statutory_forms = [ProcessUpdateForm(instance=form) for form in statutory_processors]
+        e_formset = e_FormSet(initial=e_data, prefix='earnings')
+        d_formset = d_FormSet(initial=d_data, prefix='deductions')
+        s_formset = s_FormSet(initial=s_data, prefix='statutory')
 
     context = {
         'payroll_period': payroll_period,
         'employee': employee,
-        'earning_forms': earnings_forms,
-        'deductions_forms': deductions_forms,
-        'statutory_forms': statutory_forms,
+        'e_formset': e_formset,
+        'd_formset': d_formset,
+        's_formset': s_formset,
         'extra_data': extra_data,
     }
 
     return render(request, 'reports/update_summary.html', context)
 
 
+@login_required
 def generate(payroll_periods, report):
     results = {}
     for period in payroll_periods:
@@ -84,6 +124,7 @@ def generate(payroll_periods, report):
     return results
 
 
+@login_required
 def generate_reports(request):
     if request.method == 'POST':
         form = ReportGeneratorForm(request.POST)
@@ -124,6 +165,7 @@ def generate_reports(request):
     return render(request, 'reports/generate_report.html', context)
 
 
+@login_required
 def generate_payslip_report(request, pp, user):
     period = get_object_or_404(PayrollPeriod, pk=pp)
     employee = get_object_or_404(Employee, pk=user)

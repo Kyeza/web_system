@@ -41,11 +41,11 @@
                                 <span class="slider round"></span>
                             </label>
                         </td>
-                        <td class="d-flex">
-                            <button id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll p-2">
+                        <td>
+                            <button id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll">
                                 Process
                             </button>
-                            <div id="loader{{ payroll_period.id }}" class="p-2 align-self-center"></div>
+                            <div id="loader{{ payroll_period.id }}"></div>
                         </td>
                         <td>{{ payroll_period.status }}</td>
                     </tr>

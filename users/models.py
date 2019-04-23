@@ -103,11 +103,22 @@ class Employee(models.Model):
 
 class PayrollProcessors(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    earning_and_deductions_type = models.ForeignKey(EarningDeductionType, on_delete=models.PROTECT)
-    earning_and_deductions_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.PROTECT)
-    amount = models.DecimalField(max_digits=9, decimal_places=2)
-    payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL, null=True)
-    payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True, primary_key=True)
+    earning_and_deductions_type = models.ForeignKey(EarningDeductionType, on_delete=models.PROTECT, blank=True)
+    earning_and_deductions_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.PROTECT, blank=True)
+    amount = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL, null=True, blank=True)
+    payroll_key = models.CharField(max_length=150, blank=True, null=False,
+                                   default=None, unique=True, primary_key=True, editable=False)
+
+    def to_dict(self):
+        data = {
+            'payroll_key': self.payroll_key,
+            'employee': self.employee,
+            'earning_and_deductions_type': self.earning_and_deductions_type,
+            'earning_and_deductions_category': self.earning_and_deductions_category,
+            'amount': self.amount
+        }
+        return data
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.payroll_key is None:
@@ -116,7 +127,7 @@ class PayrollProcessors(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return f'{self.payroll_key}-{self.payroll_period.payroll_center}'
+        return f'{self.payroll_key}-{self.payroll_period.payroll_center}-{self.earning_and_deductions_type}'
 
 
 class TerminatedEmployees(models.Model):

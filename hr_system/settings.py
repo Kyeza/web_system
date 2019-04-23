@@ -44,7 +44,18 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'bootstrap4',
+    'haystack',
 ]
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack_books',
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

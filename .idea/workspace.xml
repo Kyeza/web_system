@@ -2,49 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/migrations/0003_auto_20190419_1454.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/templatetags/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/templatetags/reports_extras.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/partials/pagination.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/partials/users.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reports/generate_report.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reports/generated_nssf_report.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reports/generated_paye_report.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reports/generated_payslip_report.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reports/generated_report.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reports/generated_summary_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/hr_system.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hr_system.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/migrations/0002_auto_20190422_1201.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/migrations/0003_auto_20190423_1436.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/migrations/0004_auto_20190423_1504.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/migrations/0005_auto_20190423_1535.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/search_indexes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190411_1401.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190419_1015.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0003_account.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0004_auto_20190412_1713.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0005_auto_20190412_1715.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/static/payroll/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/static/payroll/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/migrations/0002_auto_20190411_1401.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0002_auto_20190419_1015.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hr_system/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/partials/custom_css.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/custom_css.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/reports/employee_payroll_info.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reports/update_summary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/reports/summary_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reports/summary_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/filters.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/reports/update_summary.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reports/update_summary.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/migrations/0002_employeeproject_created_by.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templatetags/users_extras.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/templatetags/users_extras.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -73,24 +43,6 @@
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
         <item name="@localhost" type="feb32156:DbDataSourceImpl" />
       </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="payroll_schema: schema" type="c314c289:MysqlImplModel$Schema" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="payroll_schema: schema" type="c314c289:MysqlImplModel$Schema" />
-        <item name="reports_extrasummaryreportinfo: table" type="98d5ac3d:MysqlImplModel$Table" />
-      </path>
     </expand>
     <select />
   </component>
@@ -98,45 +50,26 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="generated_payslip_report.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/reports/generated_payslip_report.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="82">
-              <caret line="9" column="71" selection-start-line="9" selection-start-column="60" selection-end-line="9" selection-end-column="71" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="generate_report.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/reports/generate_report.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-54" />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="generated_report.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/reports/generated_report.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="5" column="67" selection-start-line="5" selection-start-column="67" selection-end-line="5" selection-end-column="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
+    <findStrings>
+      <find>ForeignKey</find>
+      <find>process_payroll-period</find>
+      <find>reverse</find>
+      <find>process_payroll_period</find>
+    </findStrings>
     <replaceStrings>
       <replace>processors</replace>
+      <replace>CharField</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -157,10 +90,18 @@
         <option value="$PROJECT_DIR$/reports/urls.py" />
         <option value="$PROJECT_DIR$/reports/forms.py" />
         <option value="$PROJECT_DIR$/templates/reports/generated_summary_report.html" />
-        <option value="$PROJECT_DIR$/reports/views.py" />
-        <option value="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" />
         <option value="$PROJECT_DIR$/templates/reports/generated_payslip_report.html" />
         <option value="$PROJECT_DIR$/templates/reports/generated_report.html" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/826a75f1-82a0-45a4-9a94-5466155519e0/console.sql" />
+        <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" />
+        <option value="$PROJECT_DIR$/hr_system/settings.py" />
+        <option value="$PROJECT_DIR$/users/search_indexes.py" />
+        <option value="$PROJECT_DIR$/templates/reports/update_summary.html" />
+        <option value="$PROJECT_DIR$/users/models.py" />
+        <option value="$PROJECT_DIR$/users/forms.py" />
+        <option value="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" />
+        <option value="$PROJECT_DIR$/reports/views.py" />
+        <option value="$PROJECT_DIR$/users/views.py" />
       </list>
     </option>
   </component>
@@ -187,6 +128,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -207,47 +149,39 @@
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="reports" type="462c0819:PsiDirectoryNode" />
-              <item name="templatetags" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
               <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="payroll" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="partials" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="reports" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
+              <item name="users" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
-    <property name="SearchEverywhereHistoryKey" value="bott&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/partials/botton_navigation_bar.html&#10;urls&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/urls.py&#10;base.html&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/base.html&#10;report_&#9;null&#9;null&#10;views&#9;null&#9;null&#10;users&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/templatetags/users_extras.py&#10;report&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/templatetags/reports_extras.py&#10;ge&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/reports/generate_report.html&#10;generated&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/reports/generated_report.html" />
+    <property name="SearchEverywhereHistoryKey" value="views&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/views.py&#10;bott&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/partials/botton_navigation_bar.html&#10;boot&#9;null&#9;null&#10;users/u&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/urls.py&#10;mod&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;form&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;mo&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;for&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;model&#9;null&#9;null&#10;urls&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/urls.py&#10;base.html&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/base.html&#10;report_&#9;null&#9;null&#10;users&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/templatetags/users_extras.py&#10;report&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/templatetags/reports_extras.py&#10;ge&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/reports/generate_report.html&#10;generated&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/reports/generated_report.html" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="JavaScript 1.8" />
@@ -353,26 +287,33 @@
       <option name="presentableId" value="Default" />
       <updated>1555736766374</updated>
     </task>
+    <task id="LOCAL-00001" summary="-Worked on payroll reports generation">
+      <created>1555915760043</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1555915760043</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="14" />
-      <window_info anchor="bottom" id="Event Log" order="3" side_tool="true" />
-      <window_info anchor="bottom" id="Database Changes" order="4" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="0" visible="true" weight="0.32954547" />
+      <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
+      <window_info anchor="bottom" id="Database Changes" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="6" />
-      <window_info anchor="bottom" id="Python Console" order="7" weight="0.32954547" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32954547" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22541603" />
+      <window_info anchor="bottom" x="1" y="31" width="728" height="736" id="Python Console" order="7" type="WINDOWED" weight="0.32817337" />
+      <window_info active="true" anchor="bottom" id="Run" order="0" visible="true" weight="0.32817337" />
+      <window_info anchor="bottom" x="1" y="31" width="681" height="736" id="Terminal" order="8" type="WINDOWED" weight="0.32817337" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17927383" />
       <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" weight="0.22995462" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="5" weight="0.39935064" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" x="862" y="31" width="503" height="736" id="Debug" order="1" type="WINDOWED" weight="0.7414861" />
       <window_info active="true" anchor="bottom" id="Concurrent Activities Diagram" order="15" weight="0.32954547" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="13" weight="0.4" />
@@ -380,34 +321,34 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="10" />
       <window_info anchor="bottom" id="Cvs" order="12" weight="0.25" />
-      <window_info anchor="bottom" id="Database Console" order="2" weight="0.32954547" />
+      <window_info anchor="bottom" id="Database Console" order="3" weight="0.32954547" />
       <window_info anchor="bottom" id="Find" order="11" />
-      <window_info anchor="bottom" id="manage.py@hr_system" order="1" weight="0.32954547" />
+      <window_info anchor="bottom" x="684" y="31" width="681" height="736" id="manage.py@hr_system" order="2" type="WINDOWED" weight="0.32817337" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="12" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="11" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25718608" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="13" />
+      <window_info anchor="bottom" id="Version Control" order="4" />
       <window_info anchor="bottom" id="Run" order="10" weight="0.32954547" />
-      <window_info anchor="bottom" id="Message" order="8" />
+      <window_info anchor="bottom" id="Find" order="9" />
+      <window_info anchor="bottom" id="Python Console" order="5" weight="0.32954547" />
       <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39935064" />
       <window_info anchor="right" id="Database" order="4" weight="0.22995462" />
       <window_info anchor="bottom" id="Terminal" order="6" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="2" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="4" />
+      <window_info anchor="bottom" id="Cvs" order="11" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info anchor="bottom" id="Database Console" order="0" weight="0.32954547" />
-      <window_info anchor="bottom" id="Find" order="9" />
+      <window_info anchor="bottom" id="Message" order="8" />
       <window_info active="true" anchor="bottom" id="Concurrent Activities Diagram" order="14" weight="0.32954547" />
-      <window_info anchor="bottom" id="Python Console" order="5" weight="0.32954547" />
+      <window_info id="Favorites" order="2" side_tool="true" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -416,72 +357,19 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="-Worked on payroll reports generation" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Worked on payroll reports generation" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="5" />
+      <option name="time" value="32" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/reports/utils.py" />
-    <entry file="file://$PROJECT_DIR$/reports/templatetags/reports_extras.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="24" column="16" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="810">
-          <caret line="45" column="4" selection-start-line="45" selection-start-column="4" selection-end-line="45" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="29" column="40" selection-end-line="57" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/summary_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="36" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2178">
-          <caret line="121" selection-start-line="121" selection-end-line="121" />
-          <folding>
-            <element signature="e#380#1198#0" expanded="true" />
-            <element signature="e#1251#2871#0" expanded="true" />
-            <element signature="e#2917#3664#0" expanded="true" />
-            <element signature="e#3431#4476#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="35" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_nssf_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="18" selection-start-column="18" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/utils.py" />
     <entry file="file://$PROJECT_DIR$/reports/templatetags/reports_extras.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -514,12 +402,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="504">
           <caret line="87" column="80" selection-start-line="87" selection-start-column="80" selection-end-line="87" selection-end-column="80" />
-          <folding>
-            <element signature="e#380#1198#0" expanded="true" />
-            <element signature="e#1251#2871#0" expanded="true" />
-            <element signature="e#2917#3664#0" expanded="true" />
-            <element signature="e#3431#4476#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -555,12 +437,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1566">
           <caret line="87" column="52" selection-start-line="87" selection-start-column="52" selection-end-line="87" selection-end-column="52" />
-          <folding>
-            <element signature="e#380#1198#0" expanded="true" />
-            <element signature="e#1251#2871#0" expanded="true" />
-            <element signature="e#2917#3664#0" expanded="true" />
-            <element signature="e#3431#4476#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -585,9 +461,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/826a75f1-82a0-45a4-9a94-5466155519e0/console.sql">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/pathlib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="115">
@@ -599,13 +472,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="115">
           <caret line="63" selection-start-line="63" selection-end-line="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/selectors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="314" selection-start-line="314" selection-end-line="314" />
         </state>
       </provider>
     </entry>
@@ -623,13 +489,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/users/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="372" selection-start-line="372" selection-end-line="372" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/reports/templatetags/reports_extras.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -638,19 +497,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/reports/utils.py" />
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/core/handlers/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="112" selection-start-line="112" selection-end-line="112" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.js" />
-    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2569" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/reports/generated_nssf_report.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
@@ -672,13 +519,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/partials/report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="27" selection-start-line="8" selection-start-column="27" selection-end-line="8" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/partials/report.html" />
     <entry file="das://826a75f1-82a0-45a4-9a94-5466155519e0/schema/payroll_schema/table/payroll_earningdeductiontype">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -707,13 +548,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/reports/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="26" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/reports/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="334">
@@ -724,30 +558,10 @@
     <entry file="file://$PROJECT_DIR$/templates/reports/generated_summary_report.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/update_summary.html">
+    <entry file="file://$PROJECT_DIR$/templates/reports/generated_report.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="25" column="20" lean-forward="true" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="133" column="76" selection-start-line="133" selection-start-column="76" selection-end-line="133" selection-end-column="76" />
-          <folding>
-            <element signature="e#380#1198#0" expanded="true" />
-            <element signature="e#1251#2871#0" expanded="true" />
-            <element signature="e#2917#3664#0" expanded="true" />
-            <element signature="e#3431#4476#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/partials/botton_navigation_bar.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-72">
-          <caret line="67" column="17" lean-forward="true" selection-start-line="67" selection-start-column="17" selection-end-line="67" selection-end-column="17" />
+        <state relative-caret-position="90">
+          <caret line="5" column="67" selection-start-line="5" selection-start-column="67" selection-end-line="5" selection-end-column="67" />
         </state>
       </provider>
     </entry>
@@ -758,15 +572,124 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generate_report.html">
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/826a75f1-82a0-45a4-9a94-5466155519e0/console.sql">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-54" />
+        <state relative-caret-position="1026">
+          <caret line="57" column="70" selection-start-line="57" selection-start-column="70" selection-end-line="57" selection-end-column="70" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_report.html">
+    <entry file="das://826a75f1-82a0-45a4-9a94-5466155519e0/schema/payroll_schema/table/support_data_nationality">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/search_indexes.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="67" selection-start-line="5" selection-start-column="67" selection-end-line="5" selection-end-column="67" />
+        <state relative-caret-position="530">
+          <caret line="93" column="28" selection-start-line="93" selection-start-column="28" selection-end-line="93" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/reports/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/reports/generate_report.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/core/handlers/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="112" selection-start-line="112" selection-end-line="112" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/threading.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="884" selection-start-line="884" selection-end-line="884" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/selectors.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="314" selection-start-line="314" selection-end-line="314" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="149" column="31" lean-forward="true" selection-start-line="149" selection-start-column="31" selection-end-line="149" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/subprocess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="1206" selection-start-line="1206" selection-end-line="1206" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="23" column="103" selection-start-line="23" selection-start-column="81" selection-end-line="23" selection-end-column="103" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="472">
+          <caret line="268" column="82" selection-start-line="268" selection-start-column="82" selection-end-line="268" selection-end-column="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/reports/update_summary.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/bootstrap4/bootstrap.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/partials/botton_navigation_bar.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="103" column="51" selection-start-line="103" selection-start-column="51" selection-end-line="103" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="493" column="37" selection-start-line="493" selection-start-column="37" selection-end-line="493" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="562">
+          <caret line="115" column="61" lean-forward="true" selection-start-line="115" selection-start-column="61" selection-end-line="115" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/reports/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-144">
+          <caret line="4" selection-start-line="4" selection-end-line="5" selection-end-column="31" />
         </state>
       </provider>
     </entry>

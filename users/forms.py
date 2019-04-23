@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 
 from hr_system.constants import YES_OR_NO_TYPES
-from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType
+from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType, PayrollPeriod, EarningDeductionCategory
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
@@ -105,18 +105,7 @@ class ProfileCreationForm(forms.ModelForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = [
-            'marital_status', 'mobile_number', 'id_number',
-            'passport_number', 'nationality', 'residential_address', 'district',
-            'date_of_birth', 'sex', 'image', 'user_group',
-            'duty_country', 'duty_station', 'department', 'job_title',
-            'appointment_date', 'contract_type', 'cost_centre', 'grade',
-            'gross_salary', 'currency', 'tin_number', 'social_security',
-            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-            'first_account_number', 'second_account_number', 'first_bank_percentage',
-            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'dr_ac_code', 'cr_ac_code'
-        ]
+        fields = '__all__'
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -189,18 +178,7 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = [
-            'marital_status', 'mobile_number', 'id_number',
-            'passport_number', 'nationality', 'residential_address', 'district',
-            'date_of_birth', 'sex', 'image', 'user_group',
-            'duty_country', 'duty_station', 'department', 'job_title',
-            'appointment_date', 'contract_type', 'cost_centre', 'grade',
-            'gross_salary', 'currency', 'tin_number', 'social_security',
-            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-            'first_account_number', 'second_account_number', 'first_bank_percentage',
-            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'employment_status', 'dr_ac_code', 'cr_ac_code'
-        ]
+        fields = '__all__'
 
 
 class EmployeeApprovalForm(ProfileUpdateForm):
@@ -209,18 +187,7 @@ class EmployeeApprovalForm(ProfileUpdateForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = [
-            'marital_status', 'mobile_number', 'id_number',
-            'passport_number', 'nationality', 'residential_address', 'district',
-            'date_of_birth', 'sex', 'image', 'user_group',
-            'duty_country', 'duty_station', 'department', 'job_title',
-            'appointment_date', 'contract_type', 'cost_centre', 'grade',
-            'gross_salary', 'currency', 'tin_number', 'social_security',
-            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-            'first_account_number', 'second_account_number', 'first_bank_percentage',
-            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'employment_status', 'dr_ac_code', 'cr_ac_code'
-        ]
+        fields = '__all__'
 
 
 class TerminationForm(forms.ModelForm):
@@ -243,48 +210,38 @@ class TerminationForm(forms.ModelForm):
 
     class Meta:
         model = TerminatedEmployees
-        fields = ['employee', 'notice_date', 'exit_date', 'days_given', 'employable', 'reason']
+        fields = '__all__'
 
 
 class EmployeeProjectForm(forms.ModelForm):
     class Meta:
         model = EmployeeProject
-        fields = [
-            'employee', 'cost_center', 'project_code', 'sof_code', 'dea_code', 'contribution_percentage'
-        ]
+        fields = '__all__'
 
 
 class CostCentreForm(forms.ModelForm):
     class Meta:
         model = CostCentre
-        fields = [
-            'cost_centre', 'description'
-        ]
+        fields = '__all__'
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = [
-            'cost_centre', 'project_code', 'project_name'
-        ]
+        fields = '__all__'
 
 
 class SOFForm(forms.ModelForm):
     class Meta:
         model = SOF
-        fields = [
-            'project_code', 'sof_code', 'sof_name'
-        ]
+        fields = '__all__'
 
 
 class DEAForm(forms.ModelForm):
     class Meta:
         model = DEA
 
-        fields = [
-            'sof_code', 'dea_code', 'dea_name'
-        ]
+        fields = '__all__'
 
 
 class ProcessUpdateForm(forms.ModelForm):
@@ -298,9 +255,8 @@ class ProcessUpdateForm(forms.ModelForm):
                     'text-indent: 1px; text-overflow: \' \'; background-color: transparent;',
             }
         ),
-        disabled=True
+        required=False
     )
-
     amount = forms.DecimalField(
         required=False,
         widget=forms.NumberInput(
@@ -310,5 +266,4 @@ class ProcessUpdateForm(forms.ModelForm):
 
     class Meta:
         model = PayrollProcessors
-        fields = ['payroll_key', 'employee', 'payroll_period', 'earning_and_deductions_type',
-                  'earning_and_deductions_category', 'amount']
+        exclude = ['employee', 'payroll_period', 'earning_and_deductions_category']
