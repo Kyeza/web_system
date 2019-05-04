@@ -13,8 +13,6 @@ install:
   - pip install -r requirements.txt
 
 before_script:
-  - mysql -e 'create database payroll_schema;' -u root
-  - python manage.py migrate
-  - python manage.py runserver --settings=hr_system.test_settings
+  - mysql -e 'create database test_payroll_schema;' -u root
 
 script: python manage.py test
