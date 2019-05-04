@@ -3,6 +3,15 @@ language: python
 python:
   - "3.6"
 
+before_script:
+  - mysqld_safe --skip-grant-tables &
+  - mysql
+  - UPDATE mysql.user SET Password=PASSWORD('Kam12345') WHERE User='root';
+  - FLUSH PRIVILEGES;
+  - exit;
+  - mysqladmin -u root -p Kam12345 shutdown
+  - service mysql start
+
 services:
   - mysql
 
@@ -11,15 +20,5 @@ env:
 
 install:
   - pip install -r requirements.txt
-
-before_script:
-  - service mysql stop
-  - mysqld_safe --skip-grant-tables &
-  - mysql
-  - UPDATE mysql.user SET Password=PASSWORD('Kam12345') WHERE User='root';
-  - FLUSH PRIVILEGES;
-  - exit;
-  - mysqladmin -u root -p Kam12345 shutdown
-  - service mysql start
 
 script: python manage.py test
