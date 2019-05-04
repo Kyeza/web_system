@@ -111,12 +111,6 @@ else:
             'PASSWORD': 'Kam12345',
             'HOST': '127.0.0.1',
             'PORT': '3306',
-            'TEST': {
-                'NAME': 'test_payroll_schema',
-                'USER': 'root',
-                'HOST': '127.0.0.1',
-                'PORT': '3306',
-            }
         }
     }
 # [END db_setup]

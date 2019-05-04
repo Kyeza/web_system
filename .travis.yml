@@ -13,6 +13,13 @@ install:
   - pip install -r requirements.txt
 
 before_script:
-  - mysql -e 'create database test_payroll_schema;' -u root
+  - service mysql stop
+  - mysqld_safe --skip-grant-tables &
+  - mysql
+  - UPDATE mysql.user SET Password=PASSWORD('Kam12345') WHERE User='root';
+  - FLUSH PRIVILEGES;
+  - exit;
+  - mysqladmin -u root -p Kam12345 shutdown
+  - service mysql start
 
 script: python manage.py test
