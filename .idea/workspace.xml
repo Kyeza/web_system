@@ -4,9 +4,8 @@
     <bookmark url="file://$PROJECT_DIR$/hr_system/settings.py" line="19" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Changed .travis.yml config v6">
+    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Changed .travis.yml config v8">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hr_system/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -76,20 +75,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="110" column="33" selection-start-line="110" selection-start-column="24" selection-end-line="110" selection-end-column="33" />
+            <state relative-caret-position="216">
+              <caret line="110" column="25" selection-start-line="110" selection-start-column="25" selection-end-line="110" selection-end-column="25" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.travis.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="22" column="23" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
+            <state relative-caret-position="36">
+              <caret line="5" column="14" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -171,8 +170,8 @@
         <option value="$PROJECT_DIR$/users/tests.py" />
         <option value="$PROJECT_DIR$/users/views.py" />
         <option value="$PROJECT_DIR$/hr_system/test_settings.py" />
-        <option value="$PROJECT_DIR$/hr_system/settings.py" />
         <option value="$PROJECT_DIR$/.travis.yml" />
+        <option value="$PROJECT_DIR$/hr_system/settings.py" />
       </list>
     </option>
   </component>
@@ -363,7 +362,7 @@
       <workItem from="1556724344456" duration="599000" />
       <workItem from="1556878701175" duration="5301000" />
       <workItem from="1556944067132" duration="1597000" />
-      <workItem from="1556989866339" duration="3679000" />
+      <workItem from="1556989866339" duration="4212000" />
     </task>
     <task id="LOCAL-00001" summary="-Worked on payroll reports generation">
       <created>1555915760043</created>
@@ -435,7 +434,21 @@
       <option name="project" value="LOCAL" />
       <updated>1556992841086</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="- Changed .travis.yml config v7">
+      <created>1556993570764</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1556993570764</updated>
+    </task>
+    <task id="LOCAL-00012" summary="- Changed .travis.yml config v8">
+      <created>1556993801127</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1556993801127</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -471,20 +484,20 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22530000" />
+    <option name="totallyTimeSpent" value="23063000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13691376" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13691376" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="0" visible="true" weight="0.31239936" />
+      <window_info anchor="bottom" id="Run" order="0" sideWeight="0.49924356" visible="true" weight="0.31239936" />
       <window_info anchor="bottom" x="862" y="31" width="503" height="736" id="Debug" order="1" type="WINDOWED" weight="0.7414861" />
       <window_info anchor="bottom" x="0" y="23" width="1366" height="745" id="manage.py@hr_system" order="2" type="WINDOWED" visible="true" weight="0.32817337" />
       <window_info anchor="bottom" id="Database Console" order="3" weight="0.32954547" />
-      <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="4" sideWeight="0.50075644" side_tool="true" visible="true" weight="0.31239936" />
       <window_info anchor="bottom" id="Database Changes" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="6" />
       <window_info anchor="bottom" x="1" y="31" width="728" height="736" id="Python Console" order="7" type="WINDOWED" weight="0.32817337" />
@@ -542,7 +555,9 @@
     <MESSAGE value="- Changed .travis.yml config v4" />
     <MESSAGE value="- Changed .travis.yml config v5" />
     <MESSAGE value="- Changed .travis.yml config v6" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Changed .travis.yml config v6" />
+    <MESSAGE value="- Changed .travis.yml config v7" />
+    <MESSAGE value="- Changed .travis.yml config v8" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Changed .travis.yml config v8" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -830,17 +845,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="110" column="33" selection-start-line="110" selection-start-column="24" selection-end-line="110" selection-end-column="33" />
+        <state relative-caret-position="36">
+          <caret line="5" column="14" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.travis.yml">
+    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="22" column="23" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
+        <state relative-caret-position="216">
+          <caret line="110" column="25" selection-start-line="110" selection-start-column="25" selection-end-line="110" selection-end-column="25" />
         </state>
       </provider>
     </entry>
