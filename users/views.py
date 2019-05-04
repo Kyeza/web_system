@@ -1,4 +1,5 @@
 from decimal import Decimal
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,6 +21,8 @@ from users.models import Employee, PayrollProcessors, TerminatedEmployees, CostC
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
 
+logger = logging.getLogger(__name__)
+
 
 def search_form(request):
     object_list = []
@@ -40,6 +43,7 @@ def search_form(request):
 
 @login_required
 def register_employee(request):
+    logger.debug(f'{request.user} started registration process')
     if request.method == 'POST':
         user_creation_form = StaffCreationForm(request.POST)
         profile_creation_form = ProfileCreationForm(request.POST, request.FILES)
@@ -227,7 +231,7 @@ class RecruitedEmployeeListView(LoginRequiredMixin, ListView):
         'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
         'first_account_number', 'second_account_number', 'first_bank_percentage',
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship'
+        'kin_relationship',
     ]
     paginate_by = 10
 

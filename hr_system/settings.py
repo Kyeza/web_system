@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'payroll-236416.appspot.com']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -41,21 +41,8 @@ INSTALLED_APPS = [
     'support_data.apps.SupportDataConfig',
     'reports.apps.ReportsConfig',
     'crispy_forms',
-    'django_tables2',
-    'django_filters',
     'bootstrap4',
-    'haystack',
 ]
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack_books',
-    },
-}
-
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -114,11 +101,16 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': 'SET default_storage_engine=INNODB',
+                'sql_mode': 'STRICT_TRANS_TABLES',
+                'isolation_level': 'read committed'
+            },
             'NAME': 'payroll_schema',
             'USER': 'root',
             'PASSWORD': 'Kam12345',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
         }
     }
 # [END db_setup]
@@ -172,3 +164,30 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'payroll:index'
 
 AUTH_USER_MODEL = 'users.User'
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_logger': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['default'],
+#             'level': 'DEBUG',
+#             'propagate': True
+#         },
+#         'hr_system.users.views': {
+#             'handlers': ['default'],
+#             'level': 'DEBUG',
+#             'propagate': True
+#         },
+#     },
+# }

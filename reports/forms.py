@@ -36,6 +36,7 @@ class ReportGeneratorForm(forms.Form):
     REPORTS = (
         ('NSSF', 'NSSF'),
         ('PAYE', 'PAYE'),
+        ('BANK', 'Bank'),
         ('SUMMARY', 'Summary report/Pay Slip'),
     )
     _month = datetime.now().month

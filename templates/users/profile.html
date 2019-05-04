@@ -4,6 +4,10 @@
 {% block content %}
     <form id="registrationForm" class="w-100" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+
+        {{ user_update_form.errors }}
+        {{ profile_update_form.errors }}
+
         <div class="d-flex w-100">
             <div class="p-2 w-75 m-3 card" style="background-color: #eeeeee;">
                 <div class="card d-flex flex-row align-items-center mb-3"
@@ -238,3 +242,34 @@
         </div>
     </form>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        $(':radio[name="social_security"]').change(function() {
+            let value = $(this).filter(':checked').val();
+            console.log(value);
+            if(value === 'YES') {
+                $(':input[name="social_security_number"]').attr('disabled', false)
+            } else {
+                $(':input[name="social_security_number"]').attr('disabled', true)
+            }
+        });
+
+        b1 = document.getElementById("id_first_bank_percentage");
+        b2 = document.getElementById("id_second_bank_percentage");
+
+        b1.addEventListener("keyup", function () {
+            if (b1.value <= 100) {
+                 b2.value = 100 - b1.value
+            }
+        });
+
+        b2.addEventListener("keyup", function () {
+            if (b2.value <= 100) {
+                 b1.value = 100 - b2.value
+            }
+        });
+
+        console.log(b1.value);
+        console.log(b2.value);
+    </script>
+{% endblock scripts %}

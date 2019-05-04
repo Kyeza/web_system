@@ -14,6 +14,8 @@
                 {% include 'reports/generated_paye_report.html' %}
             {% elif report == 'Pay Slip' %}
                 {% include 'reports/generated_payslip_report.html' %}
+            {% elif report == 'BANK' %}
+                {% include 'reports/generated_bank_report.html' %}
             {% endif %}
         </div>
     </div>

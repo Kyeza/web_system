@@ -104,11 +104,12 @@ def update_summary_report(request, pp, user):
     return render(request, 'reports/update_summary.html', context)
 
 
-@login_required
 def generate(payroll_periods, report):
     results = {}
     for period in payroll_periods:
-        if report == 'SUMMARY':
+        if report == 'BANK':
+            processors = PayrollProcessors.objects.filter(payroll_period=period)
+        elif report == 'SUMMARY':
             processors = PayrollProcessors.objects.filter(payroll_period=period)
         else:
             processors = PayrollProcessors.objects.filter(payroll_period=period) \
@@ -133,7 +134,6 @@ def generate_reports(request):
             report = form.cleaned_data.get('report_type')
             year = form.cleaned_data.get('year')
             selected_month = form.cleaned_data.get('month')
-
             payroll_periods = payroll_center.payrollperiod_set.filter(year=year)
 
             data = payroll_periods.filter(month=selected_month)
@@ -149,7 +149,7 @@ def generate_reports(request):
                 'results': results,
             }
 
-            if report == 'SUMMARY' or report == 'PAYE':
+            if report == 'SUMMARY' or report == 'PAYE' or report == 'BANK':
                 context['user_reports'] = ExTraSummaryReportInfo.objects.all()
 
             if report == 'PAYE':

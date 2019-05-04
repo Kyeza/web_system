@@ -87,14 +87,14 @@ class ProfileCreationForm(forms.ModelForm):
 
     # payroll info fields
     social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
-    social_security_number = forms.ChoiceField(required=False)
+    social_security_number = forms.CharField(required=False, disabled=True)
     payroll_center = forms.ModelChoiceField(queryset=PayrollCenter.objects.all(), required=False)
     bank_1 = forms.ModelChoiceField(queryset=Bank.objects.all(), required=False)
     bank_2 = forms.ModelChoiceField(queryset=Bank.objects.all(), required=False)
     first_account_number = forms.IntegerField(required=False)
     second_account_number = forms.IntegerField(required=False)
-    first_bank_percentage = forms.IntegerField(required=False)
-    second_bank_percentage = forms.IntegerField(required=False)
+    first_bank_percentage = forms.IntegerField(required=False, initial=0, max_value=100)
+    second_bank_percentage = forms.IntegerField(required=False, initial=0, max_value=100)
 
     # emergency contact fields
     kin_full_name = forms.CharField(required=False)
@@ -132,7 +132,7 @@ class ProfileUpdateForm(forms.ModelForm):
         self.fields['tin_number'].label = "TIN number"
 
     # bio-data fields
-    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), disabled=True)
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), disabled=True, required=False)
     id_number = forms.IntegerField(disabled=True)
     date_of_birth = forms.DateField(disabled=True)
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), disabled=True)
@@ -158,7 +158,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
     # payroll info fields
     social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
-    social_security_number = forms.ChoiceField(required=False)
+    social_security_number = forms.CharField(required=False, disabled=True)
     payroll_center = forms.ModelChoiceField(queryset=PayrollCenter.objects.all(), required=False)
     bank_1 = forms.ModelChoiceField(queryset=Bank.objects.all(), required=False)
     bank_2 = forms.ModelChoiceField(queryset=Bank.objects.all(), required=False)
@@ -178,7 +178,18 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = '__all__'
+        fields = [
+            'marital_status', 'mobile_number', 'id_number',
+            'passport_number', 'nationality', 'residential_address', 'district',
+            'date_of_birth', 'sex', 'image', 'user_group',
+            'duty_country', 'duty_station', 'department', 'job_title',
+            'appointment_date', 'contract_type', 'cost_centre', 'grade',
+            'gross_salary', 'currency', 'tin_number', 'social_security',
+            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
+            'first_account_number', 'second_account_number', 'first_bank_percentage',
+            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
+            'kin_relationship', 'dr_ac_code', 'cr_ac_code',
+        ]
 
 
 class EmployeeApprovalForm(ProfileUpdateForm):
@@ -187,7 +198,18 @@ class EmployeeApprovalForm(ProfileUpdateForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = '__all__'
+        exclude = [
+            'marital_status', 'mobile_number', 'id_number',
+            'passport_number', 'nationality', 'residential_address', 'district',
+            'date_of_birth', 'sex', 'image', 'user_group',
+            'duty_country', 'duty_station', 'department', 'job_title',
+            'appointment_date', 'contract_type', 'cost_centre', 'grade',
+            'gross_salary', 'currency', 'tin_number', 'social_security',
+            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
+            'first_account_number', 'second_account_number', 'first_bank_percentage',
+            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
+            'kin_relationship', 'dr_ac_code', 'cr_ac_code',
+        ]
 
 
 class TerminationForm(forms.ModelForm):
