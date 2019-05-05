@@ -19,6 +19,9 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
+admin.AdminSite.site_header = 'Payroll System Administration'
+admin.AdminSite.site_title = 'Payroll System Admin'
+
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),

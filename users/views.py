@@ -2,8 +2,8 @@ from decimal import Decimal
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -22,6 +22,14 @@ from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, Prof
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(levelname)s: %(asctime)s: %(module)s: %(message)s')
+
+file_handler = logging.FileHandler('logs/users/info.log')
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 
 def search_form(request):
@@ -42,20 +50,27 @@ def search_form(request):
 
 
 @login_required
+@permission_required(('users.add_user', 'users.add_employee'), raise_exception=True)
 def register_employee(request):
-    logger.debug(f'{request.user} started registration process')
     if request.method == 'POST':
         user_creation_form = StaffCreationForm(request.POST)
         profile_creation_form = ProfileCreationForm(request.POST, request.FILES)
+
+        logger.info(
+            f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data {profile_creation_form.is_valid()}')
+
         if user_creation_form.is_valid() and profile_creation_form.is_valid():
             user_instance = user_creation_form.save(commit=False)
             user_instance.save()
             user_group = Group.objects.get(pk=int(request.POST.get('user_group')))
             user_group.user_set.add(user_instance)
-            print(profile_creation_form.is_valid())
             user_profile_instance = profile_creation_form.save(commit=False)
             user_profile_instance.user = user_instance
             user_profile_instance.save()
+
+            logger.info(
+                f'Employee: {user_instance.get_full_name()} has been successfully created. Employee data: {profile_creation_form.cleaned_data}')
+
             messages.success(request, 'You have successfully created a new Employee')
             return redirect('users:new-employee')
     else:
@@ -95,6 +110,7 @@ def profile(request):
 
 
 @login_required
+@permission_required(('users.change_user', 'users.change_employee'), raise_exception=True)
 def user_update_profile(request, pk=None):
     prof = get_object_or_404(Employee, pk=pk)
     profile_user = prof.user
@@ -186,6 +202,7 @@ def reject_employee(request, pk=None):
 
 
 @login_required
+@permission_required('users.approve_employee', raise_exception=True)
 def approve_employee(request, pk=None):
     prof = get_object_or_404(Employee, pk=pk)
     profile_user = prof.user
@@ -204,6 +221,8 @@ def approve_employee(request, pk=None):
             # add user to PayrollProcessor
             add_user_to_payroll_processor(profile_user)
 
+            logger.info(f'{request.user} approved Employee {employee_profile.user}')
+
             messages.success(request, 'Employee has been approved')
             return redirect('users:employee-approval')
     else:
@@ -218,7 +237,8 @@ def approve_employee(request, pk=None):
     return render(request, 'users/_approve_employee.html', context)
 
 
-class RecruitedEmployeeListView(LoginRequiredMixin, ListView):
+class RecruitedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'users.approve_employee'
     model = Employee
     template_name = 'users/_recruited_employee_list.html'
     fields = [
@@ -231,7 +251,7 @@ class RecruitedEmployeeListView(LoginRequiredMixin, ListView):
         'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
         'first_account_number', 'second_account_number', 'first_bank_percentage',
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship',
+        'kin_relationship', 'dr_ac_code', 'cr_ac_code'
     ]
     paginate_by = 10
 
@@ -239,7 +259,8 @@ class RecruitedEmployeeListView(LoginRequiredMixin, ListView):
         return Employee.objects.filter(employment_status='Recruit').order_by('-appointment_date')
 
 
-class ApprovedEmployeeListView(LoginRequiredMixin, ListView):
+class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ('users.change_user', 'users.change_employee')
     model = Employee
     template_name = 'users/_approved_employee_list.html'
     fields = [
@@ -257,35 +278,7 @@ class ApprovedEmployeeListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        employees = Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
-        query = self.request.GET.get('q')
-        if query:
-            try:
-                if employees.filter(user__first_name__icontains=query):
-                    return employees.filter(user__first_name__icontains=query)
-                elif employees.filter(user__last_name__icontains=query):
-                    return employees.filter(user__last_name__icontains=query)
-                elif employees.filter(user__email__icontains=query):
-                    return employees.filter(user__email__icontains=query)
-                elif employees.filter(mobile_number=query):
-                    return employees.filter(mobile_number=query)
-                elif employees.filter(contract_type=query):
-                    return employees.filter(contract_type__icontains=query)
-                elif employees.filter(duty_country=query):
-                    return employees.filter(duty_country=query)
-                elif employees.filter(job_title__icontains=query):
-                    return employees.filter(job_title__icontains=query)
-                elif employees.filter(nationality=query):
-                    return employees.filter(nationality=query)
-                elif employees.filter(department=query):
-                    return employees.filter(department=query)
-                elif employees.filter(bank_1=query):
-                    return employees.filter(bank_1=query)
-                else:
-                    return employees
-            except ValueError:
-                return employees
-        return employees
+        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
 
 
 class TerminatedEmployeeListView(LoginRequiredMixin, ListView):

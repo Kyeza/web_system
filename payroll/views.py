@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.detail import DetailView
@@ -16,7 +16,8 @@ def index(request):
     return render(request, 'payroll/index.html')
 
 
-class PayrollCenterCreate(LoginRequiredMixin, CreateView):
+class PayrollCenterCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = 'payroll.add_payrollcenter'
     model = PayrollCenter
     fields = ['name', 'country', 'organization', 'description']
 
@@ -26,7 +27,8 @@ class PayrollCenterCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-class PayrollCenterUpdate(LoginRequiredMixin, UpdateView):
+class PayrollCenterUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = 'payroll.change_payrollcenter'
     model = PayrollCenter
     fields = ['name', 'country', 'organization', 'description']
 
@@ -36,7 +38,8 @@ class PayrollCenterUpdate(LoginRequiredMixin, UpdateView):
         return context
 
 
-class PayrollCenterDetailView(LoginRequiredMixin, DetailView):
+class PayrollCenterDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    permission_required = 'payroll.view_payrollcenter'
     model = PayrollCenter
     fields = ['name', 'country', 'organization', 'description']
 
@@ -46,13 +49,14 @@ class PayrollCenterListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
 
-class PayrollCenterStaffListView(LoginRequiredMixin, ListView):
+class PayrollCenterStaffListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = PayrollCenter
     template_name = 'payroll/payroll_center_staff_list.html'
     paginate_by = 10
 
 
-class PayrollPeriodCreate(LoginRequiredMixin, CreateView):
+class PayrollPeriodCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = 'payroll.add_payrollperiod'
     model = PayrollPeriod
     form_class = PayrollPeriodCreationForm
 
@@ -68,7 +72,8 @@ class PayrollPeriodCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PayrollPeriodUpdate(LoginRequiredMixin, UpdateView):
+class PayrollPeriodUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = 'payroll.change_payrollperiod'
     model = PayrollPeriod
     fields = ['payroll_center', 'month', 'year', 'status']
 
@@ -78,12 +83,14 @@ class PayrollPeriodUpdate(LoginRequiredMixin, UpdateView):
         return context
 
 
-class PayrollPeriodDetailView(LoginRequiredMixin, DetailView):
+class PayrollPeriodDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    permission_required = 'payroll.view_payrollperiod'
     model = PayrollPeriod
     fields = ['payroll_center', 'month', 'year', 'status']
 
 
-class PayrollPeriodListView(LoginRequiredMixin, ListView):
+class PayrollPeriodListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'payroll.view_payrollperiod'
     model = PayrollPeriod
     fields = ['payroll_center', 'month', 'year', 'status']
 
@@ -93,7 +100,8 @@ class PayrollPeriodListView(LoginRequiredMixin, ListView):
         return context
 
 
-class PayrollPeriodCloseListView(LoginRequiredMixin, ListView):
+class PayrollPeriodCloseListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'payroll.close_payrollperiod'
     model = PayrollPeriod
     template_name = 'payroll/payrollperiod_close_list.html'
     fields = ['payroll_center', 'month', 'year', 'status']
@@ -120,7 +128,8 @@ def close_payroll_period(request, pk):
         return redirect('payroll:close-payroll-period-list')
 
 
-class PayrollPeriodForProcessing(LoginRequiredMixin, ListView):
+class PayrollPeriodForProcessing(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'payroll.process_payrollperiod'
     model = PayrollPeriod
     template_name = 'payroll/payrollperiod_process_list.html'
     fields = ['payroll_center', 'month', 'year', 'status']
@@ -135,7 +144,7 @@ class PayrollPeriodForProcessing(LoginRequiredMixin, ListView):
         return PayrollPeriod.objects.filter(status='OPEN').all().order_by('id')
 
 
-class EarningAndDeductionCreate(LoginRequiredMixin, CreateView):
+class EarningAndDeductionCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
 
@@ -145,9 +154,9 @@ class EarningAndDeductionCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-class EarningAndDeductionUpdate(LoginRequiredMixin, UpdateView):
+class EarningAndDeductionUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = EarningDeductionType
-    fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
+    fields = ['ed_type', 'description', 'ed_category', PermissionRequiredMixin, 'recurrent', 'taxable']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -155,18 +164,18 @@ class EarningAndDeductionUpdate(LoginRequiredMixin, UpdateView):
         return context
 
 
-class EarningAndDeductionDetailView(LoginRequiredMixin, DetailView):
+class EarningAndDeductionDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
 
 
-class EarningAndDeductionListView(LoginRequiredMixin, ListView):
+class EarningAndDeductionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = EarningDeductionType
-    fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
+    fields = ['ed_type', 'description', 'ed_category', PermissionRequiredMixin, 'recurrent', 'taxable']
     paginate_by = 10
 
 
-class PayrollCenterEdsCreate(LoginRequiredMixin, CreateView):
+class PayrollCenterEdsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
 
@@ -176,7 +185,7 @@ class PayrollCenterEdsCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-class PayrollCenterEdsUpdate(LoginRequiredMixin, UpdateView):
+class PayrollCenterEdsUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
 
@@ -186,23 +195,23 @@ class PayrollCenterEdsUpdate(LoginRequiredMixin, UpdateView):
         return context
 
 
-class PayrollCenterEdsDetailView(LoginRequiredMixin, DetailView):
+class PayrollCenterEdsDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
 
 
-class PayrollCenterEdsListView(LoginRequiredMixin, ListView):
+class PayrollCenterEdsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
     paginate_by = 10
 
 
-class LSTListView(LoginRequiredMixin, ListView):
+class LSTListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = LSTRates
     fields = ['lower_boundary', 'upper_boundary', 'fixed_amount', 'rate', 'country']
 
 
-class BankCreate(LoginRequiredMixin, CreateView):
+class BankCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Bank
     fields = ['bank', 'sort_code', 'description']
 

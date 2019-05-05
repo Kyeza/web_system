@@ -81,6 +81,12 @@ class PayrollPeriod(models.Model):
     def __str__(self):
         return f'{self.payroll_center.name}-{self.payroll_key}'
 
+    class Meta:
+        permissions = [
+            ("close_payrollperiod", "Can close payroll period"),
+            ("process_payrollperiod", "Can process payroll period"),
+        ]
+
 
 class EarningDeductionCategory(models.Model):
     """docstring for EarningDeductionCategory"""

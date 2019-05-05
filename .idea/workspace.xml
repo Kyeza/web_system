@@ -4,9 +4,28 @@
     <bookmark url="file://$PROJECT_DIR$/hr_system/settings.py" line="19" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Changed .travis.yml config v9">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Added README">
+      <change afterPath="$PROJECT_DIR$/payroll/migrations/0003_auto_20190505_1428.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/403.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin/base_site.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/migrations/0002_auto_20190505_1233.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hr_system/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190430_1034.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190505_1215.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/migrations/0002_auto_20190430_1034.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0002_auto_20190505_1215.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/users/_approve_employee.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_approve_employee.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/users/_recruited_employee_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_recruited_employee_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/users/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,32 +50,18 @@
     <expand>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="MySQL - @localhost" type="feb32156:DbDataSourceImpl" />
       </path>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="MySQL - @localhost" type="feb32156:DbDataSourceImpl" />
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
       </path>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="MySQL - @localhost" type="feb32156:DbDataSourceImpl" />
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="payroll_schema: schema" type="c314c289:MysqlImplModel$Schema" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="payroll_schema: schema" type="c314c289:MysqlImplModel$Schema" />
-        <item name="payroll_bank: table" type="98d5ac3d:MysqlImplModel$Table" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="payroll_schema: schema" type="c314c289:MysqlImplModel$Schema" />
-        <item name="users_employee: table" type="98d5ac3d:MysqlImplModel$Table" />
+        <item name="payroll_schema: schema" type="76f4a085:MysqlImplModel$Schema" />
       </path>
     </expand>
     <select />
@@ -66,51 +71,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/users/tests.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="8" column="50" selection-start-line="8" selection-start-column="50" selection-end-line="8" selection-end-column="50" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="110" column="25" selection-start-line="110" selection-start-column="25" selection-end-line="110" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.travis.yml">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="399">
-                <caret line="31" column="32" selection-start-line="31" selection-start-column="32" selection-end-line="31" selection-end-column="32" />
-              </first_editor>
-              <second_editor />
+        <entry file="file://$PROJECT_DIR$/payroll/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="92" column="46" selection-start-line="92" selection-start-column="46" selection-end-line="92" selection-end-column="54" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirements.txt">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/payroll/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="116">
+              <caret line="20" column="57" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="57" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/users/views.py">
+        <entry file="file://$PROJECT_DIR$/templates/payroll/payrollperiod_close_list.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="23" column="36" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="36" />
+            <state relative-caret-position="-594" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/payroll/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="378">
+              <caret line="86" column="50" selection-start-line="86" selection-start-column="50" selection-end-line="86" selection-end-column="50" />
             </state>
           </provider>
         </entry>
@@ -120,24 +110,54 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ForeignKey</find>
-      <find>process_payroll-period</find>
-      <find>reverse</find>
-      <find>process_payroll_period</find>
-      <find>haystack</find>
-      <find>LOGG</find>
+      <find>StaffUpdateForm</find>
+      <find>EmployeeApprovalForm</find>
+      <find>approve_employee</find>
+      <find>django.contrib.admin.AdminSite</find>
+      <find>site_header</find>
+      <find>site_title</find>
+      <find>admin.py</find>
+      <find>layout.css</find>
+      <find>header</find>
+      <find>background</find>
+      <find>#417690</find>
+      <find>79aec8</find>
+      <find>a:focus</find>
+      <find>#searchbar</find>
+      <find>#searchbar:focus</find>
+      <find>#searchbar:</find>
+      <find>border-color</find>
+      <find>selected</find>
+      <find>branding</find>
+      <find>#changelist</find>
+      <find>input.default</find>
+      <find>#609ab6</find>
+      <find>input[type=submit].default</find>
+      <find>changelist</find>
+      <find>login_re</find>
+      <find>permission_denied</find>
+      <find>decorators</find>
+      <find>django.contrib.auth.decorators</find>
+      <find>approve</find>
+      <find>PayrollPeriodListView</find>
     </findStrings>
     <replaceStrings>
       <replace>processors</replace>
       <replace>CharField</replace>
+      <replace>E64C47</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>D:\projects-work-space\PycharmProjects\hr_system\static\admin</dir>
+      <dir>D:\projects-work-space\PycharmProjects\hr_system\Lib\site-packages\django\contrib\admin\static\admin</dir>
+      <dir>D:\projects-work-space\PycharmProjects\hr_system\users</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -160,27 +180,37 @@
         <option value="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" />
         <option value="$PROJECT_DIR$/templates/reports/update_summary.html" />
         <option value="$PROJECT_DIR$/users/search_indexes.py" />
-        <option value="$PROJECT_DIR$/hr_system/urls.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/reports/forms.py" />
         <option value="$PROJECT_DIR$/templates/reports/generated_report.html" />
         <option value="$PROJECT_DIR$/reports/views.py" />
         <option value="$PROJECT_DIR$/templates/reports/generated_bank_report.html" />
-        <option value="$PROJECT_DIR$/users/models.py" />
-        <option value="$PROJECT_DIR$/templates/users/profile.html" />
         <option value="$PROJECT_DIR$/templates/users/register.html" />
-        <option value="$PROJECT_DIR$/users/forms.py" />
         <option value="$PROJECT_DIR$/reports/urls.py" />
         <option value="$PROJECT_DIR$/hr_system/wsgi.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/pytest.ini" />
         <option value="$PROJECT_DIR$/users/tests/test_urls.py" />
         <option value="$PROJECT_DIR$/users/tests.py" />
-        <option value="$PROJECT_DIR$/users/views.py" />
         <option value="$PROJECT_DIR$/hr_system/test_settings.py" />
-        <option value="$PROJECT_DIR$/hr_system/settings.py" />
         <option value="$PROJECT_DIR$/.travis.yml" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/templates/users/profile.html" />
+        <option value="$PROJECT_DIR$/templates/users/_approve_employee.html" />
+        <option value="$PROJECT_DIR$/users/forms.py" />
+        <option value="$PROJECT_DIR$/templates/users/_recruited_employee_list.html" />
+        <option value="$PROJECT_DIR$/hr_system/settings.py" />
+        <option value="$PROJECT_DIR$/logs/users/info.log" />
+        <option value="$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/sites.py" />
+        <option value="$PROJECT_DIR$/hr_system/urls.py" />
+        <option value="$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/base.css" />
+        <option value="$PROJECT_DIR$/static/admin/css/base.css" />
+        <option value="$PROJECT_DIR$/templates/admin/base_site.html" />
+        <option value="$PROJECT_DIR$/users/models.py" />
+        <option value="$PROJECT_DIR$/users/views.py" />
+        <option value="$PROJECT_DIR$/templates/403.html" />
+        <option value="$PROJECT_DIR$/payroll/models.py" />
+        <option value="$PROJECT_DIR$/payroll/views.py" />
       </list>
     </option>
   </component>
@@ -208,12 +238,7 @@
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="users" type="462c0819:PsiDirectoryNode" />
+              <item name="payroll" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -222,6 +247,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SearchEverywhereHistoryKey" value="form&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;model&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;forms&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;process.html&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/users/process_payroll_period.html&#10;views&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/views.py&#10;base.html&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/base.html&#10;for&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/forms.py&#10;bott&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/partials/botton_navigation_bar.html&#10;boot&#9;null&#9;null&#10;users/u&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/urls.py&#10;mod&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;mo&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/models.py&#10;urls&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/urls.py&#10;report_&#9;null&#9;null&#10;users&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/users/templatetags/users_extras.py&#10;report&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/reports/templatetags/reports_extras.py&#10;ge&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/reports/generate_report.html&#10;generated&#9;FILE&#9;file://D:/projects-work-space/PycharmProjects/hr_system/templates/reports/generated_report.html" />
@@ -229,7 +255,7 @@
     <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="JavaScript 1.8" />
     <property name="database.console.LAST_STATE" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/hr_system" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/templates/admin" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -239,6 +265,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\projects-work-space\PycharmProjects\hr_system\templates\admin" />
       <recent name="D:\projects-work-space\PycharmProjects\hr_system\hr_system" />
       <recent name="D:\projects-work-space\PycharmProjects\hr_system" />
       <recent name="D:\projects-work-space\PycharmProjects\hr_system\templates\reports" />
@@ -371,7 +398,8 @@
       <workItem from="1556724344456" duration="599000" />
       <workItem from="1556878701175" duration="5301000" />
       <workItem from="1556944067132" duration="1597000" />
-      <workItem from="1556989866339" duration="6076000" />
+      <workItem from="1556989866339" duration="12662000" />
+      <workItem from="1557008199710" duration="20202000" />
     </task>
     <task id="LOCAL-00001" summary="-Worked on payroll reports generation">
       <created>1555915760043</created>
@@ -464,7 +492,14 @@
       <option name="project" value="LOCAL" />
       <updated>1556994164354</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="- Added README">
+      <created>1556995991084</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1556995991084</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -500,13 +535,12 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24927000" />
+    <option name="totallyTimeSpent" value="51715000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13691376" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18154311" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="0" sideWeight="0.49924356" visible="true" weight="0.31239936" />
@@ -516,7 +550,7 @@
       <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50075644" side_tool="true" weight="0.31239936" />
       <window_info anchor="bottom" id="Database Changes" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="6" />
-      <window_info anchor="bottom" x="1" y="31" width="728" height="736" id="Python Console" order="7" type="WINDOWED" weight="0.32817337" />
+      <window_info active="true" anchor="bottom" x="0" y="23" width="1366" height="715" id="Python Console" maximized="true" order="7" type="WINDOWED" visible="true" weight="0.32817337" />
       <window_info anchor="bottom" x="1" y="31" width="681" height="706" id="Terminal" order="8" type="WINDOWED" weight="0.32817337" />
       <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="10" />
@@ -574,18 +608,8 @@
     <MESSAGE value="- Changed .travis.yml config v7" />
     <MESSAGE value="- Changed .travis.yml config v8" />
     <MESSAGE value="- Changed .travis.yml config v9" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Changed .travis.yml config v9" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/users/views.py</url>
-          <line>102</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="- Added README" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Added README" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/hr_system$Test__users_tests_EmployeeModelTest_test_register_new_employee.coverage" NAME="Test: users.tests.EmployeeModelTest.test_register_new_employee Coverage Results" MODIFIED="1556880695019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -593,175 +617,6 @@
     <SUITE FILE_PATH="coverage/hr_system$Test__.coverage" NAME="Test:  Coverage Results" MODIFIED="1556887280559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://826a75f1-82a0-45a4-9a94-5466155519e0/schema/payroll_schema/table/payroll_payrollcentereds">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/templatetags/reports_extras.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="24" column="16" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/utils.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.js" />
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_nssf_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/payroll/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="73" column="1" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/partials/report.html" />
-    <entry file="das://826a75f1-82a0-45a4-9a94-5466155519e0/schema/payroll_schema/table/payroll_earningdeductiontype">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/summary_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="27" column="44" selection-start-line="27" selection-start-column="44" selection-end-line="27" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/partials/custom_css.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="265" column="19" selection-start-line="265" selection-start-column="19" selection-end-line="265" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_summary_report.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_payslip_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="82">
-          <caret line="9" column="71" selection-start-line="9" selection-start-column="60" selection-end-line="9" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/826a75f1-82a0-45a4-9a94-5466155519e0/console.sql">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="das://826a75f1-82a0-45a4-9a94-5466155519e0/schema/payroll_schema/table/support_data_nationality">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generate_report.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/core/handlers/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="112" selection-start-line="112" selection-end-line="112" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/threading.py" />
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/selectors.py" />
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/subprocess.py" />
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/bootstrap4/bootstrap.py" />
-    <entry file="file://$PROJECT_DIR$/templates/partials/botton_navigation_bar.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="103" column="51" selection-start-line="103" selection-start-column="51" selection-end-line="103" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/update_summary.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="30" column="100" selection-start-line="30" selection-start-column="100" selection-end-line="30" selection-end-column="100" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/search/Employee_text.txt" />
-    <entry file="file://$PROJECT_DIR$/users/search_indexes.py" />
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_paye_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="46" column="32" lean-forward="true" selection-start-line="46" selection-start-column="32" selection-end-line="46" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="17" column="62" selection-start-line="17" selection-start-column="62" selection-end-line="17" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/reports/generated_bank_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-306">
-          <caret line="21" column="35" lean-forward="true" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="41" lean-forward="true" selection-start-line="7" selection-start-column="41" selection-end-line="7" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reports/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="38" column="17" lean-forward="true" selection-start-line="38" selection-start-column="17" selection-end-line="38" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/users/process_payroll_period.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1896" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/users/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="64" column="95" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/users/register.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="57" selection-start-line="12" selection-start-column="57" selection-end-line="12" selection-end-column="57" />
-          <folding>
-            <element signature="e#15948#16440#0#HTML" expanded="true" />
-            <element signature="e#16504#16839#0#HTML" expanded="true" />
-            <element signature="e#16956#16983#0#HTML" expanded="true" />
-            <element signature="e#17236#17289#0#HTML" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2070">
@@ -769,25 +624,6 @@
           <folding>
             <element signature="e#4655#5113#0#HTML" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/users/profile.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
-          <folding>
-            <element signature="e#15070#15405#0#HTML" expanded="true" />
-            <element signature="e#15600#15703#0#HTML" expanded="true" />
-            <element signature="e#15756#15859#0#HTML" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/users/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3780">
-          <caret line="210" column="59" selection-start-line="210" selection-start-column="59" selection-end-line="210" selection-end-column="59" />
         </state>
       </provider>
     </entry>
@@ -809,20 +645,6 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/pytest.ini" />
-    <entry file="file://$PROJECT_DIR$/users/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="57" selection-start-line="12" selection-start-column="57" selection-end-line="12" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="21" column="9" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/users/tests/test_urls.py" />
     <entry file="file://$USER_HOME$/Envs/payroll/Lib/site-packages/django/core/management/base.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -831,40 +653,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/users/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="50" selection-start-line="8" selection-start-column="50" selection-end-line="8" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/users/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="23" column="36" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/test_settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="109" column="27" selection-start-line="109" selection-start-column="27" selection-end-line="109" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="110" column="25" selection-start-line="110" selection-start-column="25" selection-end-line="110" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.travis.yml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/test_settings.py" />
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -872,6 +664,290 @@
             <caret line="31" column="32" selection-start-line="31" selection-start-column="32" selection-end-line="31" selection-end-column="32" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="50" selection-start-line="8" selection-start-column="50" selection-end-line="8" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://826a75f1-82a0-45a4-9a94-5466155519e0/schema/payroll_schema/table/support_data_nationality" />
+    <entry file="das://85a9aa1f-0472-4131-a427-edc6a8c36a20/schema/payroll_schema/table/support_data_country">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true">
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/85a9aa1f-0472-4131-a427-edc6a8c36a20/console.sql">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="22" column="71" lean-forward="true" selection-start-line="22" selection-start-column="55" selection-end-line="22" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/partials/botton_navigation_bar.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="19" column="82" selection-start-line="19" selection-start-column="65" selection-end-line="19" selection-end-column="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/register.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="591">
+          <caret line="36" column="27" lean-forward="true" selection-start-line="12" selection-start-column="16" selection-end-line="36" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-102">
+          <caret line="200" column="14" selection-start-line="200" selection-start-column="14" selection-end-line="200" selection-end-column="14" />
+          <folding>
+            <element signature="e#5266#6032#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/_approve_employee.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="699">
+          <caret line="237" column="34" selection-start-line="237" selection-start-column="34" selection-end-line="237" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/profile.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="411">
+          <caret line="245" column="34" lean-forward="true" selection-start-line="234" selection-start-column="28" selection-end-line="245" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/_recruited_employee_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="22" column="61" selection-start-line="22" selection-start-column="61" selection-end-line="22" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="192" column="3" lean-forward="true" selection-start-line="167" selection-start-column="2" selection-end-line="192" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logs/users/info.log">
+      <provider editor-type-id="text-editor" />
+      <provider selected="true" editor-type-id="LogFileEditorProvider" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/sites.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-100">
+          <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="37" />
+          <folding>
+            <element signature="e#10986#11666#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/views/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-395" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/admin/css/widgets.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="443" column="16" selection-start-line="443" selection-start-column="16" selection-end-line="443" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/widgets.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="443" column="16" selection-start-line="443" selection-start-column="16" selection-end-line="443" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/dashboard.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-215" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/responsive.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="953" column="18" selection-start-line="953" selection-start-column="8" selection-end-line="953" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/templates/admin/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-54" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/payroll/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/vendor/select2/select2.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1612">
+          <caret line="483" column="2" selection-start-line="483" selection-start-column="2" selection-end-line="483" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/js/actions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="111" column="16" selection-start-line="111" selection-start-column="16" selection-end-line="111" selection-end-column="16" />
+          <folding>
+            <element signature="e#4664#4717#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/base.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="865" column="9" selection-start-line="865" selection-start-column="1" selection-end-line="865" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/admin/static/admin/css/changelists.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="109" column="46" selection-start-line="109" selection-start-column="26" selection-end-line="109" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/admin/css/base.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="480" selection-start-line="480" selection-end-line="485" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/base_site.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="31" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="22" column="51" selection-start-line="22" selection-start-column="51" selection-end-line="22" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/auth/mixins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="12" column="4" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/django/contrib/auth/decorators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="73">
+          <caret line="59" column="26" lean-forward="true" selection-start-line="59" selection-start-column="26" selection-end-line="59" selection-end-column="26" />
+          <folding>
+            <element signature="e#337#1578#0" expanded="true" />
+            <element signature="e#608#1557#0" expanded="true" />
+            <element signature="e#691#1528#0" expanded="true" />
+            <element signature="e#1677#2050#0" expanded="true" />
+            <element signature="e#2403#2829#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://85a9aa1f-0472-4131-a427-edc6a8c36a20/schema/payroll_schema/table/auth_group_permissions">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true">
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="20" column="14" lean-forward="true" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/users/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="52" column="32" selection-start-line="52" selection-start-column="32" selection-end-line="52" selection-end-column="32" />
+          <folding>
+            <element signature="e#1945#3368#0" expanded="true" />
+            <element signature="e#3413#4292#0" expanded="true" />
+            <element signature="e#4358#5393#0" expanded="true" />
+            <element signature="e#9442#9651#0" expanded="true" />
+            <element signature="e#12001#12090#0" expanded="true" />
+            <element signature="e#13380#13396#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/_rejected_employee_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-216" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/403.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="26" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/payroll/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="86" column="50" selection-start-line="86" selection-start-column="50" selection-end-line="86" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/payroll/payrollperiod_close_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-594" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/payroll/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="20" column="57" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/payroll/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="92" column="46" selection-start-line="92" selection-start-column="46" selection-end-line="92" selection-end-column="54" />
         </state>
       </provider>
     </entry>

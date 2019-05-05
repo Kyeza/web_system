@@ -16,7 +16,10 @@ from .utils import get_image_filename
 
 
 class User(AbstractUser):
-    pass
+    class Meta:
+        permissions = [
+            ("approve_employee", "Can approve Employee"),
+        ]
 
 
 class CostCentre(models.Model):
@@ -98,7 +101,7 @@ class Employee(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return f'{self.user.get_full_name()}'
+        return f'{self.user}'
 
 
 class PayrollProcessors(models.Model):

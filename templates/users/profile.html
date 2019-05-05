@@ -19,6 +19,31 @@
                     <img class="p-2 rounded-circle" src="{{ profile_user.employee.image.url }}" alt=""
                          style="width: 105px; height: 105px;">
                 </div>
+                {% if user_creation_form.non_field_errors or profile_creation_form.non_field_errors or profile_creation_form.errors or user_creation_form.errors %}
+                    {% for error in profile_update_form.non_field_errors %}
+                        <div class="alert alert-info alert-dismissible fade show">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>{{ error }}</strong>
+                        </div>
+                    {% endfor %}
+                    {% for error in profile_update_form.errors %}
+                        <div class="alert alert-info alert-dismissible fade show">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>{{ error }}</strong>
+                        </div>
+                    {% endfor %}
+                    {% for error in user_update_form.non_field_errors %}
+                        <div class="alert alert-info alert-dismissible fade show">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                    {% for error in user_update_form.errors %}
+                        <div class="alert alert-info alert-dismissible fade show">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>{{ error }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div class="card p-3">
                     <fieldset class="form-group">
                         <ul class="nav nav-tabs" id="infoTab" role="tablist">

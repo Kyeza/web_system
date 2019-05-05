@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 
 from hr_system.constants import YES_OR_NO_TYPES
-from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType, PayrollPeriod, EarningDeductionCategory
+from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
@@ -105,7 +105,7 @@ class ProfileCreationForm(forms.ModelForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = '__all__'
+        exclude = ['user']
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -198,7 +198,7 @@ class EmployeeApprovalForm(ProfileUpdateForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        exclude = [
+        fields = [
             'marital_status', 'mobile_number', 'id_number',
             'passport_number', 'nationality', 'residential_address', 'district',
             'date_of_birth', 'sex', 'image', 'user_group',
