@@ -4,28 +4,8 @@
     <bookmark url="file://$PROJECT_DIR$/hr_system/settings.py" line="19" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Added README">
-      <change afterPath="$PROJECT_DIR$/payroll/migrations/0003_auto_20190505_1428.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/403.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/admin/base_site.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users/migrations/0002_auto_20190505_1233.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Implemented User roles and permissions to some endpoints">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hr_system/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190430_1034.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0002_auto_20190505_1215.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/payroll/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/migrations/0002_auto_20190430_1034.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/migrations/0002_auto_20190505_1215.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/support_data/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_approve_employee.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_approve_employee.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_recruited_employee_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_recruited_employee_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -74,8 +54,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/payroll/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="92" column="46" selection-start-line="92" selection-start-column="46" selection-end-line="92" selection-end-column="54" />
+            <state relative-caret-position="198">
+              <caret line="100" lean-forward="true" selection-start-line="100" selection-end-line="100" />
             </state>
           </provider>
         </entry>
@@ -399,7 +379,7 @@
       <workItem from="1556878701175" duration="5301000" />
       <workItem from="1556944067132" duration="1597000" />
       <workItem from="1556989866339" duration="12662000" />
-      <workItem from="1557008199710" duration="20202000" />
+      <workItem from="1557008199710" duration="20449000" />
     </task>
     <task id="LOCAL-00001" summary="-Worked on payroll reports generation">
       <created>1555915760043</created>
@@ -499,7 +479,14 @@
       <option name="project" value="LOCAL" />
       <updated>1556995991084</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="- Implemented User roles and permissions to some endpoints">
+      <created>1557057221557</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1557057221558</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -535,22 +522,23 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51715000" />
+    <option name="totallyTimeSpent" value="51962000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18154311" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="0" sideWeight="0.49924356" visible="true" weight="0.31239936" />
+      <window_info anchor="bottom" id="Run" order="0" sideWeight="0.49848714" visible="true" weight="0.31239936" />
       <window_info anchor="bottom" x="862" y="31" width="503" height="736" id="Debug" order="1" type="WINDOWED" weight="0.7414861" />
       <window_info anchor="bottom" x="0" y="23" width="1366" height="745" id="manage.py@hr_system" order="2" type="WINDOWED" visible="true" weight="0.32817337" />
       <window_info anchor="bottom" id="Database Console" order="3" weight="0.32954547" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50075644" side_tool="true" weight="0.31239936" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.5015129" side_tool="true" weight="0.31239936" />
       <window_info anchor="bottom" id="Database Changes" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="6" />
-      <window_info active="true" anchor="bottom" x="0" y="23" width="1366" height="715" id="Python Console" maximized="true" order="7" type="WINDOWED" visible="true" weight="0.32817337" />
+      <window_info anchor="bottom" x="0" y="23" width="1366" height="715" id="Python Console" maximized="true" order="7" type="WINDOWED" visible="true" weight="0.32817337" />
       <window_info anchor="bottom" x="1" y="31" width="681" height="706" id="Terminal" order="8" type="WINDOWED" weight="0.32817337" />
       <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="10" />
@@ -609,7 +597,8 @@
     <MESSAGE value="- Changed .travis.yml config v8" />
     <MESSAGE value="- Changed .travis.yml config v9" />
     <MESSAGE value="- Added README" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Added README" />
+    <MESSAGE value="- Implemented User roles and permissions to some endpoints" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Implemented User roles and permissions to some endpoints" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/hr_system$Test__users_tests_EmployeeModelTest_test_register_new_employee.coverage" NAME="Test: users.tests.EmployeeModelTest.test_register_new_employee Coverage Results" MODIFIED="1556880695019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -946,8 +935,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/payroll/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="92" column="46" selection-start-line="92" selection-start-column="46" selection-end-line="92" selection-end-column="54" />
+        <state relative-caret-position="198">
+          <caret line="100" lean-forward="true" selection-start-line="100" selection-end-line="100" />
         </state>
       </provider>
     </entry>
