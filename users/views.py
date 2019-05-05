@@ -21,16 +21,6 @@ from users.models import Employee, PayrollProcessors, TerminatedEmployees, CostC
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter('%(levelname)s: %(asctime)s: %(module)s: %(message)s')
-
-file_handler = logging.FileHandler('logs/users/info.log')
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-
 
 def search_form(request):
     object_list = []
@@ -56,8 +46,8 @@ def register_employee(request):
         user_creation_form = StaffCreationForm(request.POST)
         profile_creation_form = ProfileCreationForm(request.POST, request.FILES)
 
-        logger.info(
-            f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data {profile_creation_form.is_valid()}')
+        # logger.info(
+        #     f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data {profile_creation_form.is_valid()}')
 
         if user_creation_form.is_valid() and profile_creation_form.is_valid():
             user_instance = user_creation_form.save(commit=False)
@@ -68,8 +58,8 @@ def register_employee(request):
             user_profile_instance.user = user_instance
             user_profile_instance.save()
 
-            logger.info(
-                f'Employee: {user_instance.get_full_name()} has been successfully created. Employee data: {profile_creation_form.cleaned_data}')
+            # logger.info(
+            #     f'Employee: {user_instance.get_full_name()} has been successfully created. Employee data: {profile_creation_form.cleaned_data}')
 
             messages.success(request, 'You have successfully created a new Employee')
             return redirect('users:new-employee')
@@ -221,7 +211,7 @@ def approve_employee(request, pk=None):
             # add user to PayrollProcessor
             add_user_to_payroll_processor(profile_user)
 
-            logger.info(f'{request.user} approved Employee {employee_profile.user}')
+            # logger.info(f'{request.user} approved Employee {employee_profile.user}')
 
             messages.success(request, 'Employee has been approved')
             return redirect('users:employee-approval')
