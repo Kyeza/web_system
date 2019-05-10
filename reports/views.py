@@ -1,19 +1,32 @@
+from decimal import Decimal
+
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage, get_connection
 from django.db.models import Q
 from django.forms import formset_factory
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse
+
 from payroll.models import PayrollPeriod
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
-from .forms import ReportGeneratorForm
+from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
 from .models import ExTraSummaryReportInfo
 
 
 @login_required
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
+
+    context = generate_summary_data(payroll_period)
+
+    return render(request, 'reports/summary_report.html', context)
+
+
+# generating summary data context
+def generate_summary_data(payroll_period):
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
     employees_in_period = []
 
@@ -33,7 +46,7 @@ def display_summary_report(request, pk):
         'user_reports': extra_reports,
     }
 
-    return render(request, 'reports/summary_report.html', context)
+    return context
 
 
 # noinspection PyPep8Naming
@@ -41,7 +54,7 @@ def display_summary_report(request, pk):
 def update_summary_report(request, pp, user):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pp)
     employee = get_object_or_404(Employee, pk=user)
-    processors = PayrollProcessors.objects.filter(payroll_key__startswith=f'P{payroll_period.id}S{employee.id}')
+    processors = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
 
     # Categories: earning, deductions and statutory
     cat_e = processors.filter(earning_and_deductions_category=1).all()
@@ -145,6 +158,7 @@ def generate_reports(request):
                 del results['earnings']
 
             context = {
+                'title': report.capitalize() + ' Report',
                 'report': report,
                 'results': results,
             }
@@ -160,7 +174,8 @@ def generate_reports(request):
         form = ReportGeneratorForm()
 
     context = {
-        'form': form
+        'form': form,
+        'title': 'Generate Reports'
     }
     return render(request, 'reports/generate_report.html', context)
 
@@ -169,8 +184,7 @@ def generate_reports(request):
 def generate_payslip_report(request, pp, user):
     period = get_object_or_404(PayrollPeriod, pk=pp)
     employee = get_object_or_404(Employee, pk=user)
-    proc_key = f'P{period.id}S{employee.id}'
-    data = PayrollProcessors.objects.filter(payroll_key__startswith=proc_key)
+    data = PayrollProcessors.objects.filter(payroll_period=period).filter(employee=employee)
     report = 'Pay Slip'
     info_key = f'{period.payroll_key}S{employee.id}'
     user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()
@@ -183,3 +197,306 @@ def generate_payslip_report(request, pp, user):
     }
 
     return render(request, 'reports/generated_payslip_report.html', context)
+
+
+@login_required
+def send_mass_mail(request):
+    response = {}
+    if request.method == 'POST':
+        users = request.POST.getlist('users[]')
+        period_id = request.POST.get('payroll_period')
+        employees = [Employee.objects.get(id_number=int(sap_no)) for sap_no in users]
+        payroll_period = get_object_or_404(PayrollPeriod, pk=int(period_id))
+
+        emails = []
+        for employee in employees:
+            data = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
+            info_key = f'{payroll_period.payroll_key}S{employee.id}'
+            user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()
+            context = {
+                'report': 'PaySlip',
+                'period': payroll_period,
+                'data': data,
+                'user_reports': user_reports,
+            }
+            html_mail = ''
+            try:
+                html_mail = render_to_string('partials/payslip.html', context)
+            except Exception as e:
+                # log
+                print(e.args)
+
+            subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
+            body = html_mail
+            to = (employee.user.email,)
+            email = EmailMessage(subject=subject, body=body, to=to, reply_to=['replyto@noreply.com'])
+            email.content_subtype = 'html'
+
+            emails.append(email)
+
+        connection = get_connection()
+        connection.send_messages(emails)
+
+        response = {'status': 'success'}
+
+    return JsonResponse(response)
+
+
+def get_user_processors(processors, employee):
+    return processors.filter(employee=employee)
+
+
+def get_category_processors(processors, category_id):
+    return processors.filter(earning_and_deductions_category=category_id)
+
+
+class ReconciliationUserData:
+
+    def __init__(self, user):
+        self.user = user
+        self._earnings_data = {}
+        self._deductions_data = {}
+        self._statutory_data = {}
+        self._extra_data = {}
+
+    def add_earnings_data(self, ed_type, amount):
+        self._earnings_data[ed_type] = amount
+
+    def get_earnings_data(self):
+        return self._earnings_data
+
+    def add_deductions_data(self, ed_type, amount):
+        self._deductions_data[ed_type] = amount
+
+    def get_deductions_data(self):
+        return self._deductions_data
+
+    def add_statutory_data(self, ed_type, amount):
+        self._statutory_data[ed_type] = amount
+
+    def get_statutory_data(self):
+        return self._statutory_data
+
+    def add_extra_data(self, ed_type, amount):
+        self._extra_data[ed_type] = amount
+
+    def get_extra_data(self):
+        return self._extra_data
+
+
+def get_reconciled_amount(processor_1, processor_2):
+    return processor_1.amount - processor_2.amount
+
+
+@login_required
+def generate_reconciliation_report(request):
+    if request.method == 'POST':
+        form = ReconciliationReportGeneratorForm(request.POST)
+        if form.is_valid():
+            period_one = form.cleaned_data.get('first_payroll_period')
+            period_two = form.cleaned_data.get('second_payroll_period')
+            context_1 = generate_summary_data(period_one)
+            context_2 = generate_summary_data(period_two)
+
+            # employees_in_both_periods
+            employees_in_both_periods = set(context_1['employees_to_process']) \
+                .intersection(set(context_2['employees_to_process']))
+
+            # only in period 1
+            employees_only_in_period_1 = set(context_1['employees_to_process']) \
+                .difference(employees_in_both_periods)
+
+            # only in period 2
+            employees_only_in_period_2 = set(context_2['employees_to_process']) \
+                .difference(employees_in_both_periods)
+
+            reconciliation_data = []
+            if employees_in_both_periods:
+                for employee in employees_in_both_periods:
+                    user_processors_data_1 = get_user_processors(context_1['period_processes'], employee)
+                    user_processors_data_2 = get_user_processors(context_2['period_processes'], employee)
+                    period_one_extra_data = ExTraSummaryReportInfo.objects.filter(
+                        payroll_period=period_one).filter(employee=employee).first()
+                    period_two_extra_data = ExTraSummaryReportInfo.objects.filter(
+                        payroll_period=period_two).filter(employee=employee).first()
+
+                    # earnings reconciliation
+                    user_earnings_1 = get_category_processors(user_processors_data_1, 1)
+                    user_earnings_2 = get_category_processors(user_processors_data_2, 1)
+
+                    earning_set_1 = set([earning.earning_and_deductions_type for earning in user_earnings_1])
+                    earning_set_2 = set([earning.earning_and_deductions_type for earning in user_earnings_2])
+
+                    # deductions reconciliation
+                    user_deductions_1 = get_category_processors(user_processors_data_1, 2)
+                    user_deductions_2 = get_category_processors(user_processors_data_2, 2)
+
+                    deductions_set_1 = set([earning.earning_and_deductions_type for earning in user_deductions_1])
+                    deductions_set_2 = set([earning.earning_and_deductions_type for earning in user_deductions_2])
+
+                    # statutory reconciliation
+                    user_statutory_1 = get_category_processors(user_processors_data_1, 3)
+                    user_statutory_2 = get_category_processors(user_processors_data_2, 3)
+
+                    statutory_set_1 = set([earning.earning_and_deductions_type for earning in user_statutory_1])
+                    statutory_set_2 = set([earning.earning_and_deductions_type for earning in user_statutory_2])
+
+                    earnings_in_both = earning_set_1.intersection(earning_set_2)
+                    deductions_in_both = deductions_set_1.intersection(deductions_set_2)
+                    statutory_in_both = statutory_set_1.intersection(statutory_set_2)
+
+                    user_rec_data = ReconciliationUserData(employee)
+                    if earnings_in_both:
+                        for earning in earnings_in_both:
+                            e_processor_1 = user_earnings_1.filter(earning_and_deductions_type=earning).first()
+                            e_processor_2 = user_earnings_2.filter(earning_and_deductions_type=earning).first()
+
+                            amount = get_reconciled_amount(e_processor_1, e_processor_2)
+
+                            user_rec_data.add_earnings_data(earning, amount)
+
+                    if deductions_in_both:
+                        for earning in deductions_in_both:
+                            d_processor_1 = user_deductions_1.filter(earning_and_deductions_type=earning).first()
+                            d_processor_2 = user_deductions_2.filter(earning_and_deductions_type=earning).first()
+
+                            amount = get_reconciled_amount(d_processor_1, d_processor_2)
+
+                            user_rec_data.add_deductions_data(earning, amount)
+
+                    if statutory_in_both:
+                        for earning in statutory_in_both:
+                            s_processor_1 = user_statutory_1.filter(earning_and_deductions_type=earning).first()
+                            s_processor_2 = user_statutory_2.filter(earning_and_deductions_type=earning).first()
+
+                            amount = get_reconciled_amount(s_processor_1, s_processor_2)
+
+                            user_rec_data.add_statutory_data(earning, amount)
+
+                    for index in range(3):
+                        if index == 0:
+                            amount = period_one_extra_data.total_deductions - period_two_extra_data.total_deductions
+                            user_rec_data.add_extra_data('Total Deductions', amount)
+                        elif index == 1:
+                            amount = period_one_extra_data.gross_earning - period_two_extra_data.gross_earning
+                            user_rec_data.add_extra_data('Gross Salary', amount)
+                        elif index == 2:
+                            amount = period_one_extra_data.net_pay - period_two_extra_data.net_pay
+                            user_rec_data.add_extra_data('Net Pay', amount)
+
+                    reconciliation_data.append(user_rec_data)
+
+            if employees_only_in_period_1:
+                for employee in employees_only_in_period_1:
+                    user_processors_data_1 = get_user_processors(context_1['period_processes'], employee)
+                    period_one_extra_data = ExTraSummaryReportInfo.objects.filter(
+                        payroll_period=period_one).filter(employee=employee).first()
+
+                    # earnings reconciliation
+                    user_earnings_1 = get_category_processors(user_processors_data_1, 1)
+
+                    earning_set_1 = set([earning.earning_and_deductions_type for earning in user_earnings_1])
+
+                    # deductions reconciliation
+                    user_deductions_1 = get_category_processors(user_processors_data_1, 2)
+
+                    deductions_set_1 = set([earning.earning_and_deductions_type for earning in user_deductions_1])
+
+                    # statutory reconciliation
+                    user_statutory_1 = get_category_processors(user_processors_data_1, 3)
+
+                    statutory_set_1 = set([earning.earning_and_deductions_type for earning in user_statutory_1])
+
+                    user_rec_data = ReconciliationUserData(employee)
+                    if earning_set_1:
+                        for earning in earning_set_1:
+                            e_processor_1 = user_earnings_1.filter(earning_and_deductions_type=earning).first()
+
+                            user_rec_data.add_earnings_data(earning, e_processor_1.amount)
+
+                    if deductions_set_1:
+                        for earning in deductions_set_1:
+                            d_processor_1 = user_deductions_1.filter(earning_and_deductions_type=earning).first()
+
+                            user_rec_data.add_deductions_data(earning, d_processor_1.amount)
+
+                    if statutory_set_1:
+                        for earning in statutory_set_1:
+                            s_processor_1 = user_statutory_1.filter(earning_and_deductions_type=earning).first()
+                            user_rec_data.add_statutory_data(earning, s_processor_1.amount)
+
+                    for index in range(3):
+                        if index == 0:
+                            user_rec_data.add_extra_data('Total Deductions', period_one_extra_data.total_deductions)
+                        elif index == 1:
+                            user_rec_data.add_extra_data('Gross Salary', period_one_extra_data.gross_earning)
+                        elif index == 2:
+                            user_rec_data.add_extra_data('Net Pay', period_one_extra_data.net_pay)
+
+                    reconciliation_data.append(user_rec_data)
+
+            if employees_only_in_period_2:
+                for employee in employees_only_in_period_2:
+                    user_processors_data_2 = get_user_processors(context_2['period_processes'], employee)
+                    period_two_extra_data = ExTraSummaryReportInfo.objects.filter(
+                        payroll_period=period_two).filter(employee=employee).first()
+
+                    # earnings reconciliation
+                    user_earnings_2 = get_category_processors(user_processors_data_2, 1)
+
+                    earning_set_2 = set([earning.earning_and_deductions_type for earning in user_earnings_2])
+
+                    # deductions reconciliation
+                    user_deductions_2 = get_category_processors(user_processors_data_2, 2)
+
+                    deductions_set_2 = set([earning.earning_and_deductions_type for earning in user_deductions_2])
+
+                    # statutory reconciliation
+                    user_statutory_2 = get_category_processors(user_processors_data_2, 3)
+
+                    statutory_set_2 = set([earning.earning_and_deductions_type for earning in user_statutory_2])
+
+                    user_rec_data = ReconciliationUserData(employee)
+                    if earning_set_2:
+                        for earning in earning_set_2:
+                            e_processor_2 = user_earnings_2.filter(earning_and_deductions_type=earning).first()
+
+                            user_rec_data.add_earnings_data(earning, e_processor_2.amount)
+
+                    if deductions_set_2:
+                        for earning in deductions_set_2:
+                            d_processor_2 = user_deductions_2.filter(earning_and_deductions_type=earning).first()
+
+                            user_rec_data.add_earnings_data(earning, d_processor_2.amount)
+
+                    if statutory_set_2:
+                        for earning in statutory_set_2:
+                            s_processor_2 = user_statutory_2.filter(earning_and_deductions_type=earning).first()
+
+                            user_rec_data.add_earnings_data(earning, s_processor_2.amount)
+
+                    for index in range(3):
+                        if index == 0:
+                            user_rec_data.add_extra_data('Total Deductions', period_two_extra_data.total_deductions)
+                        elif index == 1:
+                            user_rec_data.add_extra_data('Gross Salary', period_two_extra_data.gross_earning)
+                        elif index == 2:
+                            user_rec_data.add_extra_data('Net Pay', period_two_extra_data.net_pay)
+
+                    reconciliation_data.append(user_rec_data)
+
+            context = {
+                'period_1': period_one,
+                'period_2': period_two,
+                'data': reconciliation_data
+            }
+            return render(request, 'reports/generated_reconciliation_report.html', context)
+    else:
+        form = ReconciliationReportGeneratorForm()
+
+    context = {
+        'tile': 'Reconcile Payroll Periods',
+        'form': form
+    }
+
+    return render(request, 'reports/generate_reconciliation_report.html', context)

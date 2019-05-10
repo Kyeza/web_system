@@ -182,13 +182,43 @@ class DEA(models.Model):
 
 
 class EmployeeProject(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    project_key = models.CharField(max_length=150, blank=True, null=False, default=None, editable=False)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, editable=False)
     cost_center = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True, blank=True)
     project_code = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
     sof_code = models.ForeignKey(SOF, on_delete=models.SET_NULL, null=True, blank=True)
     dea_code = models.ForeignKey(DEA, on_delete=models.SET_NULL, null=True, blank=True)
-    contribution_percentage = models.IntegerField(null=True, blank=True)
+    contribution_percentage = models.IntegerField(blank=True, default=100)
     created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+
+    def clean(self):
+        if self.project_key is None:
+            key = f'E{self.employee_id}C{self.cost_center_id}' + \
+                  f'P{self.project_code_id}S{self.sof_code_id}D{self.dea_code_id}'
+            self.project_key = key
+
+        # validate contribution_percentage
+        # to determine that no project assignment is made beyond 100% contribution per employee
+        projects = EmployeeProject.objects.filter(project_key=self.project_key)
+        if projects:
+            total_contrib = 0
+            for project in projects:
+                total_contrib += project.contribution_percentage
+
+            total_contrib += self.contribution_percentage
+            if total_contrib >= 100:
+                total_contrib -= self.contribution_percentage
+                available_contrib = 100 - total_contrib
+
+                if available_contrib == 0:
+                    raise ValidationError('No more assignments can be made to this project')
+                else:
+                    raise ValidationError(f'Only {available_contrib}% contribution can be made to this project')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.full_clean()
+        super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return f'{self.employee} project'

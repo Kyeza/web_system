@@ -1,4 +1,4 @@
-{% extends "payroll/../base.html" %}
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -8,7 +8,7 @@
             <div class="p-2 w-75 m-3 card" style="background-color: #eeeeee;">
                 <div class="card d-flex flex-row-reverse align-items-center mb-3"
                      style="height: 120px; background-color: #E61D2B">
-                    <img class="p-2 rounded-circle ml-auto" src="#" alt="" style="width: 105px; height: 105px;">
+                    <img class="p-2 rounded-circle ml-auto" src="/media/default.png" alt="" style="width: 105px; height: 105px;">
                 </div>
                 {% if user_creation_form.non_field_errors or profile_creation_form.non_field_errors or profile_creation_form.errors or user_creation_form.errors %}
                     {% for error in profile_creation_form.non_field_errors %}

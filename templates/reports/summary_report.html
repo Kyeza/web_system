@@ -8,24 +8,27 @@
             {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
         </h5>
         <div class="table-responsive">
-            <table class="table table-sm table-hover">
+            <table id="table_id" class="table table-md table-striped table-bordered w-100">
+                <caption class="border-bottom mb-4">
+                    {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
+                </caption>
                 <thead class="thead-dark">
                 <tr>
                     <th>Staff</th>
                     {% for staff in employees_to_process %}
                         {% if forloop.first %}
                             {% for processor in period_processes|user_data:staff|category:1 %}
-                                <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                                <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
                             {% endfor %}
                             {% for processor in period_processes|user_data:staff|category:2 %}
-                                <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                                <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
                             {% endfor %}
                             {% for processor in period_processes|user_data:staff|category:3 %}
-                                <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                                <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
                             {% endfor %}
-                            <th>Total deductions</th>
-                            <th>Gross salary</th>
-                            <th>Net pay</th>
+                            <th>Total Deductions</th>
+                            <th>Gross Salary</th>
+                            <th>Net Pay</th>
                         {% endif %}
                     {% endfor %}
                 </tr>
@@ -57,6 +60,27 @@
                 </tbody>
             </table>
         </div>
-        {% include 'partials/pagination.html' %}
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#table_id').DataTable( {
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'A2',
+                    },
+                    'print'
+                ]
+            } );
+        } );
+    </script>
+{% endblock scripts %}

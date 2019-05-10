@@ -69,7 +69,7 @@ class PayrollPeriod(models.Model):
         if self.payroll_key is None:
             payroll_key = f'Y{self.year}M{self.KV_MONTH[self.month]}C{self.payroll_center_id}'
             if PayrollPeriod.objects.filter(payroll_key=payroll_key):
-                raise ValidationError(f'Pay roll period for this month already created')
+                raise ValidationError(f'Payroll period for this month already created')
             else:
                 self.payroll_key = payroll_key
 
@@ -156,9 +156,23 @@ class PAYERates(models.Model):
 class PayrollCenterEds(models.Model):
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
     ed_type = models.ForeignKey(EarningDeductionType, on_delete=models.SET_NULL, null=True)
+    pced_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
+
+    def clean(self):
+        if self.pced_key is None:
+            pced_key = f'P{self.payroll_center_id}E{self.ed_type_id}'
+            if PayrollCenterEds.objects.filter(pced_key=pced_key):
+                raise ValidationError(f'Earnings and Deductions already available for this Payroll Center')
+            else:
+                self.pced_key = pced_key
 
     def get_absolute_url(self):
         return reverse('payroll:payroll-center-eds-detail', kwargs={'pk': self.pk})
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.full_clean()
+        super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return f'{self.payroll_center.name}-{self.ed_type.ed_type}'

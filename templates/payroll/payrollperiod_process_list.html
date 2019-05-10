@@ -5,16 +5,11 @@
     {% include 'partials/users.css' %}
 {% endblock css %}
 {% block content %}
-    <div class="alert alert-info alert-dismissible fade" role="alert">
-        There are currently no Employees in the system
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
     <div class="content-section">
         <h3 class="border-bottom mb-4">{{ title }}</h3>
         <div class="table-responsive">
-            <table class="table table-sm table-borderless table-hover">
+            <table id="table_id" class="table table-md table-striped table-bordered w-100">
+                <caption class="border-bottom mb-4">{{ title }}</caption>
                 <thead class="thead-dark">
                 <tr>
                     <th>Payroll key</th>
@@ -49,17 +44,31 @@
                         </td>
                         <td>{{ payroll_period.status }}</td>
                     </tr>
-                {% empty %}
-                    <p class="text-center">No Payroll centers yet</p>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
-        {% include 'partials/pagination.html' %}
     </div>
 {% endblock content %}
 {% block scripts %}
     <script>
+        $(document).ready(function() {
+            $('#table_id').DataTable( {
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                    },
+                    'print'
+                ]
+            } );
+        } );
         $(function () {
             function getCookie(name) {
                 let cookieValue = null;
@@ -116,9 +125,12 @@
                 $.post(processUrl, data, function (response) {
                     $(loaderId).removeClass('loader');
                     $(btnId).show();
+                    console.log('Am back with');
+                    console.log(response);
                     if(response.status === 'Failed') {
                         console.log(response.status);
-                        $('.alert').addClass('show');
+                        let msgs = $('#messages');
+                        msgs.html(response.message)
                     }else {
                         console.log(response.status);
                         window.location.href = '/reports/summary_report/' + id;

@@ -3,7 +3,7 @@ from datetime import datetime
 from django import forms
 
 from payroll.constants import PAYROLL_YEARS, MONTHS
-from payroll.models import PayrollCenter
+from payroll.models import PayrollCenter, PayrollPeriod
 from .models import ExTraSummaryReportInfo
 
 
@@ -44,3 +44,8 @@ class ReportGeneratorForm(forms.Form):
     report_type = forms.ChoiceField(choices=REPORTS, widget=forms.Select())
     year = forms.ChoiceField(choices=PAYROLL_YEARS, widget=forms.Select())
     month = forms.ChoiceField(choices=MONTHS, widget=forms.Select(), initial=MONTHS[_month - 1][1])
+
+
+class ReconciliationReportGeneratorForm(forms.Form):
+    first_payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select())
+    second_payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select())

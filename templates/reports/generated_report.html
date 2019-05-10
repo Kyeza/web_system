@@ -2,9 +2,6 @@
 
 {% block content %}
     <div class="content-section">
-        <div class="d-flex flex-row-reverse mt-3 mb-1">
-            <button id="ignore-print" class="btn btn-sm btn-warning">PRINT/ PDF</button>
-        </div>
         <div class="pdf landscape">
             {% if report == 'NSSF' %}
                 {% include 'reports/generated_nssf_report.html' %}
@@ -21,10 +18,96 @@
     </div>
 {% endblock content %}
 {% block scripts %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.14.0/printThis.js"></script>
     <script>
-        $('#ignore-print').click(function () {
-            $('.pdf').printThis();
-        })
+        $(document).ready(function() {
+            $('#table_id').DataTable( {
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                    },
+                    'print'
+                ]
+            } );
+            let summaryReportTable = $('#summary_id').DataTable( {
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                    },
+                    'print'
+                ]
+            } );
+
+            $('#summary_id tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected');
+            } );
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    let cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            let csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $('#send_mail').click( function () {
+                console.log( summaryReportTable.rows('.selected').data().length +' Employee(s) selected for Payslip mailing' );
+                let payroll_period = $('.payroll_period').attr('id');
+                let length = summaryReportTable.rows('.selected').data().length;
+                let users = [];
+                let i;
+                for (i = 0; i < length; i++) {
+                    console.log(summaryReportTable.rows('.selected').data()[i][1]);
+                    users.push(summaryReportTable.rows('.selected').data()[i][1])
+                }
+                console.log(users);
+
+                emailUrl = '/reports/email/payslips/';
+                let users_data = {
+                    'users': users,
+                    'payroll_period': payroll_period
+                };
+                $.post(emailUrl, users_data, function (response) {
+                    if (response.status === 'success') {
+                        alert('Emails have been successfully sent')
+                    }
+                });
+            } );
+        } );
     </script>
 {% endblock scripts %}

@@ -34,7 +34,6 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
 
 class OrganizationListView(LoginRequiredMixin, ListView):
     model = Organization
-    paginate_by = 10
     ordering = 'pk'
 
 
@@ -71,7 +70,6 @@ class TaxBracketDetailView(LoginRequiredMixin, DetailView):
 class TaxBracketListView(LoginRequiredMixin, ListView):
     model = Tax
     fields = ['country', 'lower_boundary', 'upper_boundary', 'fixed_amount', 'year']
-    paginate_by = 10
 
 
 class CountryOriginCreate(LoginRequiredMixin, CreateView):
@@ -102,7 +100,6 @@ class CountryOriginDetailView(LoginRequiredMixin, DetailView):
 class CountryOriginListView(LoginRequiredMixin, ListView):
     model = Country
     fields = ['country_name', 'country_code']
-    paginate_by = 10
 
 
 class NationalityCreate(LoginRequiredMixin, CreateView):
@@ -133,7 +130,6 @@ class NationalityDetailView(LoginRequiredMixin, DetailView):
 class NationalityListView(LoginRequiredMixin, ListView):
     model = Nationality
     fields = ['country', 'country_nationality']
-    paginate_by = 10
 
 
 class DutyStationCreate(LoginRequiredMixin, CreateView):
@@ -164,7 +160,6 @@ class DutyStationDetailView(LoginRequiredMixin, DetailView):
 class DutyStationListView(LoginRequiredMixin, ListView):
     model = DutyStation
     fields = ['duty_station', 'description', 'country']
-    paginate_by = 10
 
 
 class DepartmentCreate(LoginRequiredMixin, CreateView):
@@ -195,7 +190,6 @@ class DepartmentDetailView(LoginRequiredMixin, DetailView):
 class DepartmentListView(LoginRequiredMixin, ListView):
     model = Department
     fields = ['department', 'description']
-    paginate_by = 10
 
 
 class JobTitleCreate(LoginRequiredMixin, CreateView):
@@ -226,7 +220,6 @@ class JobTitleDetailView(LoginRequiredMixin, DetailView):
 class JobTitleListView(LoginRequiredMixin, ListView):
     model = JobTitle
     fields = ['job_title', 'description']
-    paginate_by = 10
 
 
 class ContractTypeCreate(LoginRequiredMixin, CreateView):
@@ -257,7 +250,6 @@ class ContractTypeDetailView(LoginRequiredMixin, DetailView):
 class ContractTypeListView(LoginRequiredMixin, ListView):
     model = ContractType
     fields = ['contract_type', 'contract_expiry', 'leave_entitled', 'leave_days_entitled']
-    paginate_by = 10
 
 
 class GradeCreate(LoginRequiredMixin, CreateView):
@@ -288,4 +280,3 @@ class GradeDetailView(LoginRequiredMixin, DetailView):
 class GradeListView(LoginRequiredMixin, ListView):
     model = Grade
     fields = ['grade', 'description']
-    paginate_by = 10

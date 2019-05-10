@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
@@ -86,7 +87,7 @@ def profile(request):
             user_update_form.save()
             profile_update_form.save()
             messages.success(request, 'Employee has been updated')
-            return redirect('profile')
+            return redirect('users:user-profile')
     else:
         user_update_form = StaffUpdateForm(instance=profile_user)
         profile_update_form = ProfileUpdateForm(instance=profile_user.employee)
@@ -140,47 +141,50 @@ def add_user_to_payroll_processor(instance):
                     user_payroll_center = instance.employee.payroll_center
                     payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
 
-                    # get existing instance processors if they exists
-                    existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
-                        .filter(payroll_period=payroll_period)
-                    # if ed_types for the employees payroll center exist
                     if payroll_center_ed_types:
-                        if existing_user_payroll_processors:
-                            # PayrollCenterEdTypes can change, hence in case there is one not in the processor
-                            # associated with that instance, then create it
-                            for pc_ed_type in payroll_center_ed_types:
-                                if existing_user_payroll_processors.filter(
-                                        earning_and_deductions_type=pc_ed_type.ed_type):
-                                    # if that ed_type already has a processor associated with the instance leave it and
-                                    # continue
-                                    continue
-                                else:
-                                    # else create it
-                                    user_process = PayrollProcessors(employee=instance.employee,
-                                                                     earning_and_deductions_category=pc_ed_type.ed_type \
-                                                                     .ed_category,
-                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                     amount=0, payroll_period=payroll_period)
-                                    user_process.save()
+                        # get existing instance processors if they exists
+                        existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
+                            .filter(payroll_period=payroll_period)
+                        # if ed_types for the employees payroll center exist
+                        if payroll_center_ed_types:
+                            if existing_user_payroll_processors:
+                                # PayrollCenterEdTypes can change, hence in case there is one not in the processor
+                                # associated with that instance, then create it
+                                for pc_ed_type in payroll_center_ed_types:
+                                    if existing_user_payroll_processors.filter(
+                                            earning_and_deductions_type=pc_ed_type.ed_type):
+                                        # if that ed_type already has a processor associated with the instance leave it and
+                                        # continue
+                                        continue
+                                    else:
+                                        # else create it
+                                        user_process = PayrollProcessors(employee=instance.employee,
+                                                                         earning_and_deductions_category=pc_ed_type.ed_type \
+                                                                         .ed_category,
+                                                                         earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                         amount=0, payroll_period=payroll_period)
+                                        user_process.save()
 
-                        else:
-                            # if its a new instance in the payroll period, create processors for that instance/employee
-                            for pc_ed_type in payroll_center_ed_types:
-                                if pc_ed_type.ed_type == 'Basic Salary':
-                                    user_process = PayrollProcessors(employee=instance.employee,
-                                                                     earning_and_deductions_category=pc_ed_type
-                                                                     .ed_type.ed_category,
-                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                     amount=instance.employee.gross_salary,
-                                                                     payroll_period=payroll_period)
-                                else:
-                                    user_process = PayrollProcessors(employee=instance.employee,
-                                                                     earning_and_deductions_category=pc_ed_type
-                                                                     .ed_type.ed_category,
-                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                     amount=0,
-                                                                     payroll_period=payroll_period)
-                                user_process.save()
+                            else:
+                                # if its a new instance in the payroll period, create processors for that instance/employee
+                                for pc_ed_type in payroll_center_ed_types:
+                                    if pc_ed_type.ed_type == 'Basic Salary':
+                                        user_process = PayrollProcessors(employee=instance.employee,
+                                                                         earning_and_deductions_category=pc_ed_type
+                                                                         .ed_type.ed_category,
+                                                                         earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                         amount=instance.employee.gross_salary,
+                                                                         payroll_period=payroll_period)
+                                    else:
+                                        user_process = PayrollProcessors(employee=instance.employee,
+                                                                         earning_and_deductions_category=pc_ed_type
+                                                                         .ed_type.ed_category,
+                                                                         earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                         amount=0,
+                                                                         payroll_period=payroll_period)
+                                    user_process.save()
+                    else:
+                        raise Exception('No PayrollCenter Earnings and Deductions in the System')
 
 
 @login_required
@@ -243,10 +247,9 @@ class RecruitedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
         'kin_relationship', 'dr_ac_code', 'cr_ac_code'
     ]
-    paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Recruit').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='Recruit')
 
 
 class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -265,10 +268,9 @@ class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
         'kin_relationship'
     ]
-    paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='Approved')
 
 
 class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
@@ -286,10 +288,9 @@ class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
         'kin_relationship'
     ]
-    paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='TERMINATED').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='TERMINATED')
 
 
 class RejectedEmployeeListView(LoginRequiredMixin, ListView):
@@ -307,20 +308,18 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
         'kin_relationship'
     ]
-    paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='REJECTED').order_by('appointment_date')
+        return Employee.objects.filter(employment_status='REJECTED')
 
 
 class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
     model = TerminatedEmployees
     template_name = 'users/_separated_employee_list.html'
     fields = ['employee', 'notice_date', 'exit_date', 'days_given', 'employable', 'reason']
-    paginate_by = 10
 
     def get_queryset(self):
-        return TerminatedEmployees.objects.all().order_by('notice_date')
+        return TerminatedEmployees.objects.all()
 
 
 def processor(payroll_period, process_lst='False', method='GET'):
@@ -329,7 +328,12 @@ def processor(payroll_period, process_lst='False', method='GET'):
         for employee in Employee.objects.all():
             if employee.employment_status == 'APPROVED':
                 user = employee.user
-                add_user_to_payroll_processor(user)
+                try:
+                    add_user_to_payroll_processor(user)
+                except Exception:
+                    raise
+                else:
+                    continue
     else:
         response['message'] = 'There are currently no Employees in the system'
         response['status'] = 'Failed'
@@ -377,7 +381,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             lst_rates = LSTRates.objects.all()
             if lst_rates:
                 for lst_brac in lst_rates:
-                    if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary)):
+                    if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary)+1):
                         fixed_lst = lst_brac.fixed_amount / 4
                         break
         lst = fixed_lst
@@ -386,7 +390,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # calculating PAYE
         tax_bracket, tax_rate, fixed_tax = 0, 0, 0
         for tx_brac in PAYERates.objects.all():
-            if int(ge_minus_lst) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary)):
+            if int(ge_minus_lst) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary)+1):
                 tax_bracket = tx_brac.lower_boundary
                 tax_rate = tx_brac.rate / 100
                 fixed_tax = tx_brac.fixed_amount
@@ -399,28 +403,28 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         # update PAYE if exists in payroll center
         employee_paye_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=11).first()
+            .filter(earning_and_deductions_type__ed_type__icontains='PAYE').first()
         if employee_paye_processor:
             employee_paye_processor.amount = paye
             employee_paye_processor.save(update_fields=['amount'])
 
         # update LST if exists in payroll center
         employee_lst_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=13).first()
+            .filter(earning_and_deductions_type__ed_type__icontains='LST').first()
         if employee_paye_processor:
             employee_lst_processor.amount += lst
             employee_lst_processor.save(update_fields=['amount'])
 
         # update NSSF 10% if exists in payroll center
         employee_nssf_10_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=64).first()
+            .filter(earning_and_deductions_type__ed_type__icontains='NSSF 10%').first()
         if employee_nssf_10_processor:
             employee_nssf_10_processor.amount = nssf_10
             employee_nssf_10_processor.save(update_fields=['amount'])
 
         # update NSSF 5%_5 if exists in payroll center
         employee_nssf_5_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type=12).first()
+            .filter(earning_and_deductions_type__ed_type__icontains='NSSF 5%').first()
         if employee_nssf_5_processor:
             employee_nssf_5_processor.amount = nssf_5
             employee_nssf_5_processor.save(update_fields=['amount'])
@@ -468,8 +472,8 @@ def processor(payroll_period, process_lst='False', method='GET'):
             response['message'] = 'Successfully process Payroll Period'
             response['status'] = 'Success'
 
-        if method == 'POST':
-            return response
+    if method == 'POST':
+        return response
 
 
 @login_required
@@ -477,8 +481,16 @@ def process_payroll_period(request, pk):
     if request.method == 'POST' and request.is_ajax():
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
         process_lst = request.POST.get('process_lst')
-        response = processor(payroll_period, process_lst, 'POST')
-        return JsonResponse(response)
+        response = None
+        try:
+            response = processor(payroll_period, process_lst, 'POST')
+        except Exception:
+            msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
+            html = render_to_string('partials/messages.html', {'msgs': msgs})
+            response = {'status': 'Failed', 'message': html}
+            return JsonResponse(response)
+        else:
+            return JsonResponse(response)
     elif request.method == 'GET':
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
         processor(payroll_period)
@@ -524,10 +536,9 @@ class EmployeeBirthdayList(LoginRequiredMixin, ListView):
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
         'kin_relationship'
     ]
-    paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='APPROVED').order_by('appointment_date')
+        return Employee.objects.filter(employment_status='APPROVED')
 
 
 class AssignProjectListView(LoginRequiredMixin, ListView):
@@ -545,10 +556,9 @@ class AssignProjectListView(LoginRequiredMixin, ListView):
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
         'kin_relationship'
     ]
-    paginate_by = 10
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+        return Employee.objects.filter(employment_status='Approved')
 
 
 def employee_project_creation(request, pk=None):
@@ -612,7 +622,6 @@ class CostCentreDetailView(LoginRequiredMixin, DetailView):
 class CostCentreListView(LoginRequiredMixin, ListView):
     model = CostCentre
     fields = ['cost_centre', 'description']
-    paginate_by = 10
 
 
 class ProjectCreate(LoginRequiredMixin, CreateView):
@@ -643,7 +652,6 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
     fields = ['project_code', 'project_name', 'cost_centre']
-    paginate_by = 10
 
 
 class SOFCreate(LoginRequiredMixin, CreateView):
@@ -674,7 +682,6 @@ class SOFDetailView(LoginRequiredMixin, DetailView):
 class SOFListView(LoginRequiredMixin, ListView):
     model = SOF
     fields = ['sof_code', 'sof_name', 'project_code']
-    paginate_by = 10
 
 
 class DEACreate(LoginRequiredMixin, CreateView):
@@ -705,7 +712,6 @@ class DEADetailView(LoginRequiredMixin, DetailView):
 class DEAListView(LoginRequiredMixin, ListView):
     model = DEA
     fields = ['dea_code', 'dea_name', 'sof_code']
-    paginate_by = 10
 
 
 class EmployeeProjectsDetailView(LoginRequiredMixin, DetailView):
@@ -716,4 +722,3 @@ class EmployeeProjectsDetailView(LoginRequiredMixin, DetailView):
 class EmployeeProjectsListView(LoginRequiredMixin, ListView):
     model = EmployeeProject
     fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'created_by']
-    paginate_by = 10

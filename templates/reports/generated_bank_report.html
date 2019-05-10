@@ -11,7 +11,11 @@
         <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
     </h5>
     <div class="table-responsive">
-        <table class="table table-sm table-hover">
+        <table id="table_id" class="table table-md table-striped table-bordered w-100">
+            <caption class="border-bottom mb-5">
+                {{ report }} REPORT FOR PERIOD
+                <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
+            </caption>
             <thead class="thead-dark">
             <tr>
                 <th>No.</th>

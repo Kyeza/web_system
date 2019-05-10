@@ -1,6 +1,6 @@
-<nav id="bottom-nav" class="navbar navbar-expand-lg navbar-light bg-light py-0 shadow">
-    <a class="navbar-brand ml-10" href="#">
-        <i class="fas fa-home"></i>
+<nav id="bottom-nav" class="navbar navbar-expand-lg navbar-light bg-light py-2 shadow">
+    <a class="navbar-brand ml-10" href="{% url 'payroll:index' %}">
+        <img src="/media/logo.png" class="img-fluid" style="width: 2em; height: 2em">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,9 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{% url 'reports:generate-reports' %}">
                         <small>Payroll Reports</small>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'reports:generate_reconciliation_report' %}">
+                        <small>Reconciliation Report</small>
                     </a>
                 </div>
             </li>

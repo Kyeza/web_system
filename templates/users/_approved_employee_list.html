@@ -4,17 +4,10 @@
 
 {% block content %}
     <div class="content-section">
-        <div class="d-flex flex-row-reverse">
-            <div class="p-2">
-                <form action="{% url 'users:edit-employee' %}" method="GET">
-                    <input type="text" name="q">
-                    <input type="submit" value="Search">
-                </form>
-            </div>
-        </div>
-        <h3 class="border-bottom mb-4">Approved Staff List</h3>
+        <h4 class="border-bottom mb-4">Approved Staff List</h4>
         <div class="table-responsive">
-            <table class="table table-sm table-hover">
+            <table id="table_id" class="table table-md table-striped table-bordered w-100">
+                <caption class="border-bottom mb-4">Approved Staff List</caption>
                 <thead class="thead-dark">
                 <tr>
                     <th>First name</th>
@@ -103,35 +96,31 @@
                         <td>{{ employee.cr_ac_code }}</td>
                         <td class="text-success">{{ employee.employment_status }}</td>
                     </tr>
-                {% empty %}
-                    <p class="text-center">No approved "Employees" yet</p>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div class="d-flex flex-row justify-content-end">
-            {% if is_paginated %}
-
-                {% if page_obj.has_previous %}
-                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
-                    <a class="btn btn-outline-primary mb-4"
-                       href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
-
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                {% endif %}
-
-            {% endif %}
-        </div>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#table_id').DataTable( {
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'A1',
+                    },
+                    'print'
+                ]
+            } );
+        } );
+    </script>
+{% endblock scripts %}

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.detail import DetailView
@@ -46,13 +46,11 @@ class PayrollCenterDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detai
 
 class PayrollCenterListView(LoginRequiredMixin, ListView):
     model = PayrollCenter
-    paginate_by = 10
 
 
 class PayrollCenterStaffListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = PayrollCenter
     template_name = 'payroll/payroll_center_staff_list.html'
-    paginate_by = 10
 
 
 class PayrollPeriodCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -68,7 +66,7 @@ class PayrollPeriodCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         messages.success(self.request, f'Payroll Period for {form.instance.payroll_center} month of'
-                                       f' {form.instance.month} has been opened')
+        f' {form.instance.month} has been opened')
         return super().form_valid(form)
 
 
@@ -105,7 +103,6 @@ class PayrollPeriodCloseListView(LoginRequiredMixin, PermissionRequiredMixin, Li
     model = PayrollPeriod
     template_name = 'payroll/payrollperiod_close_list.html'
     fields = ['payroll_center', 'month', 'year', 'status']
-    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,7 +121,7 @@ def close_payroll_period(request, pk):
         payroll_period.status = 'CLOSED'
         payroll_period.save(update_fields=['status'])
         messages.success(request, f'Payroll Period for {payroll_period.payroll_center} month of'
-                                  f' {payroll_period.month} has been closed') 
+        f' {payroll_period.month} has been closed')
         return redirect('payroll:close-payroll-period-list')
 
 
@@ -133,7 +130,6 @@ class PayrollPeriodForProcessing(LoginRequiredMixin, PermissionRequiredMixin, Li
     model = PayrollPeriod
     template_name = 'payroll/payrollperiod_process_list.html'
     fields = ['payroll_center', 'month', 'year', 'status']
-    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -172,12 +168,16 @@ class EarningAndDeductionDetailView(LoginRequiredMixin, PermissionRequiredMixin,
 class EarningAndDeductionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', PermissionRequiredMixin, 'recurrent', 'taxable']
-    paginate_by = 10
 
 
-class PayrollCenterEdsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class PayrollCenterEdsCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
+
+    def test_func(self):
+        if self.request.user.is_superuser or self.request.user.employee.user_group.natural_key() == ('Site Admin',):
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -185,9 +185,14 @@ class PayrollCenterEdsCreate(LoginRequiredMixin, PermissionRequiredMixin, Create
         return context
 
 
-class PayrollCenterEdsUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class PayrollCenterEdsUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
+
+    def test_func(self):
+        if self.request.user.is_superuser or self.request.user.employee.user_group.natural_key() == ('Site Admin',):
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -195,15 +200,24 @@ class PayrollCenterEdsUpdate(LoginRequiredMixin, PermissionRequiredMixin, Update
         return context
 
 
-class PayrollCenterEdsDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class PayrollCenterEdsDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
 
+    def test_func(self):
+        if self.request.user.is_superuser or self.request.user.employee.user_group.natural_key() == ('Site Admin',):
+            return True
+        return False
 
-class PayrollCenterEdsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+
+class PayrollCenterEdsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = PayrollCenterEds
     fields = ['payroll_center', 'ed_type']
-    paginate_by = 10
+
+    def test_func(self):
+        if self.request.user.is_superuser or self.request.user.employee.user_group.natural_key() == ('Site Admin',):
+            return True
+        return False
 
 
 class LSTListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -239,7 +253,6 @@ class BankDetailView(LoginRequiredMixin, DetailView):
 class BankListView(LoginRequiredMixin, ListView):
     model = Bank
     fields = ['bank', 'sort_code', 'description']
-    paginate_by = 10
 
 
 class CurrencyCreate(LoginRequiredMixin, CreateView):
@@ -270,4 +283,3 @@ class CurrencyDetailView(LoginRequiredMixin, DetailView):
 class CurrencyListView(LoginRequiredMixin, ListView):
     model = Currency
     fields = ['currency', 'description']
-    paginate_by = 10
