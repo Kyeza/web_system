@@ -1,5 +1,5 @@
+from builtins import super
 from decimal import Decimal
-import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -48,7 +48,8 @@ def register_employee(request):
         profile_creation_form = ProfileCreationForm(request.POST, request.FILES)
 
         # logger.info(
-        #     f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data {profile_creation_form.is_valid()}')
+        #     f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data \
+        #     {profile_creation_form.is_valid()}')
 
         if user_creation_form.is_valid() and profile_creation_form.is_valid():
             user_instance = user_creation_form.save(commit=False)
@@ -60,7 +61,8 @@ def register_employee(request):
             user_profile_instance.save()
 
             # logger.info(
-            #     f'Employee: {user_instance.get_full_name()} has been successfully created. Employee data: {profile_creation_form.cleaned_data}')
+            #     f'Employee: {user_instance.get_full_name()} has been successfully created. \
+            #     Employee data: {profile_creation_form.cleaned_data}')
 
             messages.success(request, 'You have successfully created a new Employee')
             return redirect('users:new-employee')
@@ -290,7 +292,12 @@ class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
     ]
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='TERMINATED')
+        return Employee.objects.filter(employment_status='APPROVED')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['title'] = 'Terminate Employee'
+        return context
 
 
 class RejectedEmployeeListView(LoginRequiredMixin, ListView):
@@ -312,6 +319,11 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Employee.objects.filter(employment_status='REJECTED')
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['title'] = 'Rejected Staff'
+        return context
+
 
 class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
     model = TerminatedEmployees
@@ -320,6 +332,11 @@ class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return TerminatedEmployees.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['title'] = 'Separated Employees'
+        return context
 
 
 def processor(payroll_period, process_lst='False', method='GET'):
@@ -381,7 +398,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             lst_rates = LSTRates.objects.all()
             if lst_rates:
                 for lst_brac in lst_rates:
-                    if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary)+1):
+                    if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
                         fixed_lst = lst_brac.fixed_amount / 4
                         break
         lst = fixed_lst
@@ -390,7 +407,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # calculating PAYE
         tax_bracket, tax_rate, fixed_tax = 0, 0, 0
         for tx_brac in PAYERates.objects.all():
-            if int(ge_minus_lst) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary)+1):
+            if int(ge_minus_lst) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
                 tax_bracket = tx_brac.lower_boundary
                 tax_rate = tx_brac.rate / 100
                 fixed_tax = tx_brac.fixed_amount
@@ -561,34 +578,24 @@ class AssignProjectListView(LoginRequiredMixin, ListView):
         return Employee.objects.filter(employment_status='Approved')
 
 
-def employee_project_creation(request, pk=None):
+@login_required
+def create_employee_project(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
-    project = employee.employeeproject_set.first()
 
-    initial_data = {
-        'employee': employee,
-    }
-
-    staff_form = None
     if request.method == 'POST':
-        employee_proj_form = EmployeeProjectForm(request.POST, initial=initial_data)
-
-        if employee_proj_form.is_valid():
-            instance = employee_proj_form.save(commit=False)
+        form = EmployeeProjectForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
             instance.created_by = request.user
             instance.save()
-            messages.success(request, 'Employee successfully assigned Project')
-            return redirect('users:employee-project-list')
+            messages.success(request, f'Successfully assigned project to {employee.user.get_full_name()}')
+            return redirect('users:employee-assign-project')
     else:
-        staff_form = ProfileUpdateForm(instance=employee)
-        if project:
-            employee_proj_form = EmployeeProjectForm(instance=project)
-        else:
-            employee_proj_form = EmployeeProjectForm(initial=initial_data)
+        form = EmployeeProjectForm(initial={'employee': employee})
 
     context = {
-        'staff_form': staff_form,
-        'employee_proj_form': employee_proj_form,
+        'title': 'Assign Project',
+        'form': form
     }
 
     return render(request, 'users/employee_project_form.html', context)
@@ -721,4 +728,4 @@ class EmployeeProjectsDetailView(LoginRequiredMixin, DetailView):
 
 class EmployeeProjectsListView(LoginRequiredMixin, ListView):
     model = EmployeeProject
-    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'created_by']
+    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'contribution_percentage']

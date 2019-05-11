@@ -3,84 +3,54 @@
 
 {% block content %}
     <div class="content-section">
-        <h3 class="border-bottom mb-4">Employee Projects</h3>
-        <div class="d-flex flex-row-reverse">
-            <div class="p-2">
-                <a class="btn btn-success btn-md" href="{% url 'users:employee-assign-project' %}">Create</a>
-            </div>
-        </div>
-        <div class="table-responsive-md">
-            <table class="table table-sm table-hover">
+        <h4 class="border-bottom mb-4">Employee Projects</h4>
+        <div class="table-responsive">
+            <table id="table_id" class="table table-md table-striped table-bordered w-100">
+                <caption class="border-bottom mb-4">Projects</caption>
                 <thead class="thead-dark">
                 <tr>
                     <th>Full name</th>
-                    <th>Code</th>
-                    <th>Duty Station</th>
-                    <th>Department</th>
-                    <th>Job Title</th>
-                    <th>Employee status</th>
-                    <th>Contract type</th>
-                    <th>Cost centre</th>
-                    <th>Project code</th>
-                    <th>SOF code</th>
-                    <th>DEA code</th>
-                    <th>Contribution %age</th>
-                    <th>Actions</th>
+                    <th>Cost Centre</th>
+                    <th>Project Code</th>
+                    <th>SOF Code</th>
+                    <th>DEA Code</th>
+                    <th>Contribution</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for project in object_list %}
                     <tr>
                         <td>{{ project.employee.user.get_full_name }}</td>
-                        <td>{{ project.employee.id_number }}</td>
-                        <td>{{ project.employee.duty_station }}</td>
-                        <td>{{ project.employee.department }}</td>
-                        <td>{{ project.employee.job_title }}</td>
-                        <td>{{ project.employee.employment_status }}</td>
-                        <td>{{ project.employee.contract_type }}</td>
-                        <td>{{ project.employee.cost_centre }}</td>
+                        <td>{{ project.cost_center }}</td>
                         <td>{{ project.project_code }}</td>
                         <td>{{ project.sof_code }}</td>
                         <td>{{ project.dea_code }}</td>
                         <td>{{ project.contribution_percentage }}</td>
-                        <td class="text-primary">
-                            <a class="btn btn-primary btn-sm"
-                               href="{% url 'users:employee-project-detail' pk=project.pk %}">View</a>
-                            <a class="btn btn-warning btn-sm"
-                               href="{% url 'users:employee-project-creation' pk=project.employee.pk %}">Edit</a>
-                            <a class="btn btn-danger btn-sm"
-                               href="#">Delete</a>
-                        </td>
                     </tr>
-                {% empty %}
-                    <p class="text-center">No Employee Projects yet</p>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div class="d-flex flex-row justify-content-end">
-            {% if is_paginated %}
-
-                {% if page_obj.has_previous %}
-                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
-                    <a class="btn btn-outline-primary mb-4"
-                       href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
-
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-                    <a class="btn btn-outline-primary mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                {% endif %}
-
-            {% endif %}
-        </div>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#table_id').DataTable( {
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                    },
+                    'print'
+                ]
+            } );
+        } );
+    </script>
+{% endblock scripts %}

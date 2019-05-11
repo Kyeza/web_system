@@ -183,13 +183,16 @@ class DEA(models.Model):
 
 class EmployeeProject(models.Model):
     project_key = models.CharField(max_length=150, blank=True, null=False, default=None, editable=False)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, editable=False)
-    cost_center = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True, blank=True)
-    project_code = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
-    sof_code = models.ForeignKey(SOF, on_delete=models.SET_NULL, null=True, blank=True)
-    dea_code = models.ForeignKey(DEA, on_delete=models.SET_NULL, null=True, blank=True)
-    contribution_percentage = models.IntegerField(blank=True, default=100)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    cost_center = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True)
+    project_code = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
+    sof_code = models.ForeignKey(SOF, on_delete=models.SET_NULL, null=True)
+    dea_code = models.ForeignKey(DEA, on_delete=models.SET_NULL, null=True)
+    contribution_percentage = models.IntegerField(default=100)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, editable=False)
+
+    def get_absolute_url(self):
+        return reverse('users:employee-assign-project')
 
     def clean(self):
         if self.project_key is None:
@@ -206,14 +209,15 @@ class EmployeeProject(models.Model):
                 total_contrib += project.contribution_percentage
 
             total_contrib += self.contribution_percentage
-            if total_contrib >= 100:
+            if total_contrib > 100:
                 total_contrib -= self.contribution_percentage
                 available_contrib = 100 - total_contrib
 
                 if available_contrib == 0:
-                    raise ValidationError('No more assignments can be made to this project')
+                    raise ValidationError('No more assignments can be made to this project for this employee.')
                 else:
-                    raise ValidationError(f'Only {available_contrib}% contribution can be made to this project')
+                    raise ValidationError(f'Only {available_contrib}% contribution can be \
+                     add to this project for this employee')
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
