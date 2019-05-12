@@ -4,23 +4,13 @@
     <bookmark url="file://$PROJECT_DIR$/hr_system/settings.py" line="19" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Implemented search, print, excel and pdf feature on all system features&#10;- Implemented reports generation including the reconciliation report.">
-      <change afterPath="$PROJECT_DIR$/users/migrations/0004_auto_20190510_2325.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users/migrations/0005_auto_20190511_2242.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users/migrations/0006_auto_20190512_0047.py" afterDir="false" />
+    <list default="true" id="0562da3b-c6a1-4b77-be89-25d8c024989e" name="Default" comment="- Implemented Employee projects assignment feature&#10;- Improved Birthday, termination, and separated staff tables">
+      <change afterPath="$PROJECT_DIR$/templates/users/password_reset.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/password_reset_complete.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/password_reset_confirm.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/users/password_reset_done.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/partials/top_navigation_bar.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/top_navigation_bar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_assign_employee_project_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_assign_employee_project_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_employee_birthday_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_employee_birthday_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_rejected_employee_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_rejected_employee_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_separated_employee_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_separated_employee_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/_terminate_employee_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/_terminate_employee_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/employee_project_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/employee_project_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/employeeproject_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/employeeproject_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hr_system/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hr_system/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -73,11 +63,47 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/partials/top_navigation_bar.html">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/hr_system/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+            <state relative-caret-position="321">
+              <caret line="37" column="88" lean-forward="true" selection-start-line="37" selection-start-column="88" selection-end-line="37" selection-end-column="88" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/users/password_reset_complete.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/users/password_reset_done.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="18" selection-start-column="18" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/users/password_reset_confirm.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="396">
+              <caret line="22" column="22" lean-forward="true" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/users/password_reset.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="15" column="112" selection-start-line="15" selection-start-column="112" selection-end-line="15" selection-end-column="112" />
             </state>
           </provider>
         </entry>
@@ -143,11 +169,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/payroll/currency_list.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_list.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_close_list.html" />
-        <option value="$PROJECT_DIR$/templates/payroll/bank_list.html" />
-        <option value="$PROJECT_DIR$/support_data/views.py" />
         <option value="$PROJECT_DIR$/templates/partials/messages.html" />
         <option value="$PROJECT_DIR$/templates/payroll/payrollperiod_process_list.html" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/85a9aa1f-0472-4131-a427-edc6a8c36a20/console.sql" />
@@ -194,6 +215,11 @@
         <option value="$PROJECT_DIR$/templates/partials/botton_navigation_bar.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/partials/top_navigation_bar.html" />
+        <option value="$PROJECT_DIR$/hr_system/urls.py" />
+        <option value="$PROJECT_DIR$/templates/users/password_reset_done.html" />
+        <option value="$PROJECT_DIR$/templates/users/password_reset_confirm.html" />
+        <option value="$PROJECT_DIR$/templates/users/password_reset_complete.html" />
+        <option value="$PROJECT_DIR$/templates/users/password_reset.html" />
       </list>
     </option>
   </component>
@@ -231,12 +257,6 @@
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
               <item name="hr_system" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hr_system" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="reports" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="hr_system" type="b2602c69:ProjectViewProjectNode" />
@@ -426,7 +446,7 @@
       <workItem from="1557384652589" duration="1902000" />
       <workItem from="1557409401323" duration="34430000" />
       <workItem from="1557519276886" duration="4838000" />
-      <workItem from="1557601017213" duration="7238000" />
+      <workItem from="1557601017213" duration="9246000" />
     </task>
     <task id="LOCAL-00001" summary="-Worked on payroll reports generation">
       <created>1555915760043</created>
@@ -561,7 +581,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557508078671</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="- Implemented Employee projects assignment feature&#10;- Improved Birthday, termination, and separated staff tables">
+      <created>1557615044931</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1557615044931</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -597,18 +624,18 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="175418000" />
+    <option name="totallyTimeSpent" value="177426000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49436393" visible="true" weight="0.1762481" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.5056361" side_tool="true" visible="true" weight="0.1762481" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49436393" visible="true" weight="0.1762481" />
+      <window_info id="Structure" order="1" sideWeight="0.5056361" side_tool="true" visible="true" weight="0.1762481" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="0" sideWeight="0.49848714" weight="0.32206118" />
       <window_info anchor="bottom" x="422" y="173" width="632" height="736" id="Debug" maximized="true" order="1" weight="0.45410627" />
-      <window_info anchor="bottom" x="0" y="23" width="1366" height="715" id="manage.py@hr_system" maximized="true" order="2" type="WINDOWED" visible="true" weight="0.32817337" />
+      <window_info anchor="bottom" x="0" y="23" width="1366" height="745" id="manage.py@hr_system" maximized="true" order="2" type="WINDOWED" weight="0.32817337" />
       <window_info anchor="bottom" id="Database Console" order="3" weight="0.32954547" />
       <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.5015129" side_tool="true" weight="0.31239936" />
       <window_info anchor="bottom" id="Database Changes" order="5" show_stripe_button="false" />
@@ -677,7 +704,8 @@
     <MESSAGE value="- add .gitignore file" />
     <MESSAGE value="- added .gitignore file and removed module based logger config" />
     <MESSAGE value="- Implemented search, print, excel and pdf feature on all system features&#10;- Implemented reports generation including the reconciliation report." />
-    <option name="LAST_COMMIT_MESSAGE" value="- Implemented search, print, excel and pdf feature on all system features&#10;- Implemented reports generation including the reconciliation report." />
+    <MESSAGE value="- Implemented Employee projects assignment feature&#10;- Improved Birthday, termination, and separated staff tables" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Implemented Employee projects assignment feature&#10;- Improved Birthday, termination, and separated staff tables" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/hr_system$Test__users_tests_EmployeeModelTest_test_register_new_employee.coverage" NAME="Test: users.tests.EmployeeModelTest.test_register_new_employee Coverage Results" MODIFIED="1556880695019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -685,45 +713,6 @@
     <SUITE FILE_PATH="coverage/hr_system$Test__.coverage" NAME="Test:  Coverage Results" MODIFIED="1556887280559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/payroll/currency_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="61" column="22" lean-forward="true" selection-start-line="40" selection-start-column="22" selection-end-line="61" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/payroll_center_staff_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="63" column="22" selection-start-line="63" selection-start-column="22" selection-end-line="63" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/payroll/earningdeductiontype_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="702">
-          <caret line="55" column="22" lean-forward="true" selection-start-line="34" selection-start-column="22" selection-end-line="55" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://85a9aa1f-0472-4131-a427-edc6a8c36a20/schema/payroll_schema/table/payroll_earningdeductiontype">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true">
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://85a9aa1f-0472-4131-a427-edc6a8c36a20/schema/payroll_schema/table/payroll_payrollcentereds">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true">
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/support_data/contracttype_list.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -800,13 +789,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="861">
           <caret line="200" column="31" selection-start-line="200" selection-start-column="31" selection-end-line="200" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hr_system/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="16" column="28" selection-start-line="16" selection-start-column="22" selection-end-line="16" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -1076,6 +1058,48 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="72">
           <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hr_system/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="37" column="88" lean-forward="true" selection-start-line="37" selection-start-column="88" selection-end-line="37" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="28" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/password_reset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="15" column="112" selection-start-line="15" selection-start-column="112" selection-end-line="15" selection-end-column="112" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/password_reset_confirm.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="22" column="22" lean-forward="true" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/password_reset_done.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="18" selection-start-column="18" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/users/password_reset_complete.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
         </state>
       </provider>
     </entry>
