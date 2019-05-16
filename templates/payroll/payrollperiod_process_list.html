@@ -25,7 +25,7 @@
                 {% for payroll_period in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'reports:display-summary-report' payroll_period.id %}">{{ payroll_period.payroll_key }}</a>
+                            <a href="{% url 'reports:display-summary-report' payroll_period.pk %}">{{ payroll_period.payroll_key }}</a>
                         </td>
                         <td>{{ payroll_period.payroll_center }}</td>
                         <td>{{ payroll_period.month }}</td>
@@ -128,9 +128,7 @@
                     console.log('Am back with');
                     console.log(response);
                     if(response.status === 'Failed') {
-                        console.log(response.status);
-                        let msgs = $('#messages');
-                        msgs.html(response.message)
+                        console.log(response.message);
                     }else {
                         console.log(response.status);
                         window.location.href = '/reports/summary_report/' + id;

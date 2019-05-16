@@ -1,3 +1,5 @@
+import re
+
 from builtins import super
 from decimal import Decimal
 
@@ -171,7 +173,9 @@ def add_user_to_payroll_processor(instance):
                                 # if its a new instance in the payroll period, create processors for that
                                 # instance/employee
                                 for pc_ed_type in payroll_center_ed_types:
-                                    if pc_ed_type.ed_type == 'Basic Salary':
+                                    basic_salary_reg = re.compile(r'basic salary', re.IGNORECASE, )
+                                    hardship_allowance_reg = re.compile(r'hardship allowance', re.IGNORECASE, )
+                                    if basic_salary_reg.fullmatch(pc_ed_type.ed_type.ed_type):
                                         user_process = PayrollProcessors(employee=instance.employee,
                                                                          earning_and_deductions_category=pc_ed_type
                                                                          .ed_type.ed_category,
@@ -179,7 +183,7 @@ def add_user_to_payroll_processor(instance):
                                                                          amount=instance.employee.gross_salary,
                                                                          payroll_period=payroll_period)
                                         user_process.save()
-                                    elif pc_ed_type.ed_type.lower().__contains__('hardship'):
+                                    elif hardship_allowance_reg.fullmatch(pc_ed_type.ed_type.ed_type):
                                         if instance.employee.duty_station:
                                             user_process = PayrollProcessors(employee=instance.employee,
                                                                              earning_and_deductions_category=pc_ed_type
@@ -518,10 +522,12 @@ def process_payroll_period(request, pk):
         response = None
         try:
             response = processor(payroll_period, process_lst, 'POST')
-        except Exception:
-            msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
-            html = render_to_string('partials/messages.html', {'msgs': msgs})
-            response = {'status': 'Failed', 'message': html}
+        except Exception as e:
+            # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
+            # html = render_to_string('partials/messages.html', {'msgs': msgs})
+
+            print(e.args)
+            response = {'status': 'Failed', 'message': ''}
             return JsonResponse(response)
         else:
             return JsonResponse(response)
