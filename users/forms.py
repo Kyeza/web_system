@@ -51,6 +51,7 @@ class ProfileCreationForm(forms.ModelForm):
         self.fields['dr_ac_code'].label = "DR A/C code"
         self.fields['cr_ac_code'].label = "CR A/C code"
         self.fields['tin_number'].label = "TIN number"
+        self.fields['project'].label = "Project code"
 
     # bio-data fields
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
@@ -130,6 +131,7 @@ class ProfileUpdateForm(forms.ModelForm):
         self.fields['dr_ac_code'].label = "DR A/C code"
         self.fields['cr_ac_code'].label = "CR A/C code"
         self.fields['tin_number'].label = "TIN number"
+        self.fields['project'].label = "Project code"
 
     # bio-data fields
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), disabled=True, required=False)
@@ -137,7 +139,7 @@ class ProfileUpdateForm(forms.ModelForm):
     date_of_birth = forms.DateField(disabled=True)
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), disabled=True)
     marital_status = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.Select())
-    nationality = forms.ModelChoiceField(queryset=Nationality.objects.all(), disabled=True)
+    nationality = forms.ModelChoiceField(queryset=Nationality.objects.all())
     image = forms.ImageField(required=False)
     mobile_number = forms.CharField(max_length=12, required=False)
     passport_number = forms.CharField(required=False)
@@ -149,7 +151,7 @@ class ProfileUpdateForm(forms.ModelForm):
     duty_station = forms.ModelChoiceField(queryset=DutyStation.objects.all(), required=False)
     department = forms.ModelChoiceField(queryset=Department.objects.all(), required=False)
     job_title = forms.ModelChoiceField(queryset=JobTitle.objects.all(), required=False)
-    appointment_date = forms.DateField(disabled=True)
+    appointment_date = forms.DateField()
     contract_type = forms.ModelChoiceField(queryset=ContractType.objects.all(), required=False)
     grade = forms.ModelChoiceField(queryset=Grade.objects.all(), required=False)
     gross_salary = forms.DecimalField(max_digits=9, decimal_places=2, required=False, widget=forms.NumberInput())
@@ -178,18 +180,7 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = [
-            'marital_status', 'mobile_number', 'id_number',
-            'passport_number', 'nationality', 'residential_address', 'district',
-            'date_of_birth', 'sex', 'image', 'user_group',
-            'duty_country', 'duty_station', 'department', 'job_title',
-            'appointment_date', 'contract_type', 'cost_centre', 'grade',
-            'gross_salary', 'currency', 'tin_number', 'social_security',
-            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-            'first_account_number', 'second_account_number', 'first_bank_percentage',
-            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'dr_ac_code', 'cr_ac_code',
-        ]
+        exclude = ['user']
 
 
 class EmployeeApprovalForm(ProfileUpdateForm):
@@ -198,18 +189,7 @@ class EmployeeApprovalForm(ProfileUpdateForm):
     class Meta:
         """docstring for Meta"""
         model = Employee
-        fields = [
-            'marital_status', 'mobile_number', 'id_number',
-            'passport_number', 'nationality', 'residential_address', 'district',
-            'date_of_birth', 'sex', 'image', 'user_group',
-            'duty_country', 'duty_station', 'department', 'job_title',
-            'appointment_date', 'contract_type', 'cost_centre', 'grade',
-            'gross_salary', 'currency', 'tin_number', 'social_security',
-            'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-            'first_account_number', 'second_account_number', 'first_bank_percentage',
-            'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-            'kin_relationship', 'dr_ac_code', 'cr_ac_code',
-        ]
+        exclude = ['user']
 
 
 class TerminationForm(forms.ModelForm):

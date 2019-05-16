@@ -49,6 +49,27 @@
                     </tr>
                 {% endfor %}
                 </tbody>
+                <tfoot>
+                {% for record in data %}
+                    {% if forloop.first %}
+                        <tr>
+                            <th>Total:</th>
+                            {% for ed_type, amount in record.get_earnings_data.items %}
+                                <th></th>
+                            {% endfor %}
+                            {% for ed_type, amount in record.get_deductions_data.items %}
+                                <th></th>
+                            {% endfor %}
+                            {% for ed_type, amount in record.get_statutory_data.items %}
+                                <th></th>
+                            {% endfor %}
+                            {% for ed_type, amount in record.get_extra_data.items %}
+                                <th></th>
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tfoot>
             </table>
         </div>
     </div>
@@ -70,7 +91,43 @@
                         pageSize: 'A1',
                     },
                     'print'
-                ]
+                ],
+                "footerCallback": function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
+
+                    let colCount = api.columns().header().length;
+
+                    // Remove the formatting to get integer data for summation
+                    let intVal = function ( i ) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    let i;
+                    let pageTotal = [];
+                    for (i = 0; i < colCount; i++) {
+                        // Total over this page
+                        if (i > 0) {
+                            pageTotal[i] = api
+                                .column( i, { page: 'current'} )
+                                .data()
+                                .reduce( function (a, b) {
+                                    return Math.round((intVal(a) + intVal(b))* 100) / 100;
+                                }, 0 );
+                        }
+                    }
+
+                    for (i = 0; i < colCount; i++) {
+                        // Update footer
+                        if (i > 0) {
+                            $( api.column( i ).footer() ).html(
+                                pageTotal[i].toLocaleString()
+                            );
+                        }
+                    }
+                }
             } );
         } );
     </script>

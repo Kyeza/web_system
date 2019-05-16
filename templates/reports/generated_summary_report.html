@@ -33,10 +33,13 @@
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
                         {% for processor in data|user_data:staff|category:1 %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
+                        {% endfor %}
+                        {% for processor in data|user_data:staff|category:2 %}
+                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
                         {% endfor %}
                         {% for processor in data|user_data:staff|category:3 %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -60,6 +63,9 @@
                     {% for info in data|user_data:staff|category:1 %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
+                    {% for info in data|user_data:staff|category:2 %}
+                        <td>{{ info.amount|intcomma }}</td>
+                    {% endfor %}
                     {% for info in data|user_data:staff|category:3 %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
@@ -73,6 +79,30 @@
                 </tr>
             {% endfor %}
             </tbody>
+            <tfoot>
+            {% for staff in data|get_distinct_employee_set %}
+                {% if forloop.first %}
+                    <tr>
+                        <th colspan="5">Total:</th>
+                        {% for info in data|user_data:staff|category:1 %}
+                            <th></th>
+                        {% endfor %}
+                        {% for info in data|user_data:staff|category:2 %}
+                            <th></th>
+                        {% endfor %}
+                        {% for info in data|user_data:staff|category:3 %}
+                            <th></th>
+                        {% endfor %}
+                        {% with period|report_key:staff as key %}
+                            {% for user_report in user_reports|extra_info:key %}
+                                <th></th>
+                                <th colspan="2"></th>
+                            {%  endfor %}
+                        {% endwith %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tfoot>
         </table>
     </div>
 {% endfor %}

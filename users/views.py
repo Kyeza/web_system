@@ -155,20 +155,21 @@ def add_user_to_payroll_processor(instance):
                                 for pc_ed_type in payroll_center_ed_types:
                                     if existing_user_payroll_processors.filter(
                                             earning_and_deductions_type=pc_ed_type.ed_type):
-                                        # if that ed_type already has a processor associated with the instance leave it and
-                                        # continue
+                                        # if that ed_type already has a processor associated with the instance leave
+                                        # it and continue
                                         continue
                                     else:
                                         # else create it
                                         user_process = PayrollProcessors(employee=instance.employee,
-                                                                         earning_and_deductions_category=pc_ed_type.ed_type \
-                                                                         .ed_category,
+                                                                         earning_and_deductions_category=pc_ed_type
+                                                                         .ed_type.ed_category,
                                                                          earning_and_deductions_type=pc_ed_type.ed_type,
                                                                          amount=0, payroll_period=payroll_period)
                                         user_process.save()
 
                             else:
-                                # if its a new instance in the payroll period, create processors for that instance/employee
+                                # if its a new instance in the payroll period, create processors for that
+                                # instance/employee
                                 for pc_ed_type in payroll_center_ed_types:
                                     if pc_ed_type.ed_type == 'Basic Salary':
                                         user_process = PayrollProcessors(employee=instance.employee,
@@ -177,6 +178,17 @@ def add_user_to_payroll_processor(instance):
                                                                          earning_and_deductions_type=pc_ed_type.ed_type,
                                                                          amount=instance.employee.gross_salary,
                                                                          payroll_period=payroll_period)
+                                        user_process.save()
+                                    elif pc_ed_type.ed_type.lower().__contains__('hardship'):
+                                        if instance.employee.duty_station:
+                                            user_process = PayrollProcessors(employee=instance.employee,
+                                                                             earning_and_deductions_category=pc_ed_type
+                                                                             .ed_type.ed_category,
+                                                                             earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                             amount=instance.employee.duty_station
+                                                                             .earning_amount,
+                                                                             payroll_period=payroll_period)
+                                            user_process.save()
                                     else:
                                         user_process = PayrollProcessors(employee=instance.employee,
                                                                          earning_and_deductions_category=pc_ed_type
@@ -184,7 +196,7 @@ def add_user_to_payroll_processor(instance):
                                                                          earning_and_deductions_type=pc_ed_type.ed_type,
                                                                          amount=0,
                                                                          payroll_period=payroll_period)
-                                    user_process.save()
+                                        user_process.save()
                     else:
                         raise Exception('No PayrollCenter Earnings and Deductions in the System')
 
@@ -247,7 +259,7 @@ class RecruitedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
         'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
         'first_account_number', 'second_account_number', 'first_bank_percentage',
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship', 'dr_ac_code', 'cr_ac_code'
+        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
     ]
 
     def get_queryset(self):
@@ -268,7 +280,7 @@ class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
         'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
         'first_account_number', 'second_account_number', 'first_bank_percentage',
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship'
+        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
     ]
 
     def get_queryset(self):
@@ -288,7 +300,7 @@ class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
         'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
         'first_account_number', 'second_account_number', 'first_bank_percentage',
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship'
+        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
     ]
 
     def get_queryset(self):
@@ -313,7 +325,7 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
         'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
         'first_account_number', 'second_account_number', 'first_bank_percentage',
         'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship'
+        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
     ]
 
     def get_queryset(self):
@@ -390,7 +402,22 @@ def processor(payroll_period, process_lst='False', method='GET'):
                 if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
+                elif inst.earning_and_deductions_type.ed_type.lower().__contains__('hardship'):
+                    if employee.duty_station:
+                        inst.amount = employee.duty_station.earning_amount
+                        inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
+
+        # calculating PAYE
+        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
+        for tx_brac in PAYERates.objects.all():
+            if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
+                tax_bracket = tx_brac.lower_boundary
+                tax_rate = tx_brac.rate / 100
+                fixed_tax = tx_brac.fixed_amount
+                break
+        paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
+        ge_minus_paye = gross_earnings - paye
 
         # calculating LST
         fixed_lst = 0
@@ -398,21 +425,10 @@ def processor(payroll_period, process_lst='False', method='GET'):
             lst_rates = LSTRates.objects.all()
             if lst_rates:
                 for lst_brac in lst_rates:
-                    if int(gross_earnings) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
+                    if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
                         fixed_lst = lst_brac.fixed_amount / 4
                         break
         lst = fixed_lst
-        ge_minus_lst = gross_earnings - lst
-
-        # calculating PAYE
-        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
-        for tx_brac in PAYERates.objects.all():
-            if int(ge_minus_lst) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
-                tax_bracket = tx_brac.lower_boundary
-                tax_rate = tx_brac.rate / 100
-                fixed_tax = tx_brac.fixed_amount
-                break
-        paye = (ge_minus_lst - tax_bracket) * tax_rate + fixed_tax
 
         # calculating NSSF 5% and 10%
         nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
@@ -426,11 +442,12 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_paye_processor.save(update_fields=['amount'])
 
         # update LST if exists in payroll center
-        employee_lst_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type__icontains='LST').first()
-        if employee_paye_processor:
-            employee_lst_processor.amount += lst
-            employee_lst_processor.save(update_fields=['amount'])
+        if process_lst == 'True':
+            employee_lst_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type__ed_type__icontains='LST').first()
+            if employee_paye_processor:
+                employee_lst_processor.amount = lst
+                employee_lst_processor.save(update_fields=['amount'])
 
         # update NSSF 10% if exists in payroll center
         employee_nssf_10_processor = period_processes.filter(employee=employee) \

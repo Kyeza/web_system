@@ -34,6 +34,7 @@ class SummaryReportUpdateForm(forms.ModelForm):
 
 class ReportGeneratorForm(forms.Form):
     REPORTS = (
+        ('LST', 'LST'),
         ('NSSF', 'NSSF'),
         ('PAYE', 'PAYE'),
         ('BANK', 'Bank'),

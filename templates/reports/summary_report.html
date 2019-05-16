@@ -15,6 +15,9 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>Staff</th>
+                    <th>Agresso no.</th>
+                    <th>Job title</th>
+                    <th>Duty station</th>
                     {% for staff in employees_to_process %}
                         {% if forloop.first %}
                             {% for processor in period_processes|user_data:staff|category:1 %}
@@ -39,6 +42,9 @@
                         <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.id %}">
                             {{ staff.user.get_full_name }}
                         </a></td>
+                        <td>{{ staff.id_number }}</td>
+                        <td>{{ staff.job_title }}</td>
+                        <td>{{ staff.duty_station }}</td>
                         {% for data in period_processes|user_data:staff|category:1 %}
                             <td>{{ data.amount|intcomma }}</td>
                         {% endfor %}

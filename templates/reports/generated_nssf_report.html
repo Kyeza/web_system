@@ -38,7 +38,7 @@
             {% for staff in data|get_distinct_employee_set %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ staff.id_number }}</td>
+                    <td>{{ staff.agresso_number }}</td>
                     <td>{{ staff.social_security_number }}</td>
                     <td>{{ staff.user.get_full_name }}</td>
                     <td>{{ staff.duty_station }}</td>

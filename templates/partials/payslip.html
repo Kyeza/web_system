@@ -3,18 +3,28 @@
 {% load humanize %}
 
 <div class="flex-column">
-    <div class="p-2 mt-3 mb-1 d-flex flex-row-reverse">
-        <button id="ignore-print" class="btn btn-sm btn-warning">PRINT/ PDF</button>
-    </div>
     <div class="pdf p-2" style="width: 450px">
-        <h4 class="border-top pt-4 mb-2 text-center">
-            {{ period.payroll_center.organization }}
-        </h4>
-        <h4 class="border-bottom text-center">
-            Pay Slip
-        </h4>
+        <div class="border-top mb-4 d-flex flex-nowrap justify-content-center w-100">
+            <div class="p-2 align-self-center">
+                <img src="/media/logo.png" class="img-fluid" style="width: 3em; height: 3em">
+            </div>
+            <div class="p-2 align-self-end">
+                <h4 class="text-center" style="text-align: center;">
+                    {{ period.payroll_center.organization }}
+                </h4>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-sm">
+                <thead>
+                <tr>
+                    <th colspan="2">
+                        <h4 class="border-bottom text-center" style="text-align: center;">
+                            Pay Slip
+                        </h4>
+                    </th>
+                </tr>
+                </thead>
                 <tbody>
                 {% for staff in data|get_distinct_employee_set %}
                     <tr>
@@ -126,6 +136,16 @@
                     {% endwith %}
                 {% endfor %}
                 </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="2">
+                        <div style="margin-top: 5px">
+                            <span style="margin-right: 6px">Prepared by......................</span>
+                            <span>Reviewed by.....................</span>
+                        </div>
+                    </th>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>

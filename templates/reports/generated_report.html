@@ -5,6 +5,8 @@
         <div class="pdf landscape">
             {% if report == 'NSSF' %}
                 {% include 'reports/generated_nssf_report.html' %}
+            {% elif report == 'LST' %}
+                {% include 'reports/generated_lst_report.html' %}
             {% elif report == 'SUMMARY' %}
                 {% include 'reports/generated_summary_report.html' %}
             {% elif report == 'PAYE' %}
@@ -34,10 +36,29 @@
                     'print'
                 ]
             } );
+
+            // Setup - add a text input to each footer cell
+            $('#summary_id thead tr').clone(true).appendTo( '#summary_id thead' );
+            $('#summary_id thead tr:eq(1) th').each( function (i) {
+                let title = $(this).text();
+                $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+
+                $( 'input', this ).on( 'keyup change', function () {
+                    let table = $('#summary_id').DataTable();
+                    if ( table.column(i).search() !== this.value ) {
+                        table
+                            .column(i)
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+
             let summaryReportTable = $('#summary_id').DataTable( {
+                orderCellsTop: true,
+                fixedHeader: true,
                 dom: 'lBfrtip',
                 scrollX: true,
-                scrollCollapse: true,
                 autoWidth: true,
                 paging: true,
                 buttons: [
@@ -47,7 +68,44 @@
                         orientation: 'landscape',
                     },
                     'print'
-                ]
+                ],
+
+                "footerCallback": function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
+
+                    let colCount = api.columns().header().length;
+
+                    // Remove the formatting to get integer data for summation
+                    let intVal = function ( i ) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    let i;
+                    let pageTotal = [];
+                    for (i = 0; i < colCount; i++) {
+                        // Total over this page
+                        if (i > 4 && i < colCount-1) {
+                            pageTotal[i] = api
+                                .column( i, { page: 'current'} )
+                                .data()
+                                .reduce( function (a, b) {
+                                    return Math.round((intVal(a) + intVal(b))* 100) / 100;
+                                }, 0 );
+                        }
+                    }
+
+                    for (i = 0; i < colCount; i++) {
+                        // Update footer
+                        if (i > 4 && i < colCount-1) {
+                            $( api.column( i ).footer() ).html(
+                                pageTotal[i].toLocaleString()
+                            );
+                        }
+                    }
+                }
             } );
 
             $('#summary_id tbody').on( 'click', 'tr', function () {
@@ -92,10 +150,8 @@
                 let users = [];
                 let i;
                 for (i = 0; i < length; i++) {
-                    console.log(summaryReportTable.rows('.selected').data()[i][1]);
                     users.push(summaryReportTable.rows('.selected').data()[i][1])
                 }
-                console.log(users);
 
                 emailUrl = '/reports/email/payslips/';
                 let users_data = {

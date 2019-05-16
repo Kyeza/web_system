@@ -1,4 +1,4 @@
-from decimal import Decimal
+import weasyprint
 
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage, get_connection
@@ -163,7 +163,7 @@ def generate_reports(request):
                 'results': results,
             }
 
-            if report == 'SUMMARY' or report == 'PAYE' or report == 'BANK':
+            if report == 'SUMMARY' or report == 'PAYE' or report == 'BANK' or report == 'LST':
                 context['user_reports'] = ExTraSummaryReportInfo.objects.all()
 
             if report == 'PAYE':
@@ -220,8 +220,10 @@ def send_mass_mail(request):
                 'user_reports': user_reports,
             }
             html_mail = ''
+            pdf = None
             try:
                 html_mail = render_to_string('partials/payslip.html', context)
+                pdf = weasyprint.HTML(string=html_mail).write_pdf()
             except Exception as e:
                 # log
                 print(e.args)
@@ -231,6 +233,7 @@ def send_mass_mail(request):
             to = (employee.user.email,)
             email = EmailMessage(subject=subject, body=body, to=to, reply_to=['replyto@noreply.com'])
             email.content_subtype = 'html'
+            email.attach('payslip.pdf', pdf, 'application/pdf')
 
             emails.append(email)
 

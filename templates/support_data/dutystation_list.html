@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block content %}
     <div class="content-section">
@@ -16,6 +17,8 @@
                 <tr>
                     <th>Name</th>
                     <th>Country</th>
+                    <th>Earning</th>
+                    <th>Amount</th>
                     <th>Description</th>
                     <th>Actions</th>
                 </tr>
@@ -25,6 +28,8 @@
                     <tr>
                         <td>{{ duty_station.duty_station }}</td>
                         <td>{{ duty_station.country }}</td>
+                        <td>{{ duty_station.earnings_type }}</td>
+                        <td>{{ duty_station.earning_amount|intcomma }}</td>
                         <td>{{ duty_station.description }}</td>
                         <td class="text-primary">
                             <a class="btn btn-primary btn-sm"

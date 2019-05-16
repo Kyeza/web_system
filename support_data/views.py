@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
@@ -5,6 +6,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade
+from .forms import DutyStationCreationForm
+from payroll.models import EarningDeductionType
 
 
 class OrganizationCreate(LoginRequiredMixin, CreateView):
@@ -134,7 +137,14 @@ class NationalityListView(LoginRequiredMixin, ListView):
 
 class DutyStationCreate(LoginRequiredMixin, CreateView):
     model = DutyStation
-    fields = ['duty_station', 'description', 'country']
+    form_class = DutyStationCreationForm
+
+    def get_initial(self):
+        hardship_allowance = EarningDeductionType.objects.filter(ed_type__icontains='hardship allowance').first()
+        if hardship_allowance:
+            return {'earnings_type': hardship_allowance}
+        else:
+            return super().get_initial()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -144,6 +154,7 @@ class DutyStationCreate(LoginRequiredMixin, CreateView):
 
 class DutyStationUpdate(LoginRequiredMixin, UpdateView):
     model = DutyStation
+    form_class = DutyStationCreationForm
     fields = ['duty_station', 'description', 'country']
 
     def get_context_data(self, **kwargs):

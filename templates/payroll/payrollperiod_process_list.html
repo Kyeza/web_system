@@ -25,7 +25,7 @@
                 {% for payroll_period in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'payroll:payroll-period-update' payroll_period.id %}">{{ payroll_period.payroll_key }}</a>
+                            <a href="{% url 'reports:display-summary-report' payroll_period.id %}">{{ payroll_period.payroll_key }}</a>
                         </td>
                         <td>{{ payroll_period.payroll_center }}</td>
                         <td>{{ payroll_period.month }}</td>

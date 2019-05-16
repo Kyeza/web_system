@@ -33,6 +33,18 @@ class CostCentre(models.Model):
         return self.cost_centre
 
 
+class Project(models.Model):
+    cost_centre = models.ForeignKey(CostCentre, on_delete=models.CASCADE)
+    project_code = models.CharField(max_length=20, primary_key=True)
+    project_name = models.CharField(max_length=200)
+
+    def get_absolute_url(self):
+        return reverse('users:project-detail', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return self.project_code
+
+
 class Employee(models.Model):
     """docstring for Employee"""
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
@@ -75,6 +87,8 @@ class Employee(models.Model):
     dr_ac_code = models.CharField(max_length=30, null=True, blank=True)
     cr_ac_code = models.CharField(max_length=30, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    agresso_number = models.IntegerField(unique=True, null=True, blank=True)
 
     def clean_payroll_center(self):
         if self.payroll_center is None:
@@ -143,18 +157,6 @@ class TerminatedEmployees(models.Model):
 
     def __str__(self):
         return self.employee
-
-
-class Project(models.Model):
-    cost_centre = models.ForeignKey(CostCentre, on_delete=models.CASCADE)
-    project_code = models.CharField(max_length=20, primary_key=True)
-    project_name = models.CharField(max_length=200)
-
-    def get_absolute_url(self):
-        return reverse('users:project-detail', kwargs={'pk': self.pk})
-
-    def __str__(self):
-        return self.project_code
 
 
 class SOF(models.Model):

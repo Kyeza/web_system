@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django import template
 
 register = template.Library()
@@ -23,3 +25,11 @@ def total_amount(processors):
     for inst in processors:
         total += inst.amount
     return total
+
+
+@register.filter
+def bank_percentage(net_pay, percentage):
+    if percentage:
+        return round(net_pay * Decimal((percentage/100)), 2)
+    else:
+        return net_pay

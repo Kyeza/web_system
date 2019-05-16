@@ -140,7 +140,7 @@ class PayrollPeriodForProcessing(LoginRequiredMixin, PermissionRequiredMixin, Li
         return PayrollPeriod.objects.filter(status='OPEN').all().order_by('id')
 
 
-class EarningAndDeductionCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class EarningAndDeductionCreate(LoginRequiredMixin, CreateView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
 
@@ -150,9 +150,9 @@ class EarningAndDeductionCreate(LoginRequiredMixin, PermissionRequiredMixin, Cre
         return context
 
 
-class EarningAndDeductionUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class EarningAndDeductionUpdate(LoginRequiredMixin, UpdateView):
     model = EarningDeductionType
-    fields = ['ed_type', 'description', 'ed_category', PermissionRequiredMixin, 'recurrent', 'taxable']
+    fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -160,14 +160,14 @@ class EarningAndDeductionUpdate(LoginRequiredMixin, PermissionRequiredMixin, Upd
         return context
 
 
-class EarningAndDeductionDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class EarningAndDeductionDetailView(LoginRequiredMixin, DetailView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
 
 
-class EarningAndDeductionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class EarningAndDeductionListView(LoginRequiredMixin, ListView):
     model = EarningDeductionType
-    fields = ['ed_type', 'description', 'ed_category', PermissionRequiredMixin, 'recurrent', 'taxable']
+    fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable']
 
 
 class PayrollCenterEdsCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -220,12 +220,12 @@ class PayrollCenterEdsListView(LoginRequiredMixin, UserPassesTestMixin, ListView
         return False
 
 
-class LSTListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class LSTListView(LoginRequiredMixin, ListView):
     model = LSTRates
     fields = ['lower_boundary', 'upper_boundary', 'fixed_amount', 'rate', 'country']
 
 
-class BankCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class BankCreate(LoginRequiredMixin, CreateView):
     model = Bank
     fields = ['bank', 'sort_code', 'description']
 

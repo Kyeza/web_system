@@ -5,6 +5,7 @@ from django.urls import reverse
 
 from hr_system.constants import YES_OR_NO_TYPES
 from .constants import TAX_YEAR_CHOICES
+from payroll.models import EarningDeductionType
 
 
 class Country(models.Model):
@@ -35,7 +36,9 @@ class DutyStation(models.Model):
     """docstring for DutyStation"""
     duty_station = models.CharField(max_length=30)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    description = models.CharField(max_length=150)
+    earnings_type = models.ForeignKey(EarningDeductionType, on_delete=models.SET_NULL, null=True, blank=True)
+    earning_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    description = models.CharField(max_length=150, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('support_data:duty-station-detail', kwargs={'pk': self.pk})
