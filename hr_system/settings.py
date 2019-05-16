@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '141b364869dd5b23831d1cad86b05342'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -111,9 +111,6 @@ else:
             'PASSWORD': '',
             'HOST': '127.0.0.1',
             'PORT': '3306',
-            'TEST': {
-                'NAME': 'test_payroll_schema'
-            }
         }
     }
 # [END db_setup]

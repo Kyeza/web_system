@@ -45,6 +45,13 @@ class Project(models.Model):
         return self.project_code
 
 
+class District(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 class Employee(models.Model):
     """docstring for Employee"""
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
@@ -57,7 +64,7 @@ class Employee(models.Model):
     id_number = models.CharField('ID Number', max_length=30)
     passport_number = models.CharField(max_length=16, blank=True, null=True)
     residential_address = models.CharField('Residential address', max_length=30, blank=True, null=True)
-    district = models.CharField(max_length=30, blank=True, null=True)
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True)
     gross_salary = models.DecimalField(max_digits=9, decimal_places=2, null=True)
     tin_number = models.IntegerField('TIN NUMBER', null=True, blank=True)
     nationality = models.ForeignKey(Nationality, on_delete=models.DO_NOTHING)
