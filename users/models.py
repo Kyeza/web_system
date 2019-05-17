@@ -1,7 +1,10 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -33,18 +36,6 @@ class CostCentre(models.Model):
         return self.cost_centre
 
 
-class Project(models.Model):
-    cost_centre = models.ForeignKey(CostCentre, on_delete=models.CASCADE)
-    project_code = models.CharField(max_length=20, primary_key=True)
-    project_name = models.CharField(max_length=200)
-
-    def get_absolute_url(self):
-        return reverse('users:project-detail', kwargs={'pk': self.pk})
-
-    def __str__(self):
-        return self.project_code
-
-
 class District(models.Model):
     name = models.CharField(max_length=200)
 
@@ -54,75 +45,97 @@ class District(models.Model):
 
 class Employee(models.Model):
     """docstring for Employee"""
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    user_group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True)
+    phone_number_regex = re.compile(r'^\+?1?\d{9,15}$')
+    validation_msg = 'Enter a valid phone number .i.e: +0700000000 or +256700000000'
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, primary_key=True, editable=False)
+    user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS)
-    image = models.ImageField(default='default.png', upload_to=get_image_filename, blank=True)
-    mobile_number = models.CharField(max_length=12, blank=True, null=True)
+    image = models.ImageField(default='default.png', upload_to=get_image_filename, blank=True, null=True)
+    mobile_number = models.CharField(max_length=15, blank=True, null=True,
+                                     validators=[RegexValidator(inverse_match=True, regex=phone_number_regex,
+                                                                message=validation_msg)])
     date_of_birth = models.DateField(default=timezone.now)
     sex = models.CharField(max_length=6, choices=GENDER)
-    id_number = models.CharField('ID Number', max_length=30)
-    passport_number = models.CharField(max_length=16, blank=True, null=True)
-    residential_address = models.CharField('Residential address', max_length=30, blank=True, null=True)
+    id_number = models.CharField(max_length=200)
+    passport_number = models.CharField(max_length=200, blank=True, null=True)
+    home_address = models.CharField(max_length=200, blank=True, null=True)
+    residential_address = models.CharField(max_length=200, blank=True, null=True)
     district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True)
-    gross_salary = models.DecimalField(max_digits=9, decimal_places=2, null=True)
-    tin_number = models.IntegerField('TIN NUMBER', null=True, blank=True)
-    nationality = models.ForeignKey(Nationality, on_delete=models.DO_NOTHING)
-    grade = models.ForeignKey(Grade, on_delete=models.DO_NOTHING, null=True, blank=True)
-    duty_station = models.ForeignKey(DutyStation, on_delete=models.DO_NOTHING, null=True, blank=True)
-    duty_country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, null=True, blank=True)
-    department = models.ForeignKey(Department, on_delete=models.DO_NOTHING, null=True, blank=True)
-    job_title = models.ForeignKey(JobTitle, on_delete=models.DO_NOTHING, null=True, blank=True)
-    contract_type = models.ForeignKey(ContractType, on_delete=models.DO_NOTHING, null=True, blank=True)
+    gross_salary = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    tin_number = models.CharField(max_length=200, null=True, blank=True)
+    nationality = models.ForeignKey(Nationality, on_delete=models.SET_NULL, null=True)
+    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
+    duty_station = models.ForeignKey(DutyStation, on_delete=models.SET_NULL, null=True, blank=True)
+    duty_country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    job_title = models.ForeignKey(JobTitle, on_delete=models.SET_NULL, null=True, blank=True)
+    reports_to = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                   related_name='reports_to', null=True, blank=True)
+    contract_type = models.ForeignKey(ContractType, on_delete=models.SET_NULL, null=True, blank=True)
+    contract_expiry = models.DateField(null=True, blank=True)
     appointment_date = models.DateField(default=timezone.now, null=True, blank=True)
-    social_security = models.CharField('Pays Social Security', max_length=3, choices=YES_OR_NO_TYPES, null=True,
-                                       blank=True)
-    payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.DO_NOTHING, null=True)
-    bank_1 = models.ForeignKey(Bank, on_delete=models.DO_NOTHING, related_name='first_bank', null=True, blank=True)
-    bank_2 = models.ForeignKey(Bank, on_delete=models.DO_NOTHING, related_name='second_bank', null=True, blank=True)
-    cost_centre = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True, blank=True, default=None)
-    first_account_number = models.IntegerField('Account Number 1', null=True, blank=True)
-    second_account_number = models.IntegerField('Account Number 2', null=True, blank=True)
-    first_bank_percentage = models.IntegerField('Percentage', null=True, blank=True, default=0)
-    second_bank_percentage = models.IntegerField('Percentage', null=True, blank=True, default=0)
-    social_security_number = models.CharField(max_length=30, null=True, blank=True)
-    currency = models.ForeignKey(Currency, on_delete=models.DO_NOTHING, null=True, blank=True)
+    social_security = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
+    payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.SET_NULL, null=True)
+    bank_1 = models.ForeignKey(Bank, on_delete=models.SET_NULL, related_name='first_bank', null=True, blank=True)
+    bank_2 = models.ForeignKey(Bank, on_delete=models.SET_NULL, related_name='second_bank', null=True, blank=True)
+    cost_centre = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True, blank=True, )
+    first_account_number = models.CharField(max_length=200, null=True, blank=True)
+    second_account_number = models.CharField(max_length=200, null=True, blank=True)
+    first_bank_percentage = models.IntegerField(null=True, blank=True, default=0)
+    second_bank_percentage = models.IntegerField(null=True, blank=True, default=0)
+    social_security_number = models.CharField(max_length=200, null=True, blank=True)
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, blank=True)
     kin_full_name = models.CharField(max_length=250, null=True, blank=True)
-    kin_phone_number = models.CharField(max_length=12, null=True, blank=True)
+    kin_phone_number = models.CharField(max_length=15, blank=True, null=True,
+                                        validators=[RegexValidator(inverse_match=True, regex=phone_number_regex,
+                                                                   message=validation_msg)])
     kin_email = models.EmailField(null=True, blank=True)
-    kin_relationship = models.ForeignKey(Relationship, on_delete=models.DO_NOTHING, null=True, blank=True)
-    dr_ac_code = models.CharField(max_length=30, null=True, blank=True)
-    cr_ac_code = models.CharField(max_length=30, null=True, blank=True)
+    kin_relationship = models.ForeignKey(Relationship, on_delete=models.SET_NULL, null=True, blank=True)
+    dr_ac_code = models.CharField(max_length=50, null=True, blank=True)
+    cr_ac_code = models.CharField(max_length=50, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
-    agresso_number = models.IntegerField(unique=True, null=True, blank=True)
-
-    def clean_payroll_center(self):
-        if self.payroll_center is None:
-            raise ValidationError("Please enter employee 'Payroll center'.")
-
-    def clean_gross_salary(self):
-        if self.gross_salary is None:
-            raise ValidationError("Please enter employee 'Gross salary'.")
-
-    # TODO: add phone number validator
-    def clean_phone_number(self):
-        pass
+    agresso_number = models.CharField(max_length=200, unique=True, null=True, blank=True)
 
     def clean(self):
-        self.clean_payroll_center()
-        self.clean_gross_salary()
+        user_with_id_no = Employee.objects.filter(id_number__exact=self.id_number).first() if self.id_number else None
+        if user_with_id_no.pk != self.pk:
+            raise ValidationError("ID number already exists.")
+
+        user_with_passport_no = Employee.objects.filter(id_number__exact=self.passport_number).first() if self.passport_number else None
+        if user_with_passport_no:
+            if user_with_passport_no.pk != self.pk:
+                raise ValidationError("Passport number already exists.")
+
+        user_with_agresso_no = Employee.objects.filter(id_number__exact=self.agresso_number) if self.agresso_number else None
+        if user_with_agresso_no:
+            if user_with_agresso_no != self.pk:
+                raise ValidationError("Agresso number already exists.")
+
+        if self.payroll_center is None:
+            raise ValidationError("Payroll Canter required.")
+
+        if self.gross_salary is None:
+            raise ValidationError("Basic salary required.")
+
+        if self.first_bank_percentage > 0:
+            if self.bank_1 is None:
+                raise ValidationError("Bank 1 required.")
+            if self.first_account_number is None:
+                raise ValidationError("Account 1 required.")
+
+        if self.second_bank_percentage > 0:
+            if self.bank_2 is None:
+                raise ValidationError("Bank 2 required.")
+            if self.second_account_number is None:
+                raise ValidationError("Account 2 required.")
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.full_clean()
-        if self.appointment_date is None:
-            self.appointment_date = timezone.now()
-            super().save()
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return f'{self.user}'
+        return ' '.join([name.capitalize() for name in f'{self.user}'.split('.')])
 
 
 class PayrollProcessors(models.Model):
@@ -131,8 +144,7 @@ class PayrollProcessors(models.Model):
     earning_and_deductions_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.PROTECT, blank=True)
     amount = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL, null=True, blank=True)
-    payroll_key = models.CharField(max_length=150, blank=True, null=False,
-                                   default=None, unique=True, primary_key=True, editable=False)
+    payroll_key = models.CharField(max_length=150, blank=True, null=False, unique=True, primary_key=True, editable=False)
 
     def to_dict(self):
         data = {
@@ -155,15 +167,27 @@ class PayrollProcessors(models.Model):
 
 
 class TerminatedEmployees(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    notice_date = models.DateField(default=timezone.now, null=True)
-    exit_date = models.DateField(default=timezone.now, null=True)
-    days_given = models.IntegerField(null=True)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, primary_key=True)
+    notice_date = models.DateField(default=timezone.now, null=True, blank=True)
+    exit_date = models.DateField(default=timezone.now, null=True, blank=True)
+    days_given = models.PositiveIntegerField(null=True, blank=True)
     employable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
-    reason = models.TextField()
+    reason = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.employee
+
+
+class Project(models.Model):
+    cost_centre = models.ForeignKey(CostCentre, on_delete=models.CASCADE)
+    project_code = models.CharField(max_length=20, primary_key=True)
+    project_name = models.CharField(max_length=200)
+
+    def get_absolute_url(self):
+        return reverse('users:project-detail', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return self.project_code
 
 
 class SOF(models.Model):
@@ -191,7 +215,7 @@ class DEA(models.Model):
 
 
 class EmployeeProject(models.Model):
-    project_key = models.CharField(max_length=150, blank=True, null=False, default=None, editable=False)
+    project_key = models.CharField(max_length=150, blank=True, null=False, editable=False)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     cost_center = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True)
     project_code = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)

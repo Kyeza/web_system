@@ -28,7 +28,7 @@
                         <td>{{ employee.mobile_number }}</td>
                         <td>{{ employee.department }}</td>
                         <td>
-                            <a class="btn btn-primary btn-sm" href="{% url 'users:approve-employee' pk=employee.id %}">
+                            <a class="btn btn-primary btn-sm" href="{% url 'users:approve-employee' pk=employee.user.pk %}">
                                 APPROVE/ REJECT
                             </a>
                         </td>

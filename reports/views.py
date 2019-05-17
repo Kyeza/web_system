@@ -61,7 +61,7 @@ def update_summary_report(request, pp, user):
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
 
-    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.id}').first()
+    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.pk}').first()
 
     # creating initial data for formsets
     e_data = [processor.to_dict() for processor in cat_e]
@@ -186,7 +186,7 @@ def generate_payslip_report(request, pp, user):
     employee = get_object_or_404(Employee, pk=user)
     data = PayrollProcessors.objects.filter(payroll_period=period).filter(employee=employee)
     report = 'Pay Slip'
-    info_key = f'{period.payroll_key}S{employee.id}'
+    info_key = f'{period.payroll_key}S{employee.pk}'
     user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()
 
     context = {
@@ -211,7 +211,7 @@ def send_mass_mail(request):
         emails = []
         for employee in employees:
             data = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
-            info_key = f'{payroll_period.payroll_key}S{employee.id}'
+            info_key = f'{payroll_period.payroll_key}S{employee.pk}'
             user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()
             context = {
                 'report': 'PaySlip',

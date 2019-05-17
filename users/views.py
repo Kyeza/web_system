@@ -216,12 +216,12 @@ def reject_employee(request, pk=None):
 @login_required
 @permission_required('users.approve_employee', raise_exception=True)
 def approve_employee(request, pk=None):
-    prof = get_object_or_404(Employee, pk=pk)
-    profile_user = prof.user
+    employee = get_object_or_404(Employee, pk=pk)
+    profile_user = employee.user
 
     if request.method == 'POST':
         user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
-        profile_update_form = EmployeeApprovalForm(request.POST, request.FILES, instance=profile_user.employee)
+        profile_update_form = EmployeeApprovalForm(request.POST, request.FILES, instance=employee)
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             employee_profile = profile_update_form.save(commit=False)
@@ -235,11 +235,11 @@ def approve_employee(request, pk=None):
 
             # logger.info(f'{request.user} approved Employee {employee_profile.user}')
 
-            messages.success(request, 'Employee has been approved')
+            messages.success(request, f'{employee} has been approved')
             return redirect('users:employee-approval')
     else:
         user_update_form = StaffUpdateForm(instance=profile_user)
-        profile_update_form = EmployeeApprovalForm(instance=profile_user.employee)
+        profile_update_form = EmployeeApprovalForm(instance=employee)
 
     context = {
         'profile_user': profile_user,
@@ -489,7 +489,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         net_pay = gross_earnings - total_deductions
 
         try:
-            key = f'{payroll_period.payroll_key}S{employee.id}'
+            key = f'{payroll_period.payroll_key}S{employee.pk}'
             report = ExTraSummaryReportInfo.objects.get(pk=key)
             report.net_pay = net_pay
             report.gross_earning = gross_earnings

@@ -1,4 +1,4 @@
-{% extends "payroll/../base.html" %}
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -107,10 +107,13 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_update_form.home_address|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_update_form.residential_address|as_crispy_field }}
                                     </div>
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_update_form.district|as_crispy_field }}
                                     </div>
                                 </div>
@@ -127,19 +130,25 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_update_form.department|as_crispy_field }}
                                     </div>
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_update_form.job_title|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_update_form.reports_to|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_update_form.appointment_date|as_crispy_field }}
                                     </div>
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_update_form.contract_type|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_update_form.contract_expiry|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -176,10 +185,7 @@
                                         {{ profile_update_form.social_security_number|as_crispy_field }}
                                     </div>
                                 </div>
-                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
-                                        {{ profile_update_form.project|as_crispy_field }}
-                                    </div>
+                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.agresso_number|as_crispy_field }}
                                     </div>
@@ -268,3 +274,18 @@
         </div>
     </form>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        $(function () {
+            $("#id_date_of_birth").datetimepicker({
+                format: 'Y-m-d',
+            });
+            $("#id_appointment_date").datetimepicker({
+                format: 'Y-m-d',
+            });
+            $("#id_contract_expiry").datetimepicker({
+                format: 'Y-m-d',
+            });
+        });
+    </script>
+{% endblock scripts %}

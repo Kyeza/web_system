@@ -30,7 +30,7 @@
                         <td>{{ employee.mobile_number }}</td>
                         <td>{{ employee.department }}</td>
                         <td>
-                            <a class="btn btn-sm btn-danger" href="{% url 'users:terminate-employee' pk=employee.id %}">
+                            <a class="btn btn-sm btn-danger" href="{% url 'users:terminate-employee' pk=employee.pk %}">
                                 TERMINATE
                             </a>
                         </td>
