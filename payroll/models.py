@@ -9,11 +9,6 @@ from hr_system.constants import YES_OR_NO_TYPES
 from .constants import MONTHS, PAYROLL_YEARS, KV_MONTH
 
 
-class Account(models.Model):
-    account_code = models.IntegerField()
-    account_name = models.CharField(max_length=150)
-
-
 class EarningDeductionCategory(models.Model):
     """docstring for EarningDeductionCategory"""
     category_name = models.CharField(max_length=100)
@@ -24,14 +19,15 @@ class EarningDeductionCategory(models.Model):
 
 class EarningDeductionType(models.Model):
     """docstring for EarningDeductionTypes"""
-    ed_type = models.CharField(max_length=100)
+    ed_type = models.CharField(max_length=100, null=True)
     description = models.CharField(max_length=150, null=True, blank=True)
     ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING, null=True, blank=True)
     recurrent = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     taxable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
-    account_code = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, default=None, blank=True)
     export = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, default=YES_OR_NO_TYPES[1][0], null=True,
                               blank=True)
+    account_code = models.CharField(max_length=15, null=True, blank=True)
+    debit_credit_sign = models.CharField(max_length=15, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('payroll:ed-type-detail', kwargs={'pk': self.pk})

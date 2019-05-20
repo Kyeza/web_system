@@ -96,7 +96,7 @@ class EmployeeApprovalForm(ProfileCreationForm):
 
 
 class TerminationForm(forms.ModelForm):
-    employee = forms.ModelChoiceField(queryset=Employee.objects.all(), disabled=True)
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all())
     notice_date = forms.DateField(
         input_formats=['%Y-%m-%d'],
         required=False

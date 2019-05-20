@@ -1,12 +1,13 @@
 /* Style the body */
 html, body {
     font-family: Roboto, sans-serif;
-    font-size: 15px;
-    font-weight: 400;
+    font-weight: 200;
+    font-size: 1rem;
     line-height: 21px;
     color: #444444;
     background-color: #f1f1f1;
 }
+
 
 .bg-red {
     background-color: #E61D2B;

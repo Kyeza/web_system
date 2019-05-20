@@ -50,7 +50,7 @@ class DutyStation(models.Model):
 class Department(models.Model):
     """docstring for Department"""
     department = models.CharField(max_length=30)
-    description = models.CharField(max_length=150)
+    description = models.CharField(max_length=300)
 
     def get_absolute_url(self):
         return reverse('support_data:department-detail-detail', kwargs={'pk': self.pk})
@@ -73,10 +73,10 @@ class JobTitle(models.Model):
 
 class ContractType(models.Model):
     """docstring for ContractType"""
-    contract_type = models.CharField(max_length=150)
-    contract_expiry = models.IntegerField(default=0)
-    leave_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
-    leave_days_entitled = models.IntegerField(default=0)
+    contract_type = models.CharField(max_length=150, null=True, blank=True)
+    contract_expiry = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
+    leave_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
+    leave_days_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('support_data:contract-type-detail', kwargs={'pk': self.pk})

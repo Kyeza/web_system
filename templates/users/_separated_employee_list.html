@@ -3,35 +3,31 @@
 
 {% block content %}
     <div class="content-section">
-        <h4 class="border-bottom mb-4">Terminated Employees</h4>
+        <h4 class="border-bottom mb-4">Separated Staff</h4>
         <div class="table-responsive">
-            <table id="table_id" class="table table-md table-striped table-bordered w-100">
-                <caption class="border-bottom mb-4">Terminated Employees</caption>
+            <table id="table_id" class="table table-sm table-striped table-bordered w-100">
+                <caption class="border-bottom mb-4">Separated Staff</caption>
                 <thead class="thead-dark">
                 <tr>
                     <th>Name</th>
-                    <th>Days given</th>
-                    <th>Notice date</th>
-                    <th>Exit date</th>
-                    <th>Employable</th>
-                    <th>Reason</th>
-                    <th>Employee status</th>
+                    <th>Job Title</th>
+                    <th>ID Number</th>
+                    <th>Email</th>
+                    <th>Mobile No</th>
+                    <th>Department</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for terminated in object_list %}
+                {% for employee in object_list %}
                     <tr>
-                        <td>
-                            <a href="{% url 'users:user-detail' pk=terminated.pk %}">
-                                {{ terminated.employee.user.get_full_name }}
-                            </a>
-                        </td>
-                        <td>{{ terminated.days_given }}</td>
-                        <td>{{ terminated.notice_date }}</td>
-                        <td>{{ terminated.exit_date }}</td>
-                        <td>{{ terminated.employable }}</td>
-                        <td>{{ terminated.reason }}</td>
-                        <td class="text-danger">{{ terminated.employee.employment_status }}</td>
+                        <td>{{ employee.user.get_full_name }}</td>
+                        <td>{{ employee.job_title }}</td>
+                        <td>{{ employee.id_number }}</td>
+                        <td>{{ employee.user.email }}</td>
+                        <td>{{ employee.mobile_number }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td class="text-warning">{{ employee.employment_status }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

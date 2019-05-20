@@ -342,12 +342,11 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
 
 
 class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
-    model = TerminatedEmployees
+    model = Employee
     template_name = 'users/_separated_employee_list.html'
-    fields = ['employee', 'notice_date', 'exit_date', 'days_given', 'employable', 'reason']
 
     def get_queryset(self):
-        return TerminatedEmployees.objects.all()
+        return Employee.objects.filter(employment_status='TERMINATED').order_by('-appointment_date')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
