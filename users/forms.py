@@ -76,7 +76,7 @@ class ProfileCreationForm(forms.ModelForm):
 class ProfileUpdateForm(ProfileCreationForm):
     """docstring for ProfileUpdateForm"""
 
-    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), disabled=True, required=False)
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False)
 
     class Meta:
         """docstring for Meta"""

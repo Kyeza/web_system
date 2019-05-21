@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, TerminatedEmployeeListView, \
+from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SeparatedEmployeesListView, RejectedEmployeeListView, EmployeeBirthdayList, AssignProjectListView, \
     CostCentreCreate, CostCentreUpdate, CostCentreDetailView, CostCentreListView, \
     ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, SOFCreate, SOFUpdate, SOFDetailView, \
@@ -14,8 +14,10 @@ urlpatterns = [
     path('profile/', views.profile, name='user-profile'),
     path('<int:pk>/edit_employee/', views.user_update_profile, name='user-detail'),
     path('new_employee_approval/', RecruitedEmployeeListView.as_view(), name='employee-approval'),
-    path('edit_employee/', ApprovedEmployeeListView.as_view(), name='edit-employee'),
-    path('terminate_employee/', TerminatedEmployeeListView.as_view(), name='terminate-employee-list'),
+    path('edit_employee/', ApprovedEmployeeListView.as_view(template_name='users/_approved_employee_list.html'),
+         name='edit-employee'),
+    path('terminate_employee/', ApprovedEmployeeListView.as_view(template_name='users/_terminate_employee_list.html'),
+         name='terminate-employee-list'),
     path('separated_employees/', SeparatedEmployeesListView.as_view(), name='separated-employee'),
     path('rejected_employees/', RejectedEmployeeListView.as_view(), name='rejected-employee-list'),
     path('employees_birthdays/', EmployeeBirthdayList.as_view(), name='employee-birthday-list'),
@@ -43,5 +45,4 @@ urlpatterns = [
     path('dea/<int:pk>/', DEADetailView.as_view(), name='dea-detail'),
     path('employee/projects/', EmployeeProjectsListView.as_view(), name='employee-project-list'),
     path('employee/project/<int:pk>', EmployeeProjectsDetailView.as_view(), name='employee-project-detail'),
-    path('employees/search/', views.search_form, name='search-employees'),
 ]

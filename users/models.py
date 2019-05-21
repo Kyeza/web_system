@@ -16,6 +16,8 @@ class User(AbstractUser):
     class Meta:
         permissions = [
             ("approve_employee", "Can approve Employee"),
+            ("terminate_employee", "Can terminate Employee"),
+            ("assign_employee", "Can assign Project"),
         ]
 
     def __str__(self):

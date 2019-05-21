@@ -1,5 +1,5 @@
+import logging
 import re
-
 from builtins import super
 from decimal import Decimal
 
@@ -7,60 +7,44 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
+from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template.loader import render_to_string
+from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
 from reports.models import ExTraSummaryReportInfo
-from users.models import Employee, PayrollProcessors, TerminatedEmployees, CostCentre, Project, SOF, DEA, \
+from users.models import Employee, PayrollProcessors, CostCentre, Project, SOF, DEA, \
     EmployeeProject
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
 
 
-def search_form(request):
-    object_list = []
-    message = ''
-    if 'q' in request.GET and request.GET['q']:
-        q = request.GET['q']
-        employees = Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
-        object_list = employees.filter(user_group__user_set__first_name__icontains=q)
-    else:
-        message = 'You submitted an empty form.'
-
-    context = {
-        'object_list': object_list,
-        'message': message,
-    }
-    return render(request, 'users/_approved_employee_list.html', context)
-
-
 @login_required
 @permission_required(('users.add_user', 'users.add_employee'), raise_exception=True)
+@transaction.atomic
 def register_employee(request):
     if request.method == 'POST':
         user_creation_form = StaffCreationForm(request.POST)
         profile_creation_form = ProfileCreationForm(request.POST, request.FILES)
 
-        # logger.info(
-        #     f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data \
-        #     {profile_creation_form.is_valid()}')
+        logging.getLogger('payroll').info(
+            f'Is User post data valid: {user_creation_form.is_valid()} and is Profile post data \
+            {profile_creation_form.is_valid()}')
 
         if user_creation_form.is_valid() and profile_creation_form.is_valid():
-            user_instance = user_creation_form.save(commit=False)
-            user_instance.save()
-            user_group = Group.objects.get(pk=int(request.POST.get('user_group')))
-            user_group.user_set.add(user_instance)
-            user_profile_instance = profile_creation_form.save(commit=False)
-            user_profile_instance.user = user_instance
-            user_profile_instance.save()
+            user = user_creation_form.save(commit=False)
+            user.save()
+            user_profile = profile_creation_form.save(commit=False)
+            user_profile.user = user
+            user_profile.save()
+            user_profile.user_group.user_set.add(user)
+
 
             # logger.info(
             #     f'Employee: {user_instance.get_full_name()} has been successfully created. \
@@ -81,23 +65,29 @@ def register_employee(request):
 
 
 @login_required
+@transaction.atomic
 def profile(request):
-    profile_user = request.user
+    user = request.user
+    try:
+        employee = Employee.objects.get(pk=user.pk)
+    except Employee.DoesNotExist:
+        employee = Employee.objects.create(user=user)
+        logging.getLogger('payroll').info(f'Profile for user: {user} created.')
 
     if request.method == 'POST':
-        user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
-        profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile_user.employee)
+        user_update_form = StaffUpdateForm(request.POST, instance=user)
+        profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=employee)
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             profile_update_form.save()
             messages.success(request, 'Employee has been updated')
             return redirect('users:user-profile')
     else:
-        user_update_form = StaffUpdateForm(instance=profile_user)
-        profile_update_form = ProfileUpdateForm(instance=profile_user.employee)
+        user_update_form = StaffUpdateForm(instance=user)
+        profile_update_form = ProfileUpdateForm(instance=employee)
 
     context = {
-        'profile_user': profile_user,
+        'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
     }
@@ -106,28 +96,40 @@ def profile(request):
 
 @login_required
 @permission_required(('users.change_user', 'users.change_employee'), raise_exception=True)
+@transaction.atomic
 def user_update_profile(request, pk=None):
-    prof = get_object_or_404(Employee, pk=pk)
-    profile_user = prof.user
+    employee = get_object_or_404(Employee, pk=pk)
+    user = employee.user
 
     if request.method == 'POST':
-        user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
-        profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile_user.employee)
+        user_update_form = StaffUpdateForm(request.POST, instance=user)
+        profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=employee)
         if user_update_form.is_valid() and profile_update_form.is_valid():
-            user_update_form.save()
-            profile_update_form.save()
+            user = user_update_form.save(commit=False)
+            user.save()
+            user_profile = profile_update_form.save(commit=False)
+
+            if user.groups.first():
+                if user_profile.user_group:
+                    if not user.groups.first() == user_profile.user_group:
+                        user.groups.first().user_set.remove(user)
+                        user_profile.user_group.user_set.add(user)
+            else:
+                user_profile.user_group.user_set.add(user)
+
+            user_profile.save()
 
             # add user to PayrollProcessor
-            add_user_to_payroll_processor(profile_user)
+            add_user_to_payroll_processor(user)
 
             messages.success(request, 'Employee has been updated')
             return redirect('users:edit-employee')
     else:
-        user_update_form = StaffUpdateForm(instance=profile_user)
-        profile_update_form = ProfileUpdateForm(instance=profile_user.employee)
+        user_update_form = StaffUpdateForm(instance=user)
+        profile_update_form = ProfileUpdateForm(instance=employee   )
 
     context = {
-        'profile_user': profile_user,
+        'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
     }
@@ -206,6 +208,7 @@ def add_user_to_payroll_processor(instance):
 
 
 @login_required
+@permission_required('users.approve_employee', raise_exception=True)
 def reject_employee(request, pk=None):
     employee = get_object_or_404(Employee, pk=pk)
     employee.employment_status = 'REJECTED'
@@ -215,6 +218,7 @@ def reject_employee(request, pk=None):
 
 @login_required
 @permission_required('users.approve_employee', raise_exception=True)
+@transaction.atomic
 def approve_employee(request, pk=None):
     employee = get_object_or_404(Employee, pk=pk)
     profile_user = employee.user
@@ -250,87 +254,31 @@ def approve_employee(request, pk=None):
 
 
 class RecruitedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    permission_required = 'users.approve_employee'
+    permission_required = ('users.approve_employee',)
     model = Employee
     template_name = 'users/_recruited_employee_list.html'
-    fields = [
-        'marital_status', 'mobile_number', 'id_number',
-        'passport_number', 'nationality', 'residential_address', 'district',
-        'date_of_birth', 'sex', 'image', 'user_group',
-        'duty_country', 'duty_station', 'department', 'job_title',
-        'appointment_date', 'contract_type', 'cost_centre', 'grade',
-        'gross_salary', 'currency', 'tin_number', 'social_security',
-        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-        'first_account_number', 'second_account_number', 'first_bank_percentage',
-        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
-    ]
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Recruit')
+        return Employee.objects.filter(employment_status='Recruit').order_by('-appointment_date')
 
 
 class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.change_user', 'users.change_employee')
     model = Employee
-    template_name = 'users/_approved_employee_list.html'
-    fields = [
-        'marital_status', 'mobile_number', 'id_number',
-        'passport_number', 'nationality', 'residential_address', 'district',
-        'date_of_birth', 'sex', 'image', 'user_group',
-        'duty_country', 'duty_station', 'department', 'job_title',
-        'appointment_date', 'contract_type', 'cost_centre', 'grade',
-        'gross_salary', 'currency', 'tin_number', 'social_security',
-        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-        'first_account_number', 'second_account_number', 'first_bank_percentage',
-        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
-    ]
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Approved')
-
-
-class TerminatedEmployeeListView(LoginRequiredMixin, ListView):
-    model = Employee
-    template_name = 'users/_terminate_employee_list.html'
-    fields = [
-        'marital_status', 'mobile_number', 'id_number',
-        'passport_number', 'nationality', 'residential_address', 'district',
-        'date_of_birth', 'sex', 'image', 'user_group',
-        'duty_country', 'duty_station', 'department', 'job_title',
-        'appointment_date', 'contract_type', 'cost_centre', 'grade',
-        'gross_salary', 'currency', 'tin_number', 'social_security',
-        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-        'first_account_number', 'second_account_number', 'first_bank_percentage',
-        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
-    ]
-
-    def get_queryset(self):
-        return Employee.objects.filter(employment_status='APPROVED')
+        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['title'] = 'Terminate Employee'
+        context['title'] = 'Staff'
         return context
 
 
-class RejectedEmployeeListView(LoginRequiredMixin, ListView):
+class RejectedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
     template_name = 'users/_rejected_employee_list.html'
-    fields = [
-        'marital_status', 'mobile_number', 'id_number',
-        'passport_number', 'nationality', 'residential_address', 'district',
-        'date_of_birth', 'sex', 'image', 'user_group',
-        'duty_country', 'duty_station', 'department', 'job_title',
-        'appointment_date', 'contract_type', 'cost_centre', 'grade',
-        'gross_salary', 'currency', 'tin_number', 'social_security',
-        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-        'first_account_number', 'second_account_number', 'first_bank_percentage',
-        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship', 'dr_ac_code', 'cr_ac_code', 'project', 'agresso_number'
-    ]
 
     def get_queryset(self):
         return Employee.objects.filter(employment_status='REJECTED')
@@ -341,7 +289,8 @@ class RejectedEmployeeListView(LoginRequiredMixin, ListView):
         return context
 
 
-class SeparatedEmployeesListView(LoginRequiredMixin, ListView):
+class SeparatedEmployeesListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
     template_name = 'users/_separated_employee_list.html'
 
@@ -514,6 +463,8 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
 
 @login_required
+@transaction.atomic()
+@permission_required('can.process_payrollperiod', raise_exception=True)
 def process_payroll_period(request, pk):
     if request.method == 'POST' and request.is_ajax():
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
@@ -537,6 +488,7 @@ def process_payroll_period(request, pk):
 
 
 @login_required
+@permission_required('users.terminate_employee', raise_exception=True)
 def terminate_employee(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
 
@@ -560,47 +512,26 @@ def terminate_employee(request, pk):
     return render(request, 'users/_terminate_employee_form.html', context)
 
 
-class EmployeeBirthdayList(LoginRequiredMixin, ListView):
+class EmployeeBirthdayList(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
     template_name = 'users/_employee_birthday_list.html'
-    fields = [
-        'marital_status', 'mobile_number', 'id_number',
-        'passport_number', 'nationality', 'residential_address', 'district',
-        'date_of_birth', 'sex', 'image', 'user_group',
-        'duty_country', 'duty_station', 'department', 'job_title',
-        'appointment_date', 'contract_type', 'cost_centre', 'grade',
-        'gross_salary', 'currency', 'tin_number', 'social_security',
-        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-        'first_account_number', 'second_account_number', 'first_bank_percentage',
-        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship'
-    ]
 
     def get_queryset(self):
         return Employee.objects.filter(employment_status='APPROVED')
 
 
-class AssignProjectListView(LoginRequiredMixin, ListView):
+class AssignProjectListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
     template_name = 'users/_assign_employee_project_list.html'
-    fields = [
-        'marital_status', 'mobile_number', 'id_number',
-        'passport_number', 'nationality', 'residential_address', 'district',
-        'date_of_birth', 'sex', 'image', 'user_group',
-        'duty_country', 'duty_station', 'department', 'job_title',
-        'appointment_date', 'contract_type', 'cost_centre', 'grade',
-        'gross_salary', 'currency', 'tin_number', 'social_security',
-        'social_security_number', 'payroll_center', 'bank_1', 'bank_2',
-        'first_account_number', 'second_account_number', 'first_bank_percentage',
-        'second_bank_percentage', 'kin_full_name', 'kin_phone_number', 'kin_email',
-        'kin_relationship'
-    ]
 
     def get_queryset(self):
         return Employee.objects.filter(employment_status='Approved')
 
 
 @login_required
+@permission_required('users.assign_employee', raise_exception=True)
 def create_employee_project(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
 
