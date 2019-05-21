@@ -12,7 +12,7 @@ import sys
 
 from django.core.wsgi import get_wsgi_application
 
-from hr_system import settings
+from django.conf import settings
 
 if not settings.DEBUG:
     sys.path.append('C:/Users/administrator.SCIUGKLA/Bitnami Django Stack projects/hr_system')

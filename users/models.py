@@ -124,7 +124,7 @@ class PayrollProcessors(models.Model):
                                                         on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
-    payroll_key = models.CharField(max_length=250, blank=True, unique=True, primary_key=True, editable=False)
+    payroll_key = models.CharField(max_length=250, blank=True, primary_key=True, unique=True, default=None, editable=False)
 
     def to_dict(self):
         data = {

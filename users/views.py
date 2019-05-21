@@ -6,7 +6,6 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.models import Group
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -23,6 +22,8 @@ from users.models import Employee, PayrollProcessors, CostCentre, Project, SOF, 
     EmployeeProject
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
+
+logger = logging.getLogger('payroll')
 
 
 @login_required
@@ -45,10 +46,9 @@ def register_employee(request):
             user_profile.save()
             user_profile.user_group.user_set.add(user)
 
-
-            # logger.info(
-            #     f'Employee: {user_instance.get_full_name()} has been successfully created. \
-            #     Employee data: {profile_creation_form.cleaned_data}')
+            logger.info(
+                f"Employee: {user.get_full_name()} has been successful" +
+                f"ly created. Employee data: {profile_creation_form.cleaned_data}")
 
             messages.success(request, 'You have successfully created a new Employee')
             return redirect('users:new-employee')
@@ -71,13 +71,22 @@ def profile(request):
     try:
         employee = Employee.objects.get(pk=user.pk)
     except Employee.DoesNotExist:
-        employee = Employee.objects.create(user=user)
-        logging.getLogger('payroll').info(f'Profile for user: {user} created.')
+        return redirect('payroll:index')
 
     if request.method == 'POST':
         user_update_form = StaffUpdateForm(request.POST, instance=user)
         profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=employee)
+
+        logger.debug(f'user_form.is_valid:{user_update_form.is_valid()}')
+        logger.debug(f'user_form.errors:{user_update_form.errors}')
+        logger.debug(f'user_form.non_field_errors:{user_update_form.non_field_errors}')
+
+        logger.debug(f'profile_form.is_valid:{profile_update_form.is_valid()}')
+        logger.debug(f'profile_form.errors:{profile_update_form.errors}')
+        logger.debug(f'profile_form.non_field_errors:{profile_update_form.non_field_errors}')
+
         if user_update_form.is_valid() and profile_update_form.is_valid():
+            logger.info(f'Form updated')
             user_update_form.save()
             profile_update_form.save()
             messages.success(request, 'Employee has been updated')
@@ -137,6 +146,7 @@ def user_update_profile(request, pk=None):
 
 
 def add_user_to_payroll_processor(instance):
+    logger.debug(f'adding user: {instance} to payroll processor')
     user_status = instance.employee.employment_status
     payroll_periods = instance.employee.payroll_center.payrollperiod_set.all()
     if user_status == 'APPROVED' or user_status == 'REACTIVATED':
@@ -144,6 +154,7 @@ def add_user_to_payroll_processor(instance):
             open_payroll_period = payroll_periods.filter(status='OPEN').all()
             if open_payroll_period:
                 for payroll_period in open_payroll_period:
+                    logger.debug(f'Adding user to Period {payroll_period}')
                     user_payroll_center = instance.employee.payroll_center
                     payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
 
@@ -152,59 +163,77 @@ def add_user_to_payroll_processor(instance):
                         existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
                             .filter(payroll_period=payroll_period)
                         # if ed_types for the employees payroll center exist
-                        if payroll_center_ed_types:
-                            if existing_user_payroll_processors:
-                                # PayrollCenterEdTypes can change, hence in case there is one not in the processor
-                                # associated with that instance, then create it
-                                for pc_ed_type in payroll_center_ed_types:
-                                    if existing_user_payroll_processors.filter(
-                                            earning_and_deductions_type=pc_ed_type.ed_type):
-                                        # if that ed_type already has a processor associated with the instance leave
-                                        # it and continue
-                                        continue
-                                    else:
-                                        # else create it
-                                        user_process = PayrollProcessors(employee=instance.employee,
-                                                                         earning_and_deductions_category=pc_ed_type
-                                                                         .ed_type.ed_category,
-                                                                         earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                         amount=0, payroll_period=payroll_period)
-                                        user_process.save()
+                        if existing_user_payroll_processors:
+                            logger.debug(f'user\'s {payroll_period} processors exist')
+                            # PayrollCenterEdTypes can change, hence in case there is one not in the processor
+                            # associated with that instance, then create it
+                            for pc_ed_type in payroll_center_ed_types:
+                                if existing_user_payroll_processors.filter(
+                                        earning_and_deductions_type=pc_ed_type.ed_type):
+                                    # if that ed_type already has a processor associated with the instance leave
+                                    # it and continue
+                                    continue
+                                else:
+                                    # else create it
+                                    logger.debug(f'adding {pc_ed_type.ed_type.ed_type} to user\'s existing processors')
+                                    user_process = PayrollProcessors(employee=instance.employee,
+                                                                     earning_and_deductions_category=pc_ed_type
+                                                                     .ed_type.ed_category,
+                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                     amount=0, payroll_period=payroll_period)
+                                    user_process.save()
 
-                            else:
-                                # if its a new instance in the payroll period, create processors for that
-                                # instance/employee
-                                for pc_ed_type in payroll_center_ed_types:
-                                    basic_salary_reg = re.compile(r'basic salary', re.IGNORECASE, )
-                                    hardship_allowance_reg = re.compile(r'hardship allowance', re.IGNORECASE, )
-                                    if basic_salary_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                        else:
+                            logger.debug(f'Creating user\'s {payroll_period} processes in Processor')
+                            # if its a new instance in the payroll period, create processors for that
+                            # instance/employee
+                            for pc_ed_type in payroll_center_ed_types:
+                                basic_salary_reg = re.compile(r'basic salary', re.IGNORECASE, )
+                                hardship_allowance_reg = re.compile(r'hardship allowance', re.IGNORECASE, )
+                                user_process = None
+                                if basic_salary_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                                    user_process = PayrollProcessors(employee=instance.employee,
+                                                                     earning_and_deductions_category=pc_ed_type
+                                                                     .ed_type.ed_category,
+                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                     amount=instance.employee.gross_salary,
+                                                                     payroll_period=payroll_period)
+                                    logger.info(
+                                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+                                elif hardship_allowance_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                                    if instance.employee.duty_station:
                                         user_process = PayrollProcessors(employee=instance.employee,
                                                                          earning_and_deductions_category=pc_ed_type
                                                                          .ed_type.ed_category,
                                                                          earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                         amount=instance.employee.gross_salary,
+                                                                         amount=instance.employee.duty_station
+                                                                         .earning_amount,
                                                                          payroll_period=payroll_period)
-                                        user_process.save()
-                                    elif hardship_allowance_reg.fullmatch(pc_ed_type.ed_type.ed_type):
-                                        if instance.employee.duty_station:
-                                            user_process = PayrollProcessors(employee=instance.employee,
-                                                                             earning_and_deductions_category=pc_ed_type
-                                                                             .ed_type.ed_category,
-                                                                             earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                             amount=instance.employee.duty_station
-                                                                             .earning_amount,
-                                                                             payroll_period=payroll_period)
-                                            user_process.save()
-                                    else:
-                                        user_process = PayrollProcessors(employee=instance.employee,
-                                                                         earning_and_deductions_category=pc_ed_type
-                                                                         .ed_type.ed_category,
-                                                                         earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                         amount=0,
-                                                                         payroll_period=payroll_period)
-                                        user_process.save()
+                                        logger.info(
+                                            f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+                                else:
+                                    user_process = PayrollProcessors(employee=instance.employee,
+                                                                     earning_and_deductions_category=pc_ed_type
+                                                                     .ed_type.ed_category,
+                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                                     amount=0,
+                                                                     payroll_period=payroll_period)
+                                    logger.info(
+                                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+
+                                if user_process:
+                                    user_process.save()
+                                else:
+                                    logger.error(
+                                        f'PayrollCenter {pc_ed_type.ed_type.ed_type} for {instance} was not processed')
                     else:
-                        raise Exception('No PayrollCenter Earnings and Deductions in the System')
+                        logger.error(f'Payroll center has no Earnings and Deductions')
+            else:
+                logger.error(f'No OPEN payroll periods in the Processor')
+        else:
+            logger.error(f'No PayrollPeriods in the Processor')
+    else:
+        logger.error(f'{instance} either not APPROVED or REACTIVATED')
 
 
 @login_required
@@ -304,19 +333,22 @@ class SeparatedEmployeesListView(LoginRequiredMixin, PermissionRequiredMixin, Li
 
 
 def processor(payroll_period, process_lst='False', method='GET'):
+    logger.debug(f'started processing')
     response = {}
     if Employee.objects.all():
+        logger.critical(f'Adding users for Period {payroll_period} to processor')
         for employee in Employee.objects.all():
             if employee.employment_status == 'APPROVED':
                 user = employee.user
                 try:
                     add_user_to_payroll_processor(user)
-                except Exception:
-                    raise
-                else:
-                    continue
+                except Exception as e:
+                    logger.error(f'Something went wrong')
+                    logger.error(f'{e.args}')
+        logger.critical(f'Successfully added users for Period {payroll_period} to processor')
     else:
-        response['message'] = 'There are currently no Employees in the system'
+        logger.error(f'No Employees in the system')
+        response['message'] = 'Something went wrong'
         response['status'] = 'Failed'
 
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
@@ -331,9 +363,11 @@ def processor(payroll_period, process_lst='False', method='GET'):
                 else:
                     employees_in_period.append(process.employee)
         else:
+            logger.error(f'Here - > There are currently no Employees for this Payroll Period')
             response['message'] = 'There are currently no Employees for this Payroll Period'
             response['status'] = 'Failed'
-
+    else:
+        logger.error(f'No Employees in the system')
     employees_to_process = list(set(employees_in_period))
 
     earnings = EarningDeductionCategory.objects.get(pk=1)
@@ -344,11 +378,13 @@ def processor(payroll_period, process_lst='False', method='GET'):
     period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
 
     for employee in employees_to_process:
+        logger.info(f'Processing for user {employee}')
         gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
         ge_data = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category=earnings).all()
 
         # calculating gross earnings
+        logger.info(f'Processing for user {employee}: calculating gross earnings')
         if ge_data:
             for inst in ge_data:
                 if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
@@ -361,6 +397,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
                 gross_earnings += inst.amount
 
         # calculating PAYE
+        logger.info(f'Processing for user {employee}: calculating PAYE')
         tax_bracket, tax_rate, fixed_tax = 0, 0, 0
         for tx_brac in PAYERates.objects.all():
             if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
@@ -372,6 +409,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         ge_minus_paye = gross_earnings - paye
 
         # calculating LST
+        logger.info(f'Processing for user {employee}: calculating LST')
         fixed_lst = 0
         if process_lst == 'True':
             lst_rates = LSTRates.objects.all()
@@ -383,10 +421,12 @@ def processor(payroll_period, process_lst='False', method='GET'):
         lst = fixed_lst
 
         # calculating NSSF 5% and 10%
+        logger.info(f'Processing for user {employee}: calculating NSSF')
         nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
         nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
 
         # update PAYE if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating PAYE')
         employee_paye_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type__ed_type__icontains='PAYE').first()
         if employee_paye_processor:
@@ -394,6 +434,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_paye_processor.save(update_fields=['amount'])
 
         # update LST if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating LST')
         if process_lst == 'True':
             employee_lst_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type__ed_type__icontains='LST').first()
@@ -402,6 +443,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
                 employee_lst_processor.save(update_fields=['amount'])
 
         # update NSSF 10% if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating NSSF 10')
         employee_nssf_10_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type__ed_type__icontains='NSSF 10%').first()
         if employee_nssf_10_processor:
@@ -409,6 +451,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_nssf_10_processor.save(update_fields=['amount'])
 
         # update NSSF 5%_5 if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating NSSF 5')
         employee_nssf_5_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type__ed_type__icontains='NSSF 5%').first()
         if employee_nssf_5_processor:
@@ -416,6 +459,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_nssf_5_processor.save(update_fields=['amount'])
 
         # getting updated payroll processors with updated amounts
+        logger.info(f'Processing for user {employee}: getting updated payroll processors with updated amounts')
         period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
 
         tx_data_ded = period_processes.filter(employee=employee) \
@@ -424,16 +468,19 @@ def processor(payroll_period, process_lst='False', method='GET'):
             .filter(earning_and_deductions_category=statutory).all()
 
         # calculating total deductions from deductions
+        logger.info(f'Processing for user {employee}: calculating total deductions from deductions')
         if tx_data_ded:
             for inst in tx_data_ded:
                 total_deductions += inst.amount
 
         # calculating total deductions from statutory deductions
+        logger.info(f'Processing for user {employee}: calculating total deductions from statutory deductions')
         if tx_data_stat:
             for inst in tx_data_stat:
                 if not inst.earning_and_deductions_type.ed_type.__contains__('NSSF'):
                     total_deductions += inst.amount
 
+        logger.info(f'Processing for user {employee}: calculating NET PAY')
         net_pay = gross_earnings - total_deductions
 
         try:
@@ -446,6 +493,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
             response['message'] = 'Successfully process Payroll Period'
             response['status'] = 'Success'
+            logger.info(f'Successfully processed {employee} Payroll Period')
 
         except ExTraSummaryReportInfo.DoesNotExist:
             report = ExTraSummaryReportInfo(employee=employee,
@@ -457,8 +505,12 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
             response['message'] = 'Successfully process Payroll Period'
             response['status'] = 'Success'
+            logger.info(f'Successfully processed {employee} Payroll Period')
+
+    logger.info(f'Finished processing {response}')
 
     if method == 'POST':
+        logger.debug(f'Displaying report {response}')
         return response
 
 
@@ -467,20 +519,21 @@ def processor(payroll_period, process_lst='False', method='GET'):
 @permission_required('can.process_payrollperiod', raise_exception=True)
 def process_payroll_period(request, pk):
     if request.method == 'POST' and request.is_ajax():
+        logger.info(f'Starting whole processing process')
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
         process_lst = request.POST.get('process_lst')
-        response = None
         try:
             response = processor(payroll_period, process_lst, 'POST')
         except Exception as e:
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
 
-            print(e.args)
+            logger.error(f'Something went wrong {e.args}')
             response = {'status': 'Failed', 'message': ''}
             return JsonResponse(response)
         else:
             return JsonResponse(response)
+
     elif request.method == 'GET':
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
         processor(payroll_period)

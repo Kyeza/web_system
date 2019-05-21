@@ -49,7 +49,7 @@ class DutyStation(models.Model):
 
 class Department(models.Model):
     """docstring for Department"""
-    department = models.CharField(max_length=30)
+    department = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
 
     def get_absolute_url(self):

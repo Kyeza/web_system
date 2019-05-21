@@ -1,8 +1,5 @@
 from django import template
 
-import reports
-from users.models import User
-
 register = template.Library()
 
 
@@ -18,7 +15,7 @@ def user_data(processors, staff):
 
 @register.filter
 def report_key(payroll_period, staff):
-    return f'{payroll_period.payroll_key}S{staff.id}'
+    return f'{payroll_period.payroll_key}S{staff.pk}'
 
 
 @register.filter
