@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
@@ -516,6 +517,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
 @login_required
 @transaction.atomic()
+@cache_page(60 * 15)
 @permission_required('can.process_payrollperiod', raise_exception=True)
 def process_payroll_period(request, pk):
     if request.method == 'POST' and request.is_ajax():
