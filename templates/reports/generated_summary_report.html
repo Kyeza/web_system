@@ -52,10 +52,10 @@
             {% for staff in data|get_distinct_employee_set %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ staff.id_number }}</td>
+                    <td>{{ staff.agresso_number }}</td>
                     <td>{{ staff.duty_station }}</td>
                     <td>
-                        <a href="{% url 'reports:generate-payslip' period.id staff.id %}">
+                        <a href="{% url 'reports:generate-payslip' period.id staff.pk %}">
                             {{ staff.user.get_full_name }}
                         </a>
                     </td>

@@ -15,6 +15,7 @@ from django.views.decorators.cache import cache_page
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from django.core.cache import cache
 
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
@@ -438,7 +439,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: updating LST')
         if process_lst == 'True':
             employee_lst_processor = period_processes.filter(employee=employee) \
-                .filter(earning_and_deductions_type__ed_type__icontains='LST').first()
+                .filter(earning_and_deductions_type__ed_type__icontains='Local Service Tax').first()
             if employee_paye_processor:
                 employee_lst_processor.amount = lst
                 employee_lst_processor.save(update_fields=['amount'])
@@ -446,7 +447,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # update NSSF 10% if exists in payroll center
         logger.info(f'Processing for user {employee}: updating NSSF 10')
         employee_nssf_10_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type__icontains='NSSF 10%').first()
+            .filter(earning_and_deductions_type__ed_type__icontains='Employer NSSF').first()
         if employee_nssf_10_processor:
             employee_nssf_10_processor.amount = nssf_10
             employee_nssf_10_processor.save(update_fields=['amount'])
@@ -454,7 +455,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # update NSSF 5%_5 if exists in payroll center
         logger.info(f'Processing for user {employee}: updating NSSF 5')
         employee_nssf_5_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type__icontains='NSSF 5%').first()
+            .filter(earning_and_deductions_type__ed_type__icontains='Employee NSSF').first()
         if employee_nssf_5_processor:
             employee_nssf_5_processor.amount = nssf_5
             employee_nssf_5_processor.save(update_fields=['amount'])

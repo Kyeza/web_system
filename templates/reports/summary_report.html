@@ -42,7 +42,7 @@
                         <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
                             {{ staff.user.get_full_name }}
                         </a></td>
-                        <td>{{ staff.pk_number }}</td>
+                        <td>{{ staff.agresso_number }}</td>
                         <td>{{ staff.job_title }}</td>
                         <td>{{ staff.duty_station }}</td>
                         {% for data in period_processes|user_data:staff|category:1 %}
