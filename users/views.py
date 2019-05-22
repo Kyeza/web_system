@@ -485,7 +485,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         net_pay = gross_earnings - total_deductions
 
         try:
-            key = f'{payroll_period.payroll_key}S{employee.pk}'
+            key = f'{payroll_period.payroll_key}S{employee.id_number}'
             report = ExTraSummaryReportInfo.objects.get(pk=key)
             report.net_pay = net_pay
             report.gross_earning = gross_earnings

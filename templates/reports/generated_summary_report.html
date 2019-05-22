@@ -93,12 +93,8 @@
                         {% for info in data|user_data:staff|category:3 %}
                             <th></th>
                         {% endfor %}
-                        {% with period|report_key:staff as key %}
-                            {% for user_report in user_reports|extra_info:key %}
-                                <th></th>
-                                <th colspan="2"></th>
-                            {%  endfor %}
-                        {% endwith %}
+                        <th></th>
+                        <th colspan="2"></th>
                     </tr>
                 {% endif %}
             {% endfor %}

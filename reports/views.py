@@ -3,6 +3,7 @@ import logging
 import weasyprint
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.mail import EmailMessage, get_connection
 from django.db.models import Q
 from django.forms import formset_factory
@@ -24,9 +25,12 @@ logger = logging.getLogger('payroll.reports')
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
 
-    context = generate_summary_data(payroll_period)
-
-    return render(request, 'reports/summary_report.html', context)
+    if cache.get('summary_report') is None:
+        context = generate_summary_data(payroll_period)
+        cache.set('summary_report', context, 60 * 15)
+        return render(request, 'reports/summary_report.html', context)
+    else:
+        return render(request, 'reports/summary_report.html', cache.get('summary_report'))
 
 
 # generating summary data context

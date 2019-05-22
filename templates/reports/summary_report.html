@@ -14,6 +14,7 @@
                 </caption>
                 <thead class="thead-dark">
                 <tr>
+                    <th>No.</th>
                     <th>Staff</th>
                     <th>Agresso no.</th>
                     <th>Job title</th>
@@ -39,6 +40,7 @@
                 <tbody>
                 {% for staff in employees_to_process %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
                             {{ staff.user.get_full_name }}
                         </a></td>
@@ -55,15 +57,36 @@
                             <td>{{ data.amount|intcomma }}</td>
                         {% endfor %}
                         {% with payroll_period|report_key:staff as key %}
-                            {% for user_report in user_reports|extra_info:key %}
-                                <td>{{ user_report.total_deductions|intcomma }}</td>
-                                <td>{{ user_report.gross_earning|intcomma }}</td>
-                                <td>{{ user_report.net_pay|intcomma }}</td>
-                            {%  endfor %}
+                            {% with user_reports|extra_info:key as report %}
+                                <td>{{ report.total_deductions|intcomma }}</td>
+                                <td>{{ report.net_pay|intcomma }}</td>
+                                <td>{{ report.net_pay|intcomma }}</td>
+                            {% endwith %}
                         {% endwith %}
                     </tr>
                 {% endfor %}
                 </tbody>
+                <tfoot>
+                <tr>
+                    <th class="font-weight-light text-info text-center" colspan="5">Total</th>
+                    {% for staff in employees_to_process %}
+                        {% if forloop.first %}
+                            {% for processor in period_processes|user_data:staff|category:1 %}
+                                <th></th>
+                            {% endfor %}
+                            {% for processor in period_processes|user_data:staff|category:2 %}
+                                <th></th>
+                            {% endfor %}
+                            {% for processor in period_processes|user_data:staff|category:3 %}
+                                <th></th>
+                            {% endfor %}
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -85,7 +108,43 @@
                         pageSize: 'A2',
                     },
                     'print'
-                ]
+                ],
+                "footerCallback": function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
+
+                    let colCount = api.columns().header().length;
+
+                    // Remove the formatting to get integer data for summation
+                    let intVal = function ( i ) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    let i;
+                    let pageTotal = [];
+                    for (i = 0; i < colCount; i++) {
+                        // Total over this page
+                        if (i > 4) {
+                            pageTotal[i] = api
+                                .column( i, { page: 'current'} )
+                                .data()
+                                .reduce( function (a, b) {
+                                    return Math.round((intVal(a) + intVal(b))* 100) / 100;
+                                }, 0 );
+                        }
+                    }
+
+                    for (i = 0; i < colCount; i++) {
+                        // Update footer
+                        if (i > 4) {
+                            $( api.column( i ).footer() ).html(
+                                pageTotal[i].toLocaleString()
+                            );
+                        }
+                    }
+                }
             } );
         } );
     </script>
