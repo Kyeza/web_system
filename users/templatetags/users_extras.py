@@ -15,12 +15,13 @@ def user_data(processors, staff):
 
 @register.filter
 def report_key(payroll_period, staff):
-    return f'{payroll_period.payroll_key}S{staff.pk}'
+    return f'{payroll_period.payroll_key}S{staff.id_number}'
 
 
 @register.filter
 def extra_info(reports_data, key):
-    return reports_data.filter(pk=key)
+    report = reports_data.get(key=key)
+    return report
 
 
 @register.filter

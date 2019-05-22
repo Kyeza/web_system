@@ -1,11 +1,13 @@
-import weasyprint
+import logging
 
+import weasyprint
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage, get_connection
 from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 
@@ -14,6 +16,8 @@ from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
 from .models import ExTraSummaryReportInfo
+
+logger = logging.getLogger('payroll.reports')
 
 
 @login_required
@@ -117,24 +121,31 @@ def update_summary_report(request, pp, user):
     return render(request, 'reports/update_summary.html', context)
 
 
-def generate(payroll_periods, report):
+def generate(payroll_period, report):
     results = {}
-    for period in payroll_periods:
+    logger.info(f'generating {report} report data')
+    if payroll_period:
         if report == 'BANK':
-            processors = PayrollProcessors.objects.filter(payroll_period=period)
+            processors = PayrollProcessors.objects.filter(payroll_period=payroll_period)
         elif report == 'SUMMARY':
-            processors = PayrollProcessors.objects.filter(payroll_period=period)
+            processors = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+        elif report == 'NSSF':
+            processors = PayrollProcessors.objects.filter(
+                Q(earning_and_deductions_type__ed_type__icontains='Employee NSSF')
+                | Q(earning_and_deductions_type__ed_type__icontains='Employer NSSF')).all()
         else:
-            processors = PayrollProcessors.objects.filter(payroll_period=period) \
+            processors = PayrollProcessors.objects.filter(payroll_period=payroll_period) \
                 .filter(Q(earning_and_deductions_type__ed_type__icontains=report)
                         | Q(earning_and_deductions_type__ed_type=report)).all()
             if report == 'PAYE':
-                earnings = PayrollProcessors.objects.filter(payroll_period=period). \
+                earnings = PayrollProcessors.objects.filter(payroll_period=payroll_period). \
                     filter(earning_and_deductions_type__ed_category=1)
                 results['earnings'] = earnings
 
-        results[period] = processors
+        logger.debug(f'{report} report --> processor: {processors}')
+        results[payroll_period] = processors
 
+    logger.debug(f'{report} report --> results: {results}')
     return results
 
 
@@ -149,27 +160,46 @@ def generate_reports(request):
             selected_month = form.cleaned_data.get('month')
             payroll_periods = payroll_center.payrollperiod_set.filter(year=year)
 
-            data = payroll_periods.filter(month=selected_month)
-            results = generate(data, report)
+            payroll_period = payroll_periods.filter(month=selected_month).first()
 
-            earnings = None
-            if 'earnings' in results.keys():
-                earnings = results['earnings']
-                del results['earnings']
+            if payroll_period:
+                if ExTraSummaryReportInfo.objects.filter(payroll_period=payroll_period):
+                    logger.info(f'generating report data for {selected_month}-{year}')
 
-            context = {
-                'title': report.capitalize() + ' Report',
-                'report': report,
-                'results': results,
-            }
+                    if report == 'LST':
+                        results = generate(payroll_period, 'Local Service Tax')
+                    else:
+                        results = generate(payroll_period, report)
 
-            if report == 'SUMMARY' or report == 'PAYE' or report == 'BANK' or report == 'LST':
-                context['user_reports'] = ExTraSummaryReportInfo.objects.all()
+                    earnings = None
+                    if 'earnings' in results.keys():
+                        earnings = results['earnings']
+                        del results['earnings']
 
-            if report == 'PAYE':
-                context['earnings'] = earnings
+                    context = {
+                        'title': report.capitalize() + ' Report',
+                        'report': report,
+                        'results': results,
+                    }
 
-            return render(request, 'reports/generated_report.html', context)
+                    if report == 'SUMMARY' or report == 'PAYE' or report == 'BANK' or report == 'LST':
+                        context['user_reports'] = ExTraSummaryReportInfo.objects.all()
+
+                    if report == 'PAYE':
+                        context['earnings'] = earnings
+
+                    return render(request, 'reports/generated_report.html', context)
+                else:
+                    logger.error(f'PayrollPeriod ({payroll_period}) not processed yet!')
+                    messages.warning(request, f'PayrollPeriod ({payroll_period}) has not been processed yet!')
+                    return redirect('reports:generate-reports')
+            else:
+                logger.error(f'PayrollPeriod ({selected_month}) doesn\' exist!')
+                messages.warning(request, f'Reports for PayrollPeriod({selected_month}) don\'t exist.')
+                return redirect('reports:generate-reports')
+
+
+
     else:
         form = ReportGeneratorForm()
 

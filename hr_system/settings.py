@@ -198,10 +198,20 @@ LOGGING = {
             'filename': 'logs/debug.log',
             'formatter': 'verbose'
         },
+        'reports_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/reports_debug.log',
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'payroll': {
             'handlers': ['console', 'users_file'],
+            'level': 'DEBUG'
+        },
+        'payroll.reports': {
+            'handlers': ['console', 'reports_file'],
             'level': 'DEBUG'
         }
     }

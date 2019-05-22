@@ -70,10 +70,10 @@
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
                     {% with period|report_key:staff as key %}
-                        {% for user_report in user_reports|extra_info:key %}
-                            <td>{{ user_report.total_deductions|intcomma }}</td>
-                            <td>{{ user_report.net_pay|intcomma }}</td>
-                        {%  endfor %}
+                        {% with user_reports|extra_info:key as report %}
+                            <td>{{ report.total_deductions|intcomma }}</td>
+                            <td>{{ report.net_pay|intcomma }}</td>
+                        {% endwith %}
                     {% endwith %}
                     <td></td>
                 </tr>
