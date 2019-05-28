@@ -201,6 +201,7 @@
                 console.log( summaryReportTable.rows('.selected').data().length +' Employee(s) selected for Payslip mailing' );
                 let payroll_period = $('.payroll_period').attr('id');
                 let length = summaryReportTable.rows('.selected').data().length;
+                alert(length + ' Staff will be emailed there payslips. Would you like to continue?');
                 let users = [];
                 let i;
                 for (i = 0; i < length; i++) {
@@ -213,9 +214,9 @@
                     'payroll_period': payroll_period
                 };
                 $.post(emailUrl, users_data, function (response) {
-                    if (response.status === 'success') {
-                        alert('Emails have been successfully sent')
-                    }
+                   if (response.status === 'success') {
+                       alert('Emails have been successfully sent')
+                   }
                 });
             } );
         } );

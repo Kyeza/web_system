@@ -48,7 +48,7 @@ class PayrollCenterListView(LoginRequiredMixin, ListView):
     model = PayrollCenter
 
 
-class PayrollCenterStaffListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class PayrollCenterStaffListView(LoginRequiredMixin, ListView):
     model = PayrollCenter
     template_name = 'payroll/payroll_center_staff_list.html'
 
@@ -227,7 +227,7 @@ class LSTListView(LoginRequiredMixin, ListView):
 
 class BankCreate(LoginRequiredMixin, CreateView):
     model = Bank
-    fields = ['bank', 'sort_code', 'description']
+    fields = ['bank', 'branch', 'sort_code',  'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -237,7 +237,7 @@ class BankCreate(LoginRequiredMixin, CreateView):
 
 class BankUpdate(LoginRequiredMixin, UpdateView):
     model = Bank
-    fields = ['bank', 'sort_code', 'description']
+    fields = ['bank', 'branch', 'sort_code', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -247,12 +247,11 @@ class BankUpdate(LoginRequiredMixin, UpdateView):
 
 class BankDetailView(LoginRequiredMixin, DetailView):
     model = Bank
-    fields = ['bank', 'sort_code', 'description']
+    fields = ['bank', 'branch', 'sort_code', 'description']
 
 
 class BankListView(LoginRequiredMixin, ListView):
     model = Bank
-    fields = ['bank', 'sort_code', 'description']
 
 
 class CurrencyCreate(LoginRequiredMixin, CreateView):

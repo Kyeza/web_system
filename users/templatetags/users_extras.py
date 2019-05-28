@@ -10,7 +10,8 @@ def category(processors, category_id):
 
 @register.filter
 def user_data(processors, staff):
-    return processors.filter(employee=staff)
+    return processors.select_related('employee', 'earning_and_deductions_type', 'employee__user', 'employee__job_title',
+                                     'employee__duty_station').filter(employee=staff)
 
 
 @register.filter

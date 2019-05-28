@@ -35,6 +35,16 @@ class CostCentre(models.Model):
         return self.cost_centre
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+    def get_absolute_url(self):
+        return reverse('users:category_list')
+
+    def __str__(self):
+        return self.name
+
+
 class District(models.Model):
     name = models.CharField(max_length=200)
 
@@ -72,7 +82,7 @@ class Employee(models.Model):
     payroll_center = models.ForeignKey('payroll.PayrollCenter', on_delete=models.SET_NULL, null=True)
     bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True, blank=True)
     bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True, blank=True)
-    cost_centre = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True, blank=True, )
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, )
     first_account_number = models.CharField(max_length=200, null=True, blank=True)
     second_account_number = models.CharField(max_length=200, null=True, blank=True)
     first_bank_percentage = models.IntegerField(null=True, blank=True, default=0)

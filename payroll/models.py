@@ -10,7 +10,6 @@ from .constants import MONTHS, PAYROLL_YEARS, KV_MONTH
 
 
 class EarningDeductionCategory(models.Model):
-    """docstring for EarningDeductionCategory"""
     category_name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -18,14 +17,30 @@ class EarningDeductionCategory(models.Model):
 
 
 class EarningDeductionType(models.Model):
-    """docstring for EarningDeductionTypes"""
+    AGGRESSO_TYPES = (
+        ('SALARY COSTS', 'SALARY COSTS'),
+        ('SALARIES', 'SALARIES'),
+        ('BENEFITS', 'BENEFITS'),
+        ('OVERTIME', 'OVERTIME'),
+        ('SALARY ADVANCES', 'SALARY ADVANCES'),
+        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
+        ('DEDUCTIONS', 'DEDUCTIONS'),
+        ('PENSION COSTS', 'PENSION COSTS'),
+        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
+        ('PAYMENTS', 'PAYMENTS'),
+        ('ACCRUED PAYROLL', 'ACCRUED PAYROLL'),
+    )
     ed_type = models.CharField(max_length=100, null=True)
     description = models.CharField(max_length=150, null=True, blank=True)
+    account_name = models.CharField(max_length=200, null=True, blank=True)
     ed_category = models.ForeignKey(EarningDeductionCategory, on_delete=models.DO_NOTHING, null=True, blank=True)
     recurrent = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     taxable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     export = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, default=YES_OR_NO_TYPES[1][0], null=True,
                               blank=True)
+    factor = models.IntegerField(default=0, null=True, blank=True)
+    summarize = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, default=YES_OR_NO_TYPES[1][0])
+    agresso_type = models.CharField(max_length=50, null=True, blank=True, choices=AGGRESSO_TYPES)
     account_code = models.CharField(max_length=15, null=True, blank=True)
     debit_credit_sign = models.CharField(max_length=15, null=True, blank=True)
 
@@ -39,9 +54,9 @@ class EarningDeductionType(models.Model):
 class Bank(models.Model):
     """docstring for Bank"""
     bank = models.CharField(max_length=150)
-    branch = models.CharField(max_length=200, default=None)
-    sort_code = models.CharField(max_length=100)
-    description = models.CharField(max_length=150)
+    branch = models.CharField(max_length=200, null=True, blank=True)
+    sort_code = models.CharField(max_length=100, null=True, blank=True)
+    description = models.CharField(max_length=150, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('payroll:bank-detail', kwargs={'pk': self.pk})

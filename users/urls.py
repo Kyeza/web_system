@@ -6,7 +6,7 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     CostCentreCreate, CostCentreUpdate, CostCentreDetailView, CostCentreListView, \
     ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, SOFCreate, SOFUpdate, SOFDetailView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
-    EmployeeProjectsDetailView
+    EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView
 
 app_name = 'users'
 urlpatterns = [
@@ -14,9 +14,9 @@ urlpatterns = [
     path('profile/', views.profile, name='user-profile'),
     path('<int:pk>/edit_employee/', views.user_update_profile, name='user-detail'),
     path('new_employee_approval/', RecruitedEmployeeListView.as_view(), name='employee-approval'),
-    path('edit_employee/', ApprovedEmployeeListView.as_view(template_name='users/_approved_employee_list.html'),
+    path('edit_employee/', ApprovedEmployeeListView.as_view(template_name='users/employees/_approved_employee_list.html'),
          name='edit-employee'),
-    path('terminate_employee/', ApprovedEmployeeListView.as_view(template_name='users/_terminate_employee_list.html'),
+    path('terminate_employee/', ApprovedEmployeeListView.as_view(template_name='users/employees/_terminate_employee_list.html'),
          name='terminate-employee-list'),
     path('separated_employees/', SeparatedEmployeesListView.as_view(), name='separated-employee'),
     path('rejected_employees/', RejectedEmployeeListView.as_view(), name='rejected-employee-list'),
@@ -28,21 +28,25 @@ urlpatterns = [
     path('employee/assign/projects/', AssignProjectListView.as_view(), name='employee-assign-project'),
     path('employee/assign/project/<int:pk>/', views.create_employee_project, name='employee-project-creation'),
     path('cost_centres/add/', CostCentreCreate.as_view(), name='cost-centre-create'),
-    path('cost_centre<int:pk>/edit/', CostCentreUpdate.as_view(), name='cost-centre-update'),
+    path('cost_centre/<int:pk>/edit/', CostCentreUpdate.as_view(), name='cost-centre-update'),
     path('cost_centres/', CostCentreListView.as_view(), name='cost-centre-list'),
     path('cost_centre/<int:pk>/', CostCentreDetailView.as_view(), name='cost-centre-detail'),
     path('projects/add/', ProjectCreate.as_view(), name='project-create'),
-    path('project<int:pk>/edit/', ProjectUpdate.as_view(), name='project-update'),
+    path('project/<int:pk>/edit/', ProjectUpdate.as_view(), name='project-update'),
     path('projects/', ProjectListView.as_view(), name='project-list'),
     path('project/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),
     path('sof/add/', SOFCreate.as_view(), name='sof-create'),
-    path('sof<int:pk>/edit/', SOFUpdate.as_view(), name='sof-update'),
+    path('sof/<int:pk>/edit/', SOFUpdate.as_view(), name='sof-update'),
     path('sof/', SOFListView.as_view(), name='sof-list'),
     path('sof/<int:pk>/', SOFDetailView.as_view(), name='sof-detail'),
     path('dea/add/', DEACreate.as_view(), name='dea-create'),
-    path('dea<int:pk>/edit/', DEAUpdate.as_view(), name='dea-update'),
+    path('dea/<int:pk>/edit/', DEAUpdate.as_view(), name='dea-update'),
     path('dea/', DEAListView.as_view(), name='dea-list'),
     path('dea/<int:pk>/', DEADetailView.as_view(), name='dea-detail'),
     path('employee/projects/', EmployeeProjectsListView.as_view(), name='employee-project-list'),
     path('employee/project/<int:pk>', EmployeeProjectsDetailView.as_view(), name='employee-project-detail'),
+    path('employee_category/add/', CategoryCreateView.as_view(), name='category_create'),
+    path('employee_category/<int:pk>/edit/', CategoryUpdateView.as_view(), name='category_update'),
+    path('employee_categories/', CategoryListView.as_view(), name='category_list'),
+    path('employee_category/<int:pk>/', CategoryDetailView.as_view(), name='category_detail'),
 ]

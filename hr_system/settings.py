@@ -42,10 +42,12 @@ INSTALLED_APPS = [
     'reports.apps.ReportsConfig',
     'crispy_forms',
     'bootstrap4',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +57,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
 ]
+
+INTERNAL_IPS = ['127.0.0.1']
 
 ROOT_URLCONF = 'hr_system.urls'
 

@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 from builtins import super
 from decimal import Decimal
 
@@ -20,7 +21,7 @@ from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
 from reports.models import ExTraSummaryReportInfo
 from users.models import Employee, PayrollProcessors, CostCentre, Project, SOF, DEA, \
-    EmployeeProject
+    EmployeeProject, Category
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
 
@@ -62,7 +63,7 @@ def register_employee(request):
         'user_creation_form': user_creation_form,
         'profile_creation_form': profile_creation_form,
     }
-    return render(request, 'users/register.html', context)
+    return render(request, 'users/auth/register.html', context)
 
 
 @login_required
@@ -101,7 +102,7 @@ def profile(request):
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
     }
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/auth/profile.html', context)
 
 
 @login_required
@@ -125,7 +126,8 @@ def user_update_profile(request, pk=None):
                         user.groups.first().user_set.remove(user)
                         user_profile.user_group.user_set.add(user)
             else:
-                user_profile.user_group.user_set.add(user)
+                if user not in user_profile.user_group.user_set.all():
+                    user_profile.user_group.user_set.add(user)
 
             user_profile.save()
 
@@ -136,105 +138,116 @@ def user_update_profile(request, pk=None):
             return redirect('users:edit-employee')
     else:
         user_update_form = StaffUpdateForm(instance=user)
-        profile_update_form = ProfileUpdateForm(instance=employee   )
+        profile_update_form = ProfileUpdateForm(instance=employee)
 
     context = {
         'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
     }
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/auth/profile.html', context)
 
 
-def add_user_to_payroll_processor(instance):
+def add_users_for_period(payroll_period, instance):
+    logger.debug(f'Adding user to Period {payroll_period}')
+    user_payroll_center = instance.employee.payroll_center
+    payroll_center_ed_types = PayrollCenterEds.objects.select_related('ed_type') \
+        .filter(payroll_center=user_payroll_center)
+
+    if payroll_center_ed_types.exists():
+        # get existing instance processors if they exists
+        existing_user_payroll_processors = PayrollProcessors.objects \
+            .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
+                            'payroll_period', 'earning_and_deductions_type__ed_category_id',
+                            'earning_and_deductions_type__ed_type') \
+            .filter(employee=instance.employee).filter(payroll_period=payroll_period)
+        # if ed_types for the employees payroll center exist
+        if existing_user_payroll_processors.exists():
+            logger.debug(f'user\'s {payroll_period} processors exist')
+            # PayrollCenterEdTypes can change, hence in case there is one not in the processor
+            # associated with that instance, then create it
+            for pc_ed_type in payroll_center_ed_types.iterator():
+                ed_type = existing_user_payroll_processors.filter(earning_and_deductions_type=pc_ed_type.ed_type)
+                if ed_type.exists():
+                    # if that ed_type already has a processor associated with the instance leave
+                    # it and continue
+                    continue
+                else:
+                    # else create it
+                    logger.debug(f'adding {pc_ed_type.ed_type.ed_type} to user\'s existing processors')
+                    user_process = PayrollProcessors(employee=instance.employee,
+                                                     earning_and_deductions_category=pc_ed_type
+                                                     .ed_type.ed_category,
+                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                     amount=0, payroll_period=payroll_period)
+                    user_process.save()
+
+        else:
+            logger.debug(f'Creating user\'s {payroll_period} processes in Processor')
+            # if its a new instance in the payroll period, create processors for that
+            # instance/employee
+            for pc_ed_type in payroll_center_ed_types.iterator():
+                basic_salary_reg = re.compile(r'basic salary', re.IGNORECASE, )
+                hardship_allowance_reg = re.compile(r'hardship allowance', re.IGNORECASE, )
+                user_process = None
+                if basic_salary_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                    user_process = PayrollProcessors(employee=instance.employee,
+                                                     earning_and_deductions_category=pc_ed_type
+                                                     .ed_type.ed_category,
+                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                     amount=instance.employee.gross_salary,
+                                                     payroll_period=payroll_period)
+                    logger.info(
+                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+                elif hardship_allowance_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                    if instance.employee.duty_station:
+                        user_process = PayrollProcessors(employee=instance.employee,
+                                                         earning_and_deductions_category=pc_ed_type
+                                                         .ed_type.ed_category,
+                                                         earning_and_deductions_type=pc_ed_type.ed_type,
+                                                         amount=instance.employee.duty_station
+                                                         .earning_amount,
+                                                         payroll_period=payroll_period)
+                        logger.info(
+                            f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+                else:
+                    user_process = PayrollProcessors(employee=instance.employee,
+                                                     earning_and_deductions_category=pc_ed_type
+                                                     .ed_type.ed_category,
+                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                     amount=0,
+                                                     payroll_period=payroll_period)
+                    logger.info(
+                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+
+                if user_process:
+                    user_process.save()
+                else:
+                    logger.error(
+                        f'PayrollCenter {pc_ed_type.ed_type.ed_type} for {instance} was not processed')
+    else:
+        logger.error(f'Payroll center has no Earnings and Deductions')
+
+
+def add_user_to_payroll_processor(instance, payroll_period=None):
     logger.debug(f'adding user: {instance} to payroll processor')
     user_status = instance.employee.employment_status
-    payroll_periods = instance.employee.payroll_center.payrollperiod_set.all()
-    if user_status == 'APPROVED' or user_status == 'REACTIVATED':
-        if payroll_periods:
-            open_payroll_period = payroll_periods.filter(status='OPEN').all()
-            if open_payroll_period:
-                for payroll_period in open_payroll_period:
-                    logger.debug(f'Adding user to Period {payroll_period}')
-                    user_payroll_center = instance.employee.payroll_center
-                    payroll_center_ed_types = PayrollCenterEds.objects.filter(payroll_center=user_payroll_center)
-
-                    if payroll_center_ed_types:
-                        # get existing instance processors if they exists
-                        existing_user_payroll_processors = PayrollProcessors.objects.filter(employee=instance.employee) \
-                            .filter(payroll_period=payroll_period)
-                        # if ed_types for the employees payroll center exist
-                        if existing_user_payroll_processors:
-                            logger.debug(f'user\'s {payroll_period} processors exist')
-                            # PayrollCenterEdTypes can change, hence in case there is one not in the processor
-                            # associated with that instance, then create it
-                            for pc_ed_type in payroll_center_ed_types:
-                                if existing_user_payroll_processors.filter(
-                                        earning_and_deductions_type=pc_ed_type.ed_type):
-                                    # if that ed_type already has a processor associated with the instance leave
-                                    # it and continue
-                                    continue
-                                else:
-                                    # else create it
-                                    logger.debug(f'adding {pc_ed_type.ed_type.ed_type} to user\'s existing processors')
-                                    user_process = PayrollProcessors(employee=instance.employee,
-                                                                     earning_and_deductions_category=pc_ed_type
-                                                                     .ed_type.ed_category,
-                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                     amount=0, payroll_period=payroll_period)
-                                    user_process.save()
-
-                        else:
-                            logger.debug(f'Creating user\'s {payroll_period} processes in Processor')
-                            # if its a new instance in the payroll period, create processors for that
-                            # instance/employee
-                            for pc_ed_type in payroll_center_ed_types:
-                                basic_salary_reg = re.compile(r'basic salary', re.IGNORECASE, )
-                                hardship_allowance_reg = re.compile(r'hardship allowance', re.IGNORECASE, )
-                                user_process = None
-                                if basic_salary_reg.fullmatch(pc_ed_type.ed_type.ed_type):
-                                    user_process = PayrollProcessors(employee=instance.employee,
-                                                                     earning_and_deductions_category=pc_ed_type
-                                                                     .ed_type.ed_category,
-                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                     amount=instance.employee.gross_salary,
-                                                                     payroll_period=payroll_period)
-                                    logger.info(
-                                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
-                                elif hardship_allowance_reg.fullmatch(pc_ed_type.ed_type.ed_type):
-                                    if instance.employee.duty_station:
-                                        user_process = PayrollProcessors(employee=instance.employee,
-                                                                         earning_and_deductions_category=pc_ed_type
-                                                                         .ed_type.ed_category,
-                                                                         earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                         amount=instance.employee.duty_station
-                                                                         .earning_amount,
-                                                                         payroll_period=payroll_period)
-                                        logger.info(
-                                            f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
-                                else:
-                                    user_process = PayrollProcessors(employee=instance.employee,
-                                                                     earning_and_deductions_category=pc_ed_type
-                                                                     .ed_type.ed_category,
-                                                                     earning_and_deductions_type=pc_ed_type.ed_type,
-                                                                     amount=0,
-                                                                     payroll_period=payroll_period)
-                                    logger.info(
-                                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
-
-                                if user_process:
-                                    user_process.save()
-                                else:
-                                    logger.error(
-                                        f'PayrollCenter {pc_ed_type.ed_type.ed_type} for {instance} was not processed')
-                    else:
-                        logger.error(f'Payroll center has no Earnings and Deductions')
-            else:
-                logger.error(f'No OPEN payroll periods in the Processor')
-        else:
-            logger.error(f'No PayrollPeriods in the Processor')
+    if payroll_period:
+        add_users_for_period(payroll_period, instance)
     else:
-        logger.error(f'{instance} either not APPROVED or REACTIVATED')
+        payroll_periods = instance.employee.payroll_center.payrollperiod_set.all()
+        if user_status == 'APPROVED' or user_status == 'REACTIVATED':
+            if payroll_periods.exists():
+                open_payroll_period = payroll_periods.filter(status='OPEN').all()
+                if open_payroll_period.exists():
+                    for payroll_period in open_payroll_period:
+                        add_users_for_period(payroll_period, instance)
+                else:
+                    logger.error(f'No OPEN payroll periods in the Processor')
+            else:
+                logger.error(f'No PayrollPeriods in the Processor')
+        else:
+            logger.error(f'{instance} either not APPROVED or REACTIVATED')
 
 
 @login_required
@@ -243,7 +256,7 @@ def reject_employee(request, pk=None):
     employee = get_object_or_404(Employee, pk=pk)
     employee.employment_status = 'REJECTED'
     employee.save(update_fields=['employment_status'])
-    return render(request, 'users/_approved_employee_list.html')
+    return render(request, 'users/employees/_approved_employee_list.html')
 
 
 @login_required
@@ -280,16 +293,17 @@ def approve_employee(request, pk=None):
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
     }
-    return render(request, 'users/_approve_employee.html', context)
+    return render(request, 'users/employees/_approve_employee.html', context)
 
 
 class RecruitedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.approve_employee',)
     model = Employee
-    template_name = 'users/_recruited_employee_list.html'
+    template_name = 'users/employees/_recruited_employee_list.html'
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Recruit').order_by('-appointment_date')
+        return Employee.objects.select_related('user', 'department', 'job_title') \
+            .filter(employment_status='Recruit').order_by('-appointment_date').iterator()
 
 
 class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -297,7 +311,11 @@ class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
     model = Employee
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Approved').order_by('-appointment_date')
+        return Employee.objects \
+            .select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country', 'department', 'job_title',
+                            'reports_to', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
+                            'currency', 'kin_relationship', 'district') \
+            .filter(employment_status='Approved').iterator()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
@@ -308,10 +326,11 @@ class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
 class RejectedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
-    template_name = 'users/_rejected_employee_list.html'
+    template_name = 'users/employees/_rejected_employee_list.html'
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='REJECTED')
+        return Employee.objects.select_related('user', 'department', 'job_title') \
+            .filter(employment_status='REJECTED').iterator()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
@@ -322,10 +341,12 @@ class RejectedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
 class SeparatedEmployeesListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
-    template_name = 'users/_separated_employee_list.html'
+    template_name = 'users/employees/_separated_employee_list.html'
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='TERMINATED').order_by('-appointment_date')
+        return Employee.objects \
+            .select_related('user', 'department', 'job_title').filter(employment_status='Terminated') \
+            .order_by('-appointment_date').iterator()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
@@ -335,30 +356,40 @@ class SeparatedEmployeesListView(LoginRequiredMixin, PermissionRequiredMixin, Li
 
 def processor(payroll_period, process_lst='False', method='GET'):
     logger.debug(f'started processing')
+    start = time.time()
+    print(f'Start: {start}')
     response = {}
-    if Employee.objects.all():
+    users = Employee.objects.all()
+    if users.exists():
+
         logger.critical(f'Adding users for Period {payroll_period} to processor')
-        for employee in Employee.objects.all():
+        for employee in users:
             if employee.employment_status == 'APPROVED':
                 user = employee.user
                 try:
-                    add_user_to_payroll_processor(user)
+                    add_user_to_payroll_processor(user, payroll_period)
                 except Exception as e:
                     logger.error(f'Something went wrong')
                     logger.error(f'{e.args}')
+        end = time.time()
+        elapsed = end - start
+        print(f'End: {end}')
+        print(f'Elaspsed: {elapsed}')
         logger.critical(f'Successfully added users for Period {payroll_period} to processor')
     else:
         logger.error(f'No Employees in the system')
         response['message'] = 'Something went wrong'
         response['status'] = 'Failed'
 
-    period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+    period_processes = PayrollProcessors.objects \
+        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user')\
+        .filter(payroll_period=payroll_period)
 
     # removing any terminated employees before processing
     employees_in_period = []
-    if Employee.objects.all():
-        if period_processes:
-            for process in period_processes:
+    if users.exists():
+        if period_processes.exists():
+            for process in period_processes.iterator():
                 if process.employee.employment_status == 'TERMINATED':
                     process.delete()
                 else:
@@ -376,7 +407,9 @@ def processor(payroll_period, process_lst='False', method='GET'):
     statutory = EarningDeductionCategory.objects.get(pk=3)
 
     # getting updated payroll processors in case any employees have been removed
-    period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+    # period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+    paye_rates = PAYERates.objects.all()
+    lst_rates = LSTRates.objects.all()
 
     for employee in employees_to_process:
         logger.info(f'Processing for user {employee}')
@@ -386,8 +419,8 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         # calculating gross earnings
         logger.info(f'Processing for user {employee}: calculating gross earnings')
-        if ge_data:
-            for inst in ge_data:
+        if ge_data.exists():
+            for inst in ge_data.iterator():
                 if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
@@ -400,7 +433,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # calculating PAYE
         logger.info(f'Processing for user {employee}: calculating PAYE')
         tax_bracket, tax_rate, fixed_tax = 0, 0, 0
-        for tx_brac in PAYERates.objects.all():
+        for tx_brac in paye_rates.iterator():
             if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
                 tax_bracket = tx_brac.lower_boundary
                 tax_rate = tx_brac.rate / 100
@@ -413,9 +446,8 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: calculating LST')
         fixed_lst = 0
         if process_lst == 'True':
-            lst_rates = LSTRates.objects.all()
-            if lst_rates:
-                for lst_brac in lst_rates:
+            if lst_rates.exists():
+                for lst_brac in lst_rates.iterator():
                     if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
                         fixed_lst = lst_brac.fixed_amount / 4
                         break
@@ -459,10 +491,6 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_nssf_5_processor.amount = nssf_5
             employee_nssf_5_processor.save(update_fields=['amount'])
 
-        # getting updated payroll processors with updated amounts
-        logger.info(f'Processing for user {employee}: getting updated payroll processors with updated amounts')
-        period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
-
         tx_data_ded = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category=deductions).all()
         tx_data_stat = period_processes.filter(employee=employee) \
@@ -470,14 +498,14 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         # calculating total deductions from deductions
         logger.info(f'Processing for user {employee}: calculating total deductions from deductions')
-        if tx_data_ded:
-            for inst in tx_data_ded:
+        if tx_data_ded.exists():
+            for inst in tx_data_ded.iterator():
                 total_deductions += inst.amount
 
         # calculating total deductions from statutory deductions
         logger.info(f'Processing for user {employee}: calculating total deductions from statutory deductions')
-        if tx_data_stat:
-            for inst in tx_data_stat:
+        if tx_data_stat.exists():
+            for inst in tx_data_stat.iterator():
                 if not inst.earning_and_deductions_type.ed_type.__contains__('NSSF'):
                     total_deductions += inst.amount
 
@@ -564,25 +592,27 @@ def terminate_employee(request, pk):
         'employee': employee,
         'form': form,
     }
-    return render(request, 'users/_terminate_employee_form.html', context)
+    return render(request, 'users/employees/_terminate_employee_form.html', context)
 
 
 class EmployeeBirthdayList(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
-    template_name = 'users/_employee_birthday_list.html'
+    template_name = 'users/employees/_employee_birthday_list.html'
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='APPROVED')
+        return Employee.objects.select_related('user') \
+            .filter(employment_status='APPROVED').iterator()
 
 
 class AssignProjectListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
-    template_name = 'users/_assign_employee_project_list.html'
+    template_name = 'users/employees/_assign_employee_project_list.html'
 
     def get_queryset(self):
-        return Employee.objects.filter(employment_status='Approved')
+        return Employee.objects.select_related('user', 'department', 'job_title') \
+            .filter(employment_status='Approved').iterator()
 
 
 @login_required
@@ -606,12 +636,13 @@ def create_employee_project(request, pk):
         'form': form
     }
 
-    return render(request, 'users/employee_project_form.html', context)
+    return render(request, 'users/employeeproject/employee_project_form.html', context)
 
 
 class CostCentreCreate(LoginRequiredMixin, CreateView):
     model = CostCentre
     fields = ['cost_centre', 'description']
+    template_name = 'users/costcentre/costcentre_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -622,6 +653,7 @@ class CostCentreCreate(LoginRequiredMixin, CreateView):
 class CostCentreUpdate(LoginRequiredMixin, UpdateView):
     model = CostCentre
     fields = ['cost_centre', 'description']
+    template_name = 'users/costcentre/costcentre_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -632,16 +664,19 @@ class CostCentreUpdate(LoginRequiredMixin, UpdateView):
 class CostCentreDetailView(LoginRequiredMixin, DetailView):
     model = CostCentre
     fields = ['cost_centre', 'description']
+    template_name = 'users/costcentre/costcentre_detail.html'
 
 
 class CostCentreListView(LoginRequiredMixin, ListView):
     model = CostCentre
     fields = ['cost_centre', 'description']
+    template_name = 'users/costcentre/costcentre_list.html'
 
 
 class ProjectCreate(LoginRequiredMixin, CreateView):
     model = Project
     fields = ['project_code', 'project_name', 'cost_centre']
+    template_name = 'users/project/project_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -652,6 +687,7 @@ class ProjectCreate(LoginRequiredMixin, CreateView):
 class ProjectUpdate(LoginRequiredMixin, UpdateView):
     model = Project
     fields = ['project_code', 'project_name', 'cost_centre']
+    template_name = 'users/project/project_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -662,16 +698,18 @@ class ProjectUpdate(LoginRequiredMixin, UpdateView):
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project
     fields = ['project_code', 'project_name', 'cost_centre']
+    template_name = 'users/project/project_detail.html'
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
-    fields = ['project_code', 'project_name', 'cost_centre']
+    template_name = 'users/project/project_list.html'
 
 
 class SOFCreate(LoginRequiredMixin, CreateView):
     model = SOF
     fields = ['sof_code', 'sof_name', 'project_code']
+    template_name = 'users/sof/sof_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -682,6 +720,7 @@ class SOFCreate(LoginRequiredMixin, CreateView):
 class SOFUpdate(LoginRequiredMixin, UpdateView):
     model = SOF
     fields = ['sof_code', 'sof_name', 'project_code']
+    template_name = 'users/sof/sof_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -692,16 +731,18 @@ class SOFUpdate(LoginRequiredMixin, UpdateView):
 class SOFDetailView(LoginRequiredMixin, DetailView):
     model = SOF
     fields = ['sof_code', 'sof_name', 'project_code']
+    template_name = 'users/sof/sof_detail.html'
 
 
 class SOFListView(LoginRequiredMixin, ListView):
     model = SOF
-    fields = ['sof_code', 'sof_name', 'project_code']
+    template_name = 'users/sof/sof_list.html'
 
 
 class DEACreate(LoginRequiredMixin, CreateView):
     model = DEA
     fields = ['dea_code', 'dea_name', 'sof_code']
+    template_name = 'users/dea/dea_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -712,6 +753,7 @@ class DEACreate(LoginRequiredMixin, CreateView):
 class DEAUpdate(LoginRequiredMixin, UpdateView):
     model = DEA
     fields = ['dea_code', 'dea_name', 'sof_code']
+    template_name = 'users/dea/dea_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -722,18 +764,63 @@ class DEAUpdate(LoginRequiredMixin, UpdateView):
 class DEADetailView(LoginRequiredMixin, DetailView):
     model = DEA
     fields = ['dea_code', 'dea_name', 'sof_code']
+    template_name = 'users/dea/dea_detail.html'
 
 
 class DEAListView(LoginRequiredMixin, ListView):
     model = DEA
-    fields = ['dea_code', 'dea_name', 'sof_code']
+    template_name = 'users/dea/dea_list.html'
 
 
 class EmployeeProjectsDetailView(LoginRequiredMixin, DetailView):
     model = EmployeeProject
     fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'created_by']
+    template_name = 'users/employeeproject/employeeproject_detail.html'
 
 
 class EmployeeProjectsListView(LoginRequiredMixin, ListView):
     model = EmployeeProject
-    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'contribution_percentage']
+    template_name = 'users/employeeproject/employeeproject_list.html'
+
+
+class CategoryCreateView(CreateView):
+    model = Category
+    fields = ['name']
+    template_name = 'users/category/category_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create Category'
+        return context
+
+
+class CategoryUpdateView(UpdateView):
+    model = Category
+    fields = ['name']
+    template_name = 'users/category/category_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update Category'
+        return context
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    fields = ['name']
+    template_name = 'users/category/category_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Category'
+        return context
+
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'users/category/category_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Categories'
+        return context

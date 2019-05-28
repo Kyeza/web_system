@@ -53,7 +53,7 @@ class Department(models.Model):
     description = models.CharField(max_length=300)
 
     def get_absolute_url(self):
-        return reverse('support_data:department-detail-detail', kwargs={'pk': self.pk})
+        return reverse('support_data:department-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.department

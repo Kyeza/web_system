@@ -21,15 +21,17 @@
                     <th>Duty station</th>
                     {% for staff in employees_to_process %}
                         {% if forloop.first %}
-                            {% for processor in period_processes|user_data:staff|category:1 %}
-                                <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
-                            {% endfor %}
-                            {% for processor in period_processes|user_data:staff|category:2 %}
-                                <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
-                            {% endfor %}
-                            {% for processor in period_processes|user_data:staff|category:3 %}
-                                <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
-                            {% endfor %}
+                            {% with period_processes|user_data:staff as processes %}
+                                {% for processor in processes|category:1 %}
+                                    <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
+                                {% endfor %}
+                                {% for processor in processes|category:2 %}
+                                    <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
+                                {% endfor %}
+                                {% for processor in processes|category:3 %}
+                                    <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
+                                {% endfor %}
+                            {% endwith %}
                             <th>Total Deductions</th>
                             <th>Gross Salary</th>
                             <th>Net Pay</th>

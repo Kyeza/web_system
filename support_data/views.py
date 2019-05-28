@@ -1,13 +1,12 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
-from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade
-from .forms import DutyStationCreationForm
 from payroll.models import EarningDeductionType
+from .forms import DutyStationCreationForm
+from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade
 
 
 class OrganizationCreate(LoginRequiredMixin, CreateView):

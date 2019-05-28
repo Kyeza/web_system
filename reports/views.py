@@ -35,18 +35,21 @@ def display_summary_report(request, pk):
 
 # generating summary data context
 def generate_summary_data(payroll_period):
-    period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+    period_processes = PayrollProcessors.objects\
+        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user', 'employee__job_title',
+                        'employee__duty_station')\
+        .filter(payroll_period=payroll_period)
     employees_in_period = []
 
     # removing any terminated employees before processing
-    for process in period_processes:
+    for process in period_processes.iterator():
         if process.employee.employment_status == 'TERMINATED':
             process.delete()
         else:
             employees_in_period.append(process.employee)
 
     employees_to_process = list(set(employees_in_period))
-    extra_reports = ExTraSummaryReportInfo.objects.all()
+    extra_reports = ExTraSummaryReportInfo.objects.select_related('employee', 'payroll_period').all()
     context = {
         'payroll_period': payroll_period,
         'period_processes': period_processes,
@@ -72,9 +75,9 @@ def update_summary_report(request, pp, user):
     extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.pk}').first()
 
     # creating initial data for formsets
-    e_data = [processor.to_dict() for processor in cat_e]
-    d_data = [processor.to_dict() for processor in cat_d]
-    s_data = [processor.to_dict() for processor in cat_s]
+    e_data = [processor.to_dict() for processor in cat_e.iterator()]
+    d_data = [processor.to_dict() for processor in cat_d.iterator()]
+    s_data = [processor.to_dict() for processor in cat_s.iterator()]
 
     # creating initial display formsets
     e_FormSet = formset_factory(ProcessUpdateForm, max_num=len(e_data), extra=0)
@@ -128,26 +131,24 @@ def update_summary_report(request, pp, user):
 def generate(payroll_period, report):
     results = {}
     logger.info(f'generating {report} report data')
+    processors = PayrollProcessors.objects.filter(payroll_period=payroll_period)
     if payroll_period:
-        if report == 'BANK':
-            processors = PayrollProcessors.objects.filter(payroll_period=payroll_period)
-        elif report == 'SUMMARY':
-            processors = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+        if report == 'BANK' or report == 'SUMMARY':
+            results[payroll_period] = processors
         elif report == 'NSSF':
-            processors = PayrollProcessors.objects.filter(
+            p = processors.filter(
                 Q(earning_and_deductions_type__ed_type__icontains='Employee NSSF')
                 | Q(earning_and_deductions_type__ed_type__icontains='Employer NSSF')).all()
+            results[payroll_period] = p
         else:
-            processors = PayrollProcessors.objects.filter(payroll_period=payroll_period) \
+            p = processors \
                 .filter(Q(earning_and_deductions_type__ed_type__icontains=report)
                         | Q(earning_and_deductions_type__ed_type=report)).all()
             if report == 'PAYE':
-                earnings = PayrollProcessors.objects.filter(payroll_period=payroll_period). \
+                earnings = processors. \
                     filter(earning_and_deductions_type__ed_category=1)
                 results['earnings'] = earnings
-
-        logger.debug(f'{report} report --> processor: {processors}')
-        results[payroll_period] = processors
+                results[payroll_period] = p
 
     logger.debug(f'{report} report --> results: {results}')
     return results
@@ -198,7 +199,7 @@ def generate_reports(request):
                     messages.warning(request, f'PayrollPeriod ({payroll_period}) has not been processed yet!')
                     return redirect('reports:generate-reports')
             else:
-                logger.error(f'PayrollPeriod ({selected_month}) doesn\' exist!')
+                logger.error(f'PayrollPeriod ({selected_month}) does not exist!')
                 messages.warning(request, f'Reports for PayrollPeriod({selected_month}) don\'t exist.')
                 return redirect('reports:generate-reports')
 

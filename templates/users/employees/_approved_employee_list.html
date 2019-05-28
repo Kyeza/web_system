@@ -32,7 +32,7 @@
                     <th>Appointment date</th>
                     <th>Contract type</th>
                     <th>Contract expiry</th>
-                    <th>Cost centre</th>
+                    <th>Employee category</th>
                     <th>Grade</th>
                     <th>Gross salary</th>
                     <th>Currency</th>
@@ -82,7 +82,7 @@
                         <td>{{ employee.appointment_date|date:'d M, Y' }}</td>
                         <td>{{ employee.contract_type }}</td>
                         <td>{{ employee.contract_expiry }}</td>
-                        <td>{{ employee.cost_centre }}</td>
+                        <td>{{ employee.category }}</td>
                         <td>{{ employee.grade }}</td>
                         <td>{{ employee.gross_salary|intcomma }}</td>
                         <td>{{ employee.currency }}</td>
