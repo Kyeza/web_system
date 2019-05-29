@@ -484,7 +484,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: updating Pension')
 
         pension = 0
-        if employee.category.pk == 1:
+        if employee.category_id == 1:
             pension = employee.gross_salary * (5 / 100)
 
         employee_pension_processor = period_processes.filter(employee=employee) \
