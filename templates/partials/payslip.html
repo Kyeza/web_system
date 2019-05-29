@@ -10,7 +10,7 @@
             </div>
             <div class="p-2 align-self-end">
                 <h4 class="text-center" style="text-align: center;">
-                    {{ period.payroll_center.organization }}
+                    {{ period.payroll_center.name }}
                 </h4>
             </div>
         </div>
@@ -78,15 +78,13 @@
                         </tr>
                     {% endfor %}
                     <div class="border-top-3"></div>
-                    {% with period|report_key:staff as key %}
-                        {% for user_report in user_reports|extra_info:key %}
-                            <tr>
-                                <th scope="row"><h5>Total Earnings</h5></th>
-                                <td class="d-flex justify-content-end borderless">
-                                    {{ user_report.gross_earning|intcomma }}
-                                </td>
-                            </tr>
-                        {%  endfor %}
+                    {% with staff|report:period as report %}
+                        <tr>
+                            <th scope="row"><h5>Total Earnings</h5></th>
+                            <td class="d-flex justify-content-end borderless">
+                                {{ report.gross_earning|intcomma }}
+                            </td>
+                        </tr>
                     {% endwith %}
                     <div class="border-bottom-3"></div>
 
@@ -113,26 +111,22 @@
                         </tr>
                     {% endfor %}
 
-                    {% with period|report_key:staff as key %}
-                        {% for user_report in user_reports|extra_info:key %}
-                            <tr>
-                                <th scope="row"><h5>Total Deductions</h5></th>
-                                <td class="d-flex justify-content-end borderless">
-                                    {{ user_report.total_deductions|intcomma }}
-                                </td>
-                            </tr>
-                        {%  endfor %}
+                    {% with staff|report:period as report %}
+                        <tr>
+                            <th scope="row"><h5>Total Deductions</h5></th>
+                            <td class="d-flex justify-content-end borderless">
+                                {{ report.total_deductions|intcomma }}
+                            </td>
+                        </tr>
                     {% endwith %}
 
-                    {% with period|report_key:staff as key %}
-                        {% for user_report in user_reports|extra_info:key %}
-                            <tr>
-                                <th scope="row"><h4>Net Pay</h4></th>
-                                <td class="d-flex justify-content-end borderless">
-                                    {{ user_report.net_pay|intcomma }}
-                                </td>
-                            </tr>
-                        {%  endfor %}
+                    {% with staff|report:period as report %}
+                        <tr>
+                            <th scope="row"><h4>Net Pay</h4></th>
+                            <td class="d-flex justify-content-end borderless">
+                                {{ report.net_pay|intcomma }}
+                            </td>
+                        </tr>
                     {% endwith %}
                 {% endfor %}
                 </tbody>
