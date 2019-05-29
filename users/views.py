@@ -466,7 +466,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # update PAYE if exists in payroll center
         logger.info(f'Processing for user {employee}: updating PAYE')
         employee_paye_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type_id=61).first()
+            .filter(earning_and_deductions_type_id=61).first()
         if employee_paye_processor:
             employee_paye_processor.amount = paye
             employee_paye_processor.save(update_fields=['amount'])
@@ -475,7 +475,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: updating LST')
         if process_lst == 'True':
             employee_lst_processor = period_processes.filter(employee=employee) \
-                .filter(earning_and_deductions_type__ed_type_id=65).first()
+                .filter(earning_and_deductions_type_id=65).first()
             if employee_paye_processor:
                 employee_lst_processor.amount = lst
                 employee_lst_processor.save(update_fields=['amount'])
@@ -488,7 +488,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             pension = employee.gross_salary * (5 / 100)
 
         employee_pension_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type_id=75).first()
+            .filter(earning_and_deductions_type_id=75).first()
         if employee_paye_processor:
             employee_pension_processor.amount = pension
             employee_pension_processor.save(update_fields=['amount'])
@@ -496,7 +496,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # update NSSF 10% if exists in payroll center
         logger.info(f'Processing for user {employee}: updating NSSF 10')
         employee_nssf_10_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type_id=31).first()
+            .filter(earning_and_deductions_type_id=31).first()
         if employee_nssf_10_processor:
             employee_nssf_10_processor.amount = nssf_10
             employee_nssf_10_processor.save(update_fields=['amount'])
@@ -504,7 +504,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # update NSSF 5%_5 if exists in payroll center
         logger.info(f'Processing for user {employee}: updating NSSF 5')
         employee_nssf_5_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type__ed_type_id=32).first()
+            .filter(earning_and_deductions_type_id=32).first()
         if employee_nssf_5_processor:
             employee_nssf_5_processor.amount = nssf_5
             employee_nssf_5_processor.save(update_fields=['amount'])
