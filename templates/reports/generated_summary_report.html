@@ -69,11 +69,9 @@
                     {% for info in data|user_data:staff|category:3 %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
-                    {% with period|report_key:staff as key %}
-                        {% with user_reports|extra_info:key as report %}
-                            <td>{{ report.total_deductions|intcomma }}</td>
-                            <td>{{ report.net_pay|intcomma }}</td>
-                        {% endwith %}
+                    {% with staff|report:period as report %}
+                        <td>{{ report.total_deductions|intcomma }}</td>
+                        <td>{{ report.net_pay|intcomma }}</td>
                     {% endwith %}
                     <td></td>
                 </tr>

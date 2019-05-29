@@ -41,10 +41,8 @@
                     {% for info in earnings|user_data:staff %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
-                    {% with period|report_key:staff as key %}
-                        {% for user_report in user_reports|extra_info:key %}
-                            <td>{{ user_report.gross_earning|intcomma }}</td>
-                        {%  endfor %}
+                    {% with staff|report:period as report %}
+                        <td>{{ report.gross_earning|intcomma }}</td>
                     {% endwith %}
                     {% for info in data|user_data:staff|category:3 %}
                         <td>{{ info.amount|intcomma }}</td>

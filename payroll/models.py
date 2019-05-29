@@ -141,8 +141,8 @@ class PayrollPeriod(models.Model):
 
     _month = datetime.datetime.now().month
     payroll_center = models.ForeignKey(PayrollCenter, on_delete=models.CASCADE)
-    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[_month - 1][1])
-    year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year)
+    month = models.CharField(max_length=15, choices=MONTHS, default=MONTHS[_month - 1][1], db_index=True)
+    year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year, db_index=True)
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
     status = models.CharField(max_length=6, default='OPEN')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)

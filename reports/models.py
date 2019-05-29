@@ -7,7 +7,7 @@ from users.models import Employee
 
 class ExTraSummaryReportInfo(models.Model):
     key = models.CharField(max_length=150, blank=True, default=None, unique=True, primary_key=True)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='report')
     payroll_period = models.ForeignKey(PayrollPeriod, on_delete=models.SET_NULL, null=True)
     total_deductions = models.DecimalField(max_digits=12, decimal_places=2, default=None,)
     net_pay = models.DecimalField(max_digits=12, decimal_places=2, default=None,)

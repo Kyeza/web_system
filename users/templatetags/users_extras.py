@@ -25,6 +25,11 @@ def extra_info(reports_data, key):
 
 
 @register.filter
+def report(staff, period):
+    return staff.report.filter(payroll_period=period).first()
+
+
+@register.filter
 def user_profile(user):
     try:
         if user:

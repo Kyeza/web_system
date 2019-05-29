@@ -31,10 +31,8 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ staff.user.get_full_name }}</td>
                     <td>{{ staff.duty_station }}</td>
-                    {% with period|report_key:staff as key %}
-                        {% with user_reports|extra_info:key as report %}
-                            <td>{{ report.gross_earning|intcomma }}</td>
-                        {% endwith %}
+                    {% with staff|report:period as report %}
+                        <td>{{ report.gross_earning|intcomma }}</td>
                     {% endwith %}
                     {% for info in data|user_data:staff|category:2 %}
                         <td>{{ info.amount|intcomma }}</td>

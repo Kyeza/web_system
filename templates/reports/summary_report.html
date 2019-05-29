@@ -12,15 +12,16 @@
                 <caption class="border-bottom mb-4">
                     {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
                 </caption>
-                <thead class="thead-dark">
-                <tr>
-                    <th>No.</th>
-                    <th>Staff</th>
-                    <th>Agresso no.</th>
-                    <th>Job title</th>
-                    <th>Duty station</th>
-                    {% for staff in employees_to_process %}
+                {% for staff in employees_to_process %}
+                    <thead class="thead-dark">
+                    <tr>
                         {% if forloop.first %}
+                            <th>No.</th>
+                            <th>Staff</th>
+                            <th>Agresso no.</th>
+                            <th>Job title</th>
+                            <th>Duty station</th>
+
                             {% for heading in headings_1 %}
                                 {% for title in heading %}
                                     <th>{{ title }}</th>
@@ -40,15 +41,14 @@
                                 {% for title in heading %}
                                     <th>{{ title }}</th>
                                 {% endfor %}
-                            {% endfor %}                            <th>Total Deductions</th>
+                            {% endfor %}
+                            <th>Total Deductions</th>
                             <th>Gross Salary</th>
                             <th>Net Pay</th>
                         {% endif %}
-                    {% endfor %}
-                </tr>
-                </thead>
-                <tbody>
-                {% for staff in employees_to_process %}
+                    </tr>
+                    </thead>
+                    <tbody>
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
@@ -85,13 +85,11 @@
                             {% endwith %}
                         {% endwith %}
                     </tr>
-                {% endfor %}
-                </tbody>
-                <tfoot>
-                <tr>
-                    <th class="font-weight-light text-info text-center" colspan="5">Total</th>
-                    {% for staff in employees_to_process %}
-                        {% if forloop.first %}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        {% if forloop.last %}
+                            <th class="font-weight-light text-info text-center" colspan="5">Total</th>
                             {% for heading in headings_1 %}
                                 {% for title in heading %}
                                     <th></th>
@@ -116,9 +114,9 @@
                             <th></th>
                             <th></th>
                         {% endif %}
-                    {% endfor %}
-                </tr>
-                </tfoot>
+                    </tr>
+                    </tfoot>
+                {% endfor %}
             </table>
         </div>
     </div>

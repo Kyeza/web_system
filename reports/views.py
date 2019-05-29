@@ -33,11 +33,13 @@ def generate_summary_data(payroll_period):
     period_processes = PayrollProcessors.objects \
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                         'employee__user', 'employee__job_title', 'employee__duty_station') \
-        .filter(payroll_period_id=payroll_period.pk)
-    employees_in_period = []
+        .filter(payroll_period_id=payroll_period.pk).all() \
+        .prefetch_related('employee__report', 'employee__report__payroll_period').all()
+    employees_in_period = set()
 
     # removing any terminated employees before processing
     i = 1
+    headings_1, headings_2, headings_3, headings_4 = None, None, None, None
     for process in period_processes.iterator():
         if i == 1:
             e = process.employee
@@ -51,14 +53,13 @@ def generate_summary_data(payroll_period):
             headings_4 = list(headings.filter(earning_and_deductions_category_id=4)
                               .values_list('earning_and_deductions_type__ed_type'))
             i = 0
-        employees_in_period.append(process.employee)
+        employees_in_period.add(process.employee)
 
-    employees_to_process = list(set(employees_in_period))
     extra_reports = ExTraSummaryReportInfo.objects.select_related('employee', 'payroll_period').all()
     context = {
         'payroll_period': payroll_period,
         'period_processes': period_processes,
-        'employees_to_process': employees_to_process,
+        'employees_to_process': employees_in_period,
         'user_reports': extra_reports,
         'headings_1': headings_1,
         'headings_2': headings_2,
@@ -144,25 +145,25 @@ def generate(payroll_period, report):
     results = {}
     logger.info(f'generating {report} report data')
     processors = PayrollProcessors.objects \
-        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user',
-                        'employee__job_title', 'employee__duty_station').filter(payroll_period=payroll_period)
+        .select_related('employee', 'payroll_period', 'payroll_period__payroll_center', 'earning_and_deductions_type',
+                        'earning_and_deductions_category', 'employee__user', 'employee__job_title',
+                        'employee__duty_station', 'employee__bank_1', 'employee__bank_2') \
+        .filter(payroll_period_id=payroll_period.pk).all() \
+        .prefetch_related('employee__report', 'employee__report__payroll_period').all()
     if payroll_period:
         if report == 'BANK' or report == 'SUMMARY':
             results[payroll_period] = processors
-        elif report == 'NSSF':
-            p = processors.filter(
-                Q(earning_and_deductions_type__ed_type__icontains='Employee NSSF')
-                | Q(earning_and_deductions_type__ed_type__icontains='Employer NSSF')).all()
+        elif report == 'LST':
+            p = processors.filter(earning_and_deductions_type_id=65).all()
             results[payroll_period] = p
-        else:
-            p = processors \
-                .filter(Q(earning_and_deductions_type__ed_type__icontains=report)
-                        | Q(earning_and_deductions_type__ed_type=report)).all()
-            if report == 'PAYE':
-                earnings = processors. \
-                    filter(earning_and_deductions_type__ed_category=1)
-                results['earnings'] = earnings
-                results[payroll_period] = p
+        elif report == 'NSSF':
+            p = processors.filter(Q(earning_and_deductions_type_id=32) | Q(earning_and_deductions_type_id=31)).all()
+            results[payroll_period] = p
+        elif report == 'PAYE':
+            p = processors.filter(earning_and_deductions_type_id=61).all()
+            earnings = p.filter(earning_and_deductions_type__ed_category=1)
+            results['earnings'] = earnings
+            results[payroll_period] = p
 
     logger.debug(f'{report} report --> results: {results}')
     return results
@@ -178,18 +179,16 @@ def generate_reports(request):
             report = form.cleaned_data.get('report_type')
             year = form.cleaned_data.get('year')
             selected_month = form.cleaned_data.get('month')
-            payroll_periods = payroll_center.payrollperiod_set.filter(year=year)
-
-            payroll_period = payroll_periods.filter(month=selected_month).first()
+            payroll_period = payroll_center.payrollperiod_set.select_related('payroll_center', 'created_by') \
+                .filter(year=year).filter(month=selected_month).first()
 
             if payroll_period:
-                if ExTraSummaryReportInfo.objects.filter(payroll_period=payroll_period):
+                extra_reports = ExTraSummaryReportInfo.objects.select_related('employee') \
+                    .filter(payroll_period_id=payroll_period.pk).all()
+                if extra_reports.exists():
                     logger.info(f'generating report data for {selected_month}-{year}')
 
-                    if report == 'LST':
-                        results = generate(payroll_period, 'Local Service Tax')
-                    else:
-                        results = generate(payroll_period, report)
+                    results = generate(payroll_period, report)
 
                     earnings = None
                     if 'earnings' in results.keys():
@@ -201,9 +200,6 @@ def generate_reports(request):
                         'report': report,
                         'results': results,
                     }
-
-                    if report == 'SUMMARY' or report == 'PAYE' or report == 'BANK' or report == 'LST':
-                        context['user_reports'] = ExTraSummaryReportInfo.objects.all()
 
                     if report == 'PAYE':
                         context['earnings'] = earnings

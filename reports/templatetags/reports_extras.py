@@ -12,11 +12,11 @@ def obj_type(obj):
 
 @register.filter
 def get_distinct_employee_set(processors):
-    employees_in_period = []
+    employees_in_period = set()
     for process in processors.iterator():
-        employees_in_period.append(process.employee)
+        employees_in_period.add(process.employee)
 
-    return list(set(employees_in_period))
+    return employees_in_period
 
 
 @register.filter
