@@ -2,8 +2,7 @@ import logging
 
 import weasyprint
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import EmailMessage, get_connection
 from django.db.models import Q
 from django.forms import formset_factory
@@ -25,28 +24,34 @@ logger = logging.getLogger('payroll.reports')
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
 
-    if cache.get('summary_report') is None:
-        context = generate_summary_data(payroll_period)
-        cache.set('summary_report', context, 60 * 15)
-        return render(request, 'reports/summary_report.html', context)
-    else:
-        return render(request, 'reports/summary_report.html', cache.get('summary_report'))
+    context = generate_summary_data(payroll_period)
+    return render(request, 'reports/summary_report.html', context)
 
 
 # generating summary data context
 def generate_summary_data(payroll_period):
-    period_processes = PayrollProcessors.objects\
-        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user', 'employee__job_title',
-                        'employee__duty_station')\
-        .filter(payroll_period=payroll_period)
+    period_processes = PayrollProcessors.objects \
+        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
+                        'employee__user', 'employee__job_title', 'employee__duty_station') \
+        .filter(payroll_period_id=payroll_period.pk)
     employees_in_period = []
 
     # removing any terminated employees before processing
+    i = 1
     for process in period_processes.iterator():
-        if process.employee.employment_status == 'TERMINATED':
-            process.delete()
-        else:
-            employees_in_period.append(process.employee)
+        if i == 1:
+            e = process.employee
+            headings = period_processes.filter(employee=e)
+            headings_1 = list(headings.filter(earning_and_deductions_category_id=1)
+                              .values_list('earning_and_deductions_type__ed_type'))
+            headings_2 = list(headings.filter(earning_and_deductions_category_id=2)
+                              .values_list('earning_and_deductions_type__ed_type'))
+            headings_3 = list(headings.filter(earning_and_deductions_category_id=3)
+                              .values_list('earning_and_deductions_type__ed_type'))
+            headings_4 = list(headings.filter(earning_and_deductions_category_id=4)
+                              .values_list('earning_and_deductions_type__ed_type'))
+            i = 0
+        employees_in_period.append(process.employee)
 
     employees_to_process = list(set(employees_in_period))
     extra_reports = ExTraSummaryReportInfo.objects.select_related('employee', 'payroll_period').all()
@@ -55,6 +60,10 @@ def generate_summary_data(payroll_period):
         'period_processes': period_processes,
         'employees_to_process': employees_to_process,
         'user_reports': extra_reports,
+        'headings_1': headings_1,
+        'headings_2': headings_2,
+        'headings_3': headings_3,
+        'headings_4': headings_4,
     }
 
     return context
@@ -65,14 +74,17 @@ def generate_summary_data(payroll_period):
 def update_summary_report(request, pp, user):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pp)
     employee = get_object_or_404(Employee, pk=user)
-    processors = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
+    processors = PayrollProcessors.objects \
+        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user',
+                        'employee__job_title', 'employee__duty_station') \
+        .filter(payroll_period=payroll_period).filter(employee=employee)
 
     # Categories: earning, deductions and statutory
     cat_e = processors.filter(earning_and_deductions_category=1).all()
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
 
-    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.pk}').first()
+    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.id_number}').first()
 
     # creating initial data for formsets
     e_data = [processor.to_dict() for processor in cat_e.iterator()]
@@ -131,7 +143,9 @@ def update_summary_report(request, pp, user):
 def generate(payroll_period, report):
     results = {}
     logger.info(f'generating {report} report data')
-    processors = PayrollProcessors.objects.filter(payroll_period=payroll_period)
+    processors = PayrollProcessors.objects \
+        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user',
+                        'employee__job_title', 'employee__duty_station').filter(payroll_period=payroll_period)
     if payroll_period:
         if report == 'BANK' or report == 'SUMMARY':
             results[payroll_period] = processors
@@ -155,6 +169,7 @@ def generate(payroll_period, report):
 
 
 @login_required
+@permission_required(('users.view_user', 'users.view_employee', 'can.process_payrollperiod'), raise_exception=True)
 def generate_reports(request):
     if request.method == 'POST':
         form = ReportGeneratorForm(request.POST)
@@ -219,7 +234,11 @@ def generate_reports(request):
 def generate_payslip_report(request, pp, user):
     period = get_object_or_404(PayrollPeriod, pk=pp)
     employee = get_object_or_404(Employee, pk=user)
-    data = PayrollProcessors.objects.filter(payroll_period=period).filter(employee=employee)
+    data = PayrollProcessors.objects.select_related('employee', 'earning_and_deductions_type',
+                                                    'earning_and_deductions_category', 'employee__user',
+                                                    'employee__job_title',
+                                                    'employee__duty_station').filter(payroll_period=period).filter(
+        employee=employee)
     report = 'Pay Slip'
     info_key = f'{period.payroll_key}S{employee.pk}'
     user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()

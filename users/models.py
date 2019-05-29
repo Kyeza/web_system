@@ -60,7 +60,7 @@ class Employee(models.Model):
     mobile_number = models.CharField(max_length=50, null=True, blank=True)
     date_of_birth = models.DateField(default=timezone.now, null=True)
     sex = models.CharField(max_length=6, choices=GENDER, null=True)
-    id_number = models.CharField(max_length=200, null=True)
+    id_number = models.CharField(max_length=200, null=True, db_index=True)
     passport_number = models.CharField(max_length=200, blank=True, null=True)
     home_address = models.CharField(max_length=200, blank=True, null=True)
     residential_address = models.CharField(max_length=200, blank=True, null=True)
@@ -95,8 +95,9 @@ class Employee(models.Model):
     kin_relationship = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True, blank=True)
     dr_ac_code = models.CharField(max_length=50, null=True, blank=True)
     cr_ac_code = models.CharField(max_length=50, null=True, blank=True)
-    employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True, null=True)
-    agresso_number = models.CharField(max_length=200, null=True, blank=True)
+    employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,
+                                         null=True, db_index=True)
+    agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
 
     def clean(self):
         if self.payroll_center is None:
@@ -132,9 +133,10 @@ class PayrollProcessors(models.Model):
                                                     blank=True, null=True)
     earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
                                                         on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_index=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
-    payroll_key = models.CharField(max_length=250, blank=True, primary_key=True, unique=True, default=None, editable=False)
+    payroll_key = models.CharField(max_length=250, blank=True, primary_key=True, unique=True, default=None,
+                                   editable=False)
 
     def to_dict(self):
         data = {

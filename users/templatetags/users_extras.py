@@ -5,13 +5,12 @@ register = template.Library()
 
 @register.filter
 def category(processors, category_id):
-    return processors.filter(earning_and_deductions_category=category_id)
+    return processors.filter(earning_and_deductions_category_id=category_id)
 
 
 @register.filter
 def user_data(processors, staff):
-    return processors.select_related('employee', 'earning_and_deductions_type', 'employee__user', 'employee__job_title',
-                                     'employee__duty_station').filter(employee=staff)
+    return processors.filter(employee_id=staff.pk)
 
 
 @register.filter

@@ -21,18 +21,26 @@
                     <th>Duty station</th>
                     {% for staff in employees_to_process %}
                         {% if forloop.first %}
-                            {% with period_processes|user_data:staff as processes %}
-                                {% for processor in processes|category:1 %}
-                                    <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
+                            {% for heading in headings_1 %}
+                                {% for title in heading %}
+                                    <th>{{ title }}</th>
                                 {% endfor %}
-                                {% for processor in processes|category:2 %}
-                                    <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
+                            {% endfor %}
+                            {% for heading in headings_2 %}
+                                {% for title in heading %}
+                                    <th>{{ title }}</th>
                                 {% endfor %}
-                                {% for processor in processes|category:3 %}
-                                    <th>{{ processor.earning_and_deductions_type|capfirst }}</th>
+                            {% endfor %}
+                            {% for heading in headings_3 %}
+                                {% for title in heading %}
+                                    <th>{{ title }}</th>
                                 {% endfor %}
-                            {% endwith %}
-                            <th>Total Deductions</th>
+                            {% endfor %}
+                            {% for heading in headings_4 %}
+                                {% for title in heading %}
+                                    <th>{{ title }}</th>
+                                {% endfor %}
+                            {% endfor %}                            <th>Total Deductions</th>
                             <th>Gross Salary</th>
                             <th>Net Pay</th>
                         {% endif %}
@@ -49,15 +57,26 @@
                         <td>{{ staff.agresso_number }}</td>
                         <td>{{ staff.job_title }}</td>
                         <td>{{ staff.duty_station }}</td>
-                        {% for data in period_processes|user_data:staff|category:1 %}
-                            <td>{{ data.amount|intcomma }}</td>
-                        {% endfor %}
-                        {% for data in period_processes|user_data:staff|category:2 %}
-                            <td>{{ data.amount|intcomma }}</td>
-                        {% endfor %}
-                        {% for data in period_processes|user_data:staff|category:3 %}
-                            <td>{{ data.amount|intcomma }}</td>
-                        {% endfor %}
+                        {% with period_processes|category:1|user_data:staff as user_earnings %}
+                            {% for earning in user_earnings %}
+                                <td>{{ earning.amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endwith %}
+                        {% with period_processes|category:2|user_data:staff as user_deductions %}
+                            {% for deduction in user_deductions %}
+                                <td>{{ deduction.amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endwith %}
+                        {% with period_processes|category:3|user_data:staff as user_statutory %}
+                            {% for statutory  in user_statutory %}
+                                <td>{{ statutory.amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endwith %}
+                        {% with period_processes|category:4|user_data:staff as user_others %}
+                            {% for other in user_others %}
+                                <td>{{ other.amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endwith %}
                         {% with payroll_period|report_key:staff as key %}
                             {% with user_reports|extra_info:key as report %}
                                 <td>{{ report.total_deductions|intcomma }}</td>
@@ -73,14 +92,25 @@
                     <th class="font-weight-light text-info text-center" colspan="5">Total</th>
                     {% for staff in employees_to_process %}
                         {% if forloop.first %}
-                            {% for processor in period_processes|user_data:staff|category:1 %}
-                                <th></th>
+                            {% for heading in headings_1 %}
+                                {% for title in heading %}
+                                    <th></th>
+                                {% endfor %}
                             {% endfor %}
-                            {% for processor in period_processes|user_data:staff|category:2 %}
-                                <th></th>
+                            {% for heading in headings_2 %}
+                                {% for title in heading %}
+                                    <th>}</th>
+                                {% endfor %}
                             {% endfor %}
-                            {% for processor in period_processes|user_data:staff|category:3 %}
-                                <th></th>
+                            {% for heading in headings_3 %}
+                                {% for title in heading %}
+                                    <th></th>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for heading in headings_4 %}
+                                {% for title in heading %}
+                                    <th></th>
+                                {% endfor %}
                             {% endfor %}
                             <th></th>
                             <th></th>

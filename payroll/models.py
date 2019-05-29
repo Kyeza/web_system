@@ -38,7 +38,7 @@ class EarningDeductionType(models.Model):
     taxable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES)
     export = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, default=YES_OR_NO_TYPES[1][0], null=True,
                               blank=True)
-    factor = models.IntegerField(default=0, null=True, blank=True)
+    factor = models.FloatField(default=0, null=True, blank=True)
     summarize = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, default=YES_OR_NO_TYPES[1][0])
     agresso_type = models.CharField(max_length=50, null=True, blank=True, choices=AGGRESSO_TYPES)
     account_code = models.CharField(max_length=15, null=True, blank=True)
