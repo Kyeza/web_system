@@ -10,7 +10,7 @@ def category(processors, category_id):
 
 @register.filter
 def user_data(processors, staff):
-    return processors.filter(employee_id=staff.pk)
+    return processors.filter(employee_id=staff.pk).values('amount')
 
 
 @register.filter

@@ -34,10 +34,9 @@ def generate_summary_data(payroll_period):
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                         'employee__user', 'employee__job_title', 'employee__duty_station') \
         .filter(payroll_period_id=payroll_period.pk).all() \
-        .prefetch_related('employee__report', 'employee__report__payroll_period').all()
+        .prefetch_related('employee__report', 'employee__report__payroll_period')
     employees_in_period = set()
 
-    # removing any terminated employees before processing
     i = 1
     headings_1, headings_2, headings_3, headings_4 = None, None, None, None
     for process in period_processes.iterator():
@@ -55,12 +54,10 @@ def generate_summary_data(payroll_period):
             i = 0
         employees_in_period.add(process.employee)
 
-    extra_reports = ExTraSummaryReportInfo.objects.select_related('employee', 'payroll_period').all()
     context = {
         'payroll_period': payroll_period,
         'period_processes': period_processes,
         'employees_to_process': employees_in_period,
-        'user_reports': extra_reports,
         'headings_1': headings_1,
         'headings_2': headings_2,
         'headings_3': headings_3,

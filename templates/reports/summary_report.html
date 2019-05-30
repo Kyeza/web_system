@@ -3,123 +3,133 @@
 {% load humanize %}
 
 {% block content %}
-    <div class="content-section">
-        <h5 class="border-bottom mb-4">
-            {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
-        </h5>
-        <div class="table-responsive">
-            <table id="table_id" class="table table-sm table-striped table-bordered w-100">
-                <caption class="border-bottom mb-4">
-                    {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
-                </caption>
+<div class="content-section">
+    <h5 class="border-bottom mb-4">
+        {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
+    </h5>
+    <div class="table-responsive">
+        <table id="table_id" class="table table-sm table-striped table-bordered w-100">
+            <caption class="border-bottom mb-4">
+                {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
+            </caption>
+            <thead class="thead-dark">
+            <tr>
                 {% for staff in employees_to_process %}
-                    <thead class="thead-dark">
-                    <tr>
-                        {% if forloop.first %}
-                            <th>No.</th>
-                            <th>Staff</th>
-                            <th>Agresso no.</th>
-                            <th>Job title</th>
-                            <th>Duty station</th>
+                    {% if forloop.first %}
+                        <th>No.</th>
+                        <th>Staff</th>
+                        <th>Agresso no.</th>
+                        <th>Job title</th>
+                        <th>Duty station</th>
 
-                            {% for heading in headings_1 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
+                        {% for heading in headings_1 %}
+                            {% for title in heading %}
+                                <th>{{ title }}</th>
                             {% endfor %}
-                            {% for heading in headings_2 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
+                        {% endfor %}
+                        {% for heading in headings_2 %}
+                            {% for title in heading %}
+                                <th>{{ title }}</th>
                             {% endfor %}
-                            {% for heading in headings_3 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
+                        {% endfor %}
+                        {% for heading in headings_3 %}
+                            {% for title in heading %}
+                                <th>{{ title }}</th>
                             {% endfor %}
-                            {% for heading in headings_4 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
+                        {% endfor %}
+                        {% for heading in headings_4 %}
+                            {% for title in heading %}
+                                <th>{{ title }}</th>
                             {% endfor %}
-                            <th>Total Deductions</th>
-                            <th>Gross Salary</th>
-                            <th>Net Pay</th>
-                        {% endif %}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
-                            {{ staff.user.get_full_name }}
-                        </a></td>
-                        <td>{{ staff.agresso_number }}</td>
-                        <td>{{ staff.job_title }}</td>
-                        <td>{{ staff.duty_station }}</td>
-                        {% with period_processes|category:1|user_data:staff as user_earnings %}
-                            {% for earning in user_earnings %}
-                                <td>{{ earning.amount|intcomma }}</td>
-                            {% endfor %}
-                        {% endwith %}
-                        {% with period_processes|category:2|user_data:staff as user_deductions %}
-                            {% for deduction in user_deductions %}
-                                <td>{{ deduction.amount|intcomma }}</td>
-                            {% endfor %}
-                        {% endwith %}
-                        {% with period_processes|category:3|user_data:staff as user_statutory %}
-                            {% for statutory  in user_statutory %}
-                                <td>{{ statutory.amount|intcomma }}</td>
-                            {% endfor %}
-                        {% endwith %}
-                        {% with period_processes|category:4|user_data:staff as user_others %}
-                            {% for other in user_others %}
-                                <td>{{ other.amount|intcomma }}</td>
-                            {% endfor %}
-                        {% endwith %}
-                        {% with payroll_period|report_key:staff as key %}
-                            {% with user_reports|extra_info:key as report %}
-                                <td>{{ report.total_deductions|intcomma }}</td>
-                                <td>{{ report.net_pay|intcomma }}</td>
-                                <td>{{ report.net_pay|intcomma }}</td>
-                            {% endwith %}
-                        {% endwith %}
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        {% if forloop.last %}
-                            <th class="font-weight-light text-info text-center" colspan="5">Total</th>
-                            {% for heading in headings_1 %}
-                                {% for title in heading %}
-                                    <th></th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_2 %}
-                                {% for title in heading %}
-                                    <th>}</th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_3 %}
-                                {% for title in heading %}
-                                    <th></th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_4 %}
-                                {% for title in heading %}
-                                    <th></th>
-                                {% endfor %}
-                            {% endfor %}
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        {% endif %}
-                    </tr>
-                    </tfoot>
+                        {% endfor %}
+                        <th>Total Deductions</th>
+                        <th>Gross Salary</th>
+                        <th>Net Pay</th>
+                    {% endif %}
                 {% endfor %}
-            </table>
-        </div>
+            </tr>
+            </thead>
+            <tbody>
+            {% for staff in employees_to_process %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
+                        {{ staff.user.get_full_name }}
+                    </a></td>
+                    <td>{{ staff.agresso_number }}</td>
+                    <td>{{ staff.job_title }}</td>
+                    <td>{{ staff.duty_station }}</td>
+                    {% with period_processes|category:1|user_data:staff as user_earnings %}
+                        {% for earning in user_earnings %}
+                            {% for k, amount in earning.items %}
+                                 <td>{{ amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endwith %}
+                    {% with period_processes|category:2|user_data:staff as user_deductions %}
+                        {% for deduction in user_deductions %}
+                           {% for k, amount in deduction.items %}
+                                 <td>{{ amount|intcomma }}</td>
+                           {% endfor %}
+                        {% endfor %}
+                    {% endwith %}
+                    {% with period_processes|category:3|user_data:staff as user_statutory %}
+                        {% for statutory in user_statutory %}
+                            {% for k, amount in statutory.items %}
+                                 <td>{{ amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endwith %}
+                    {% with period_processes|category:4|user_data:staff as user_others %}
+                        {% for other in user_others %}
+                            {% for k, amount in other.items %}
+                                 <td>{{ amount|intcomma }}</td>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endwith %}
+                    {% with staff|report:payroll_period as report %}
+                        <td>{{ report.total_deductions|intcomma }}</td>
+                        <td>{{ report.net_pay|intcomma }}</td>
+                        <td>{{ report.net_pay|intcomma }}</td>
+                    {% endwith %}
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                {% for staff in employees_to_process %}
+                    {% if forloop.last %}
+                        <th class="font-weight-light text-info text-center" colspan="5">Total</th>
+                        {% for heading in headings_1 %}
+                            {% for title in heading %}
+                                <th></th>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for heading in headings_2 %}
+                            {% for title in heading %}
+                                <th>}</th>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for heading in headings_3 %}
+                            {% for title in heading %}
+                                <th></th>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for heading in headings_4 %}
+                            {% for title in heading %}
+                                <th></th>
+                            {% endfor %}
+                        {% endfor %}
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            </tfoot>
+        </table>
     </div>
+</div>
 {% endblock content %}
 {% block scripts %}
     <script>

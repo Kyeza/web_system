@@ -388,24 +388,24 @@ def processor(payroll_period, process_lst='False', method='GET'):
                         'employee__grade', 'employee__duty_station', 'employee__duty_country', 'employee__department', 'employee__job_title',
                         'employee__reports_to', 'employee__contract_type', 'employee__payroll_center',
                         'employee__bank_1', 'employee__bank_2', 'employee__category') \
-        .filter(payroll_period=payroll_period)
+        .filter(payroll_period=payroll_period).all()\
+        .prefetch_related('employee__report', 'employee__report__payroll_period')
 
     # removing any terminated employees before processing
-    employees_in_period = []
+    employees_in_period = set()
     if users.exists():
         if period_processes.exists():
             for process in period_processes.iterator():
                 if process.employee.employment_status == 'TERMINATED':
                     process.delete()
                 else:
-                    employees_in_period.append(process.employee)
+                    employees_in_period.add(process.employee)
         else:
             logger.error(f'Here - > There are currently no Employees for this Payroll Period')
             response['message'] = 'There are currently no Employees for this Payroll Period'
             response['status'] = 'Failed'
     else:
         logger.error(f'No Employees in the system')
-    employees_to_process = list(set(employees_in_period))
 
     earnings = EarningDeductionCategory.objects.get(pk=1)
     deductions = EarningDeductionCategory.objects.get(pk=2)
@@ -484,8 +484,8 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: updating Pension')
 
         pension = 0
-        if employee.category_id == 1:
-            pension = employee.gross_salary * (5 / 100)
+        if employee.category_id == 2:
+            pension = employee.gross_salary * Decimal(5 / 100)
 
         employee_pension_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=75).first()
