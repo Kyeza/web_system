@@ -171,8 +171,7 @@ class TerminatedEmployees(models.Model):
 
 
 class Project(models.Model):
-    cost_centre = models.ForeignKey(CostCentre, on_delete=models.CASCADE)
-    project_code = models.CharField(max_length=20, primary_key=True)
+    project_code = models.CharField(max_length=20)
     project_name = models.CharField(max_length=200)
 
     def get_absolute_url(self):
@@ -183,7 +182,6 @@ class Project(models.Model):
 
 
 class SOF(models.Model):
-    project_code = models.OneToOneField(Project, on_delete=models.CASCADE)
     sof_code = models.CharField(max_length=20)
     sof_name = models.CharField(max_length=200)
 
@@ -195,7 +193,6 @@ class SOF(models.Model):
 
 
 class DEA(models.Model):
-    sof_code = models.OneToOneField(SOF, on_delete=models.CASCADE)
     dea_code = models.CharField(max_length=20)
     dea_name = models.CharField(max_length=200)
 
@@ -207,30 +204,25 @@ class DEA(models.Model):
 
 
 class EmployeeProject(models.Model):
-    project_key = models.CharField(max_length=150, blank=True, null=False, editable=False)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
     cost_center = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True)
     project_code = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
     sof_code = models.ForeignKey(SOF, on_delete=models.SET_NULL, null=True)
     dea_code = models.ForeignKey(DEA, on_delete=models.SET_NULL, null=True)
     contribution_percentage = models.IntegerField(default=100)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, editable=False)
 
     def get_absolute_url(self):
         return reverse('users:employee-assign-project')
 
     def clean(self):
-        if self.project_key is None:
-            key = f'E{self.employee_id}C{self.cost_center_id}' + \
-                  f'P{self.project_code_id}S{self.sof_code_id}D{self.dea_code_id}'
-            self.project_key = key
-
         # validate contribution_percentage
         # to determine that no project assignment is made beyond 100% contribution per employee
-        projects = EmployeeProject.objects.filter(project_key=self.project_key)
-        if projects:
+        projects = EmployeeProject.objects.filter(employee=self.employee, cost_center=self.cost_center_id,
+                                                  project_code=self.project_code_id, sof_code=self.sof_code_id,
+                                                  dea_code=self.dea_code_id)
+        if projects.exists():
             total_contrib = 0
-            for project in projects:
+            for project in projects.iterator():
                 total_contrib += project.contribution_percentage
 
             total_contrib += self.contribution_percentage

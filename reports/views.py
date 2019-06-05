@@ -82,7 +82,7 @@ def update_summary_report(request, pp, user):
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
 
-    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.id_number}').first()
+    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.pk}').first()
 
     # creating initial data for formsets
     e_data = [processor.to_dict() for processor in cat_e.iterator()]

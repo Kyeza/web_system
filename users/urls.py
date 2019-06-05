@@ -4,9 +4,10 @@ from . import views
 from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SeparatedEmployeesListView, RejectedEmployeeListView, EmployeeBirthdayList, AssignProjectListView, \
     CostCentreCreate, CostCentreUpdate, CostCentreDetailView, CostCentreListView, \
-    ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, SOFCreate, SOFUpdate, SOFDetailView, \
+    SOFCreate, SOFUpdate, SOFDetailView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
-    EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView
+    EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
+    ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView
 
 app_name = 'users'
 urlpatterns = [

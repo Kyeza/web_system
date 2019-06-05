@@ -29,12 +29,6 @@ def report_key(payroll_period, staff):
 
 
 @register.filter
-def extra_info(reports_data, key):
-    report = reports_data.get(key=key)
-    return report
-
-
-@register.filter
 def report(staff, period):
     return staff.report.filter(payroll_period=period).first()
 

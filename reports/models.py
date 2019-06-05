@@ -15,7 +15,7 @@ class ExTraSummaryReportInfo(models.Model):
 
     def clean(self):
         if self.key is None:
-            key = f'{self.payroll_period.payroll_key}S{self.employee.id_number}'
+            key = f'{self.payroll_period.payroll_key}S{self.employee.pk}'
             if ExTraSummaryReportInfo.objects.filter(key=key):
                 raise ValidationError('Duplicate record')
             else:

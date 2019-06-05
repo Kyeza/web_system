@@ -47,6 +47,11 @@
                                 <th>{{ heading }}</th>
                             {% endfor %}
                         {% endfor %}
+                        {% for processor in data|user_data_headings:staff|category:4 %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
+                        {% endfor %}
                     {% endif %}
                 {% endfor %}
                 <th>Total Deductions</th>
@@ -75,6 +80,9 @@
                     {% for info in data|user_data:staff|category:3 %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
+                    {% for info in data|user_data:staff|category:4 %}
+                        <td>{{ info.amount|intcomma }}</td>
+                    {% endfor %}
                     {% with staff|report:period as report %}
                         <td>{{ report.total_deductions|intcomma }}</td>
                         <td>{{ report.net_pay|intcomma }}</td>
@@ -95,6 +103,9 @@
                             <th></th>
                         {% endfor %}
                         {% for info in data|user_data:staff|category:3 %}
+                            <th></th>
+                        {% endfor %}
+                        {% for info in data|user_data:staff|category:4 %}
                             <th></th>
                         {% endfor %}
                         <th></th>

@@ -21,8 +21,8 @@ from django.views.generic.list import ListView
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
 from reports.models import ExTraSummaryReportInfo
-from users.models import Employee, PayrollProcessors, CostCentre, Project, SOF, DEA, \
-    EmployeeProject, Category
+from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, \
+    EmployeeProject, Category, Project
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
 
@@ -406,11 +406,6 @@ def processor(payroll_period, process_lst='False', method='GET'):
             response['status'] = 'Failed'
     else:
         logger.error(f'No Employees in the system')
-
-    earnings = EarningDeductionCategory.objects.get(pk=1)
-    deductions = EarningDeductionCategory.objects.get(pk=2)
-    statutory = EarningDeductionCategory.objects.get(pk=3)
-
     # getting updated payroll processors in case any employees have been removed
     # period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
     paye_rates = PAYERates.objects.all()
@@ -420,7 +415,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}')
         gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
         ge_data = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_category=earnings).all()
+            .filter(earning_and_deductions_category_id=1).all()
 
         # calculating gross earnings
         logger.info(f'Processing for user {employee}: calculating gross earnings')
@@ -520,9 +515,9 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_nssf_5_processor.save(update_fields=['amount'])
 
         tx_data_ded = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_category=deductions).all()
+            .filter(earning_and_deductions_category_id=2).all()
         tx_data_stat = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_category=statutory).all()
+            .filter(earning_and_deductions_category_id=3).all()
 
         # calculating total deductions from deductions
         logger.info(f'Processing for user {employee}: calculating total deductions from deductions')
@@ -534,8 +529,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: calculating total deductions from statutory deductions')
         if tx_data_stat.exists():
             for inst in tx_data_stat.iterator():
-                if not inst.earning_and_deductions_type.ed_type.__contains__('NSSF'):
-                    total_deductions += inst.amount
+                total_deductions += inst.amount
 
         logger.info(f'Processing for user {employee}: calculating NET PAY')
         net_pay = gross_earnings - total_deductions
@@ -549,7 +543,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             employee_net_pay.save(update_fields=['amount'])
 
         try:
-            key = f'{payroll_period.payroll_key}S{employee.id_number}'
+            key = f'{payroll_period.payroll_key}S{employee.pk}'
             report = ExTraSummaryReportInfo.objects.get(pk=key)
             report.net_pay = net_pay
             report.gross_earning = gross_earnings
@@ -659,9 +653,7 @@ def create_employee_project(request, pk):
     if request.method == 'POST':
         form = EmployeeProjectForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.created_by = request.user
-            instance.save()
+            form.save()
             messages.success(request, f'Successfully assigned project to {employee.user.get_full_name()}')
             return redirect('users:employee-assign-project')
     else:
@@ -699,19 +691,17 @@ class CostCentreUpdate(LoginRequiredMixin, UpdateView):
 
 class CostCentreDetailView(LoginRequiredMixin, DetailView):
     model = CostCentre
-    fields = ['cost_centre', 'description']
     template_name = 'users/costcentre/costcentre_detail.html'
 
 
 class CostCentreListView(LoginRequiredMixin, ListView):
     model = CostCentre
-    fields = ['cost_centre', 'description']
     template_name = 'users/costcentre/costcentre_list.html'
 
 
 class ProjectCreate(LoginRequiredMixin, CreateView):
     model = Project
-    fields = ['project_code', 'project_name', 'cost_centre']
+    fields = ['project_code', 'project_name']
     template_name = 'users/project/project_form.html'
 
     def get_context_data(self, **kwargs):
@@ -722,7 +712,7 @@ class ProjectCreate(LoginRequiredMixin, CreateView):
 
 class ProjectUpdate(LoginRequiredMixin, UpdateView):
     model = Project
-    fields = ['project_code', 'project_name', 'cost_centre']
+    fields = ['project_code', 'project_name']
     template_name = 'users/project/project_form.html'
 
     def get_context_data(self, **kwargs):
@@ -733,7 +723,7 @@ class ProjectUpdate(LoginRequiredMixin, UpdateView):
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project
-    fields = ['project_code', 'project_name', 'cost_centre']
+    fields = ['project_code', 'project_name']
     template_name = 'users/project/project_detail.html'
 
 
@@ -744,7 +734,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
 class SOFCreate(LoginRequiredMixin, CreateView):
     model = SOF
-    fields = ['sof_code', 'sof_name', 'project_code']
+    fields = ['sof_code', 'sof_name']
     template_name = 'users/sof/sof_form.html'
 
     def get_context_data(self, **kwargs):
@@ -755,7 +745,7 @@ class SOFCreate(LoginRequiredMixin, CreateView):
 
 class SOFUpdate(LoginRequiredMixin, UpdateView):
     model = SOF
-    fields = ['sof_code', 'sof_name', 'project_code']
+    fields = ['sof_code', 'sof_name']
     template_name = 'users/sof/sof_form.html'
 
     def get_context_data(self, **kwargs):
@@ -766,7 +756,7 @@ class SOFUpdate(LoginRequiredMixin, UpdateView):
 
 class SOFDetailView(LoginRequiredMixin, DetailView):
     model = SOF
-    fields = ['sof_code', 'sof_name', 'project_code']
+    fields = ['sof_code', 'sof_name']
     template_name = 'users/sof/sof_detail.html'
 
 
@@ -777,7 +767,7 @@ class SOFListView(LoginRequiredMixin, ListView):
 
 class DEACreate(LoginRequiredMixin, CreateView):
     model = DEA
-    fields = ['dea_code', 'dea_name', 'sof_code']
+    fields = ['dea_code', 'dea_name']
     template_name = 'users/dea/dea_form.html'
 
     def get_context_data(self, **kwargs):
@@ -788,7 +778,7 @@ class DEACreate(LoginRequiredMixin, CreateView):
 
 class DEAUpdate(LoginRequiredMixin, UpdateView):
     model = DEA
-    fields = ['dea_code', 'dea_name', 'sof_code']
+    fields = ['dea_code', 'dea_name']
     template_name = 'users/dea/dea_form.html'
 
     def get_context_data(self, **kwargs):
@@ -799,7 +789,7 @@ class DEAUpdate(LoginRequiredMixin, UpdateView):
 
 class DEADetailView(LoginRequiredMixin, DetailView):
     model = DEA
-    fields = ['dea_code', 'dea_name', 'sof_code']
+    fields = ['dea_code', 'dea_name']
     template_name = 'users/dea/dea_detail.html'
 
 
@@ -810,7 +800,7 @@ class DEAListView(LoginRequiredMixin, ListView):
 
 class EmployeeProjectsDetailView(LoginRequiredMixin, DetailView):
     model = EmployeeProject
-    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code', 'created_by']
+    fields = ['employee', 'cost_centre', 'project_code', 'sof_code', 'dea_code']
     template_name = 'users/employeeproject/employeeproject_detail.html'
 
 

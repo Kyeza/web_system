@@ -9,7 +9,7 @@ from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType
 from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
     Relationship
 from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
-from .models import Employee, TerminatedEmployees, CostCentre, Project, SOF, DEA, EmployeeProject, PayrollProcessors
+from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project
 
 
 class StaffCreationForm(UserCreationForm):
