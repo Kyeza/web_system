@@ -35,7 +35,9 @@
                         <td>{{ report.gross_earning|intcomma }}</td>
                     {% endwith %}
                     {% for info in data|user_data:staff|category:2 %}
-                        <td>{{ info.amount|intcomma }}</td>
+                        {% for k, amount in info.items %}
+                                <th>{{ amount }}</th>
+                            {% endfor %}
                     {% endfor %}
                 </tr>
             {% endfor %}

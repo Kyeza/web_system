@@ -22,12 +22,16 @@
                 <th>Name</th>
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
-                        {% for processor in earnings|user_data:staff %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                        {% for processor in earnings|user_data_headings:staff %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
                         {% endfor %}
                         <th>Gross</th>
-                        {% for processor in data|user_data:staff|category:3 %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type|upper }}</th>
+                        {% for processor in data|user_data_headings:staff|category:3 %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}

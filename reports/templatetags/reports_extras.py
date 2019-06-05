@@ -20,10 +20,16 @@ def get_distinct_employee_set(processors):
 
 
 @register.filter
+def credit(amount):
+    return amount * -1
+
+
+@register.filter
 def total_amount(processors):
     total = 0
     for inst in processors:
-        total += inst.amount
+        for k, amount in inst.items():
+            total += amount
     return total
 
 

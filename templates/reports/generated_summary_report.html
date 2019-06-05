@@ -32,14 +32,20 @@
                 <th>Job Title</th>
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
-                        {% for processor in data|user_data:staff|category:1 %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
+                        {% for processor in data|user_data_headings:staff|category:1 %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
                         {% endfor %}
-                        {% for processor in data|user_data:staff|category:2 %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
+                        {% for processor in data|user_data_headings:staff|category:2 %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
                         {% endfor %}
-                        {% for processor in data|user_data:staff|category:3 %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
+                        {% for processor in data|user_data_headings:staff|category:3 %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}

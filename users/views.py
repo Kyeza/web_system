@@ -416,7 +416,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
     paye_rates = PAYERates.objects.all()
     lst_rates = LSTRates.objects.all()
 
-    for employee in employees_to_process:
+    for employee in employees_in_period:
         logger.info(f'Processing for user {employee}')
         gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
         ge_data = period_processes.filter(employee=employee) \
@@ -473,12 +473,12 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         # update LST if exists in payroll center
         logger.info(f'Processing for user {employee}: updating LST')
-        if process_lst == 'True':
-            employee_lst_processor = period_processes.filter(employee=employee) \
-                .filter(earning_and_deductions_type_id=65).first()
-            if employee_paye_processor:
-                employee_lst_processor.amount = lst
-                employee_lst_processor.save(update_fields=['amount'])
+
+        employee_lst_processor = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=65).first()
+        if employee_paye_processor:
+            employee_lst_processor.amount = lst
+            employee_lst_processor.save(update_fields=['amount'])
 
         # update Pension if exists in payroll center
         logger.info(f'Processing for user {employee}: updating Pension')
@@ -492,6 +492,16 @@ def processor(payroll_period, process_lst='False', method='GET'):
         if employee_paye_processor:
             employee_pension_processor.amount = pension
             employee_pension_processor.save(update_fields=['amount'])
+
+        # update Employer Pension if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating Employer Pension')
+        employer_pension = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=76).first()
+        arrears = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=11).first()
+        if employer_pension:
+            employer_pension.amount = (employee.gross_salary / Decimal(8.33/100)) + arrears.amount
+            employer_pension.save(update_fields=['amount'])
 
         # update NSSF 10% if exists in payroll center
         logger.info(f'Processing for user {employee}: updating NSSF 10')
@@ -529,6 +539,14 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         logger.info(f'Processing for user {employee}: calculating NET PAY')
         net_pay = gross_earnings - total_deductions
+
+        # update net_pay if exists in payroll center
+        logger.info(f'Processing for user {employee}: Net pay')
+        employee_net_pay = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=60).first()
+        if employee_net_pay:
+            employee_net_pay.amount = net_pay
+            employee_net_pay.save(update_fields=['amount'])
 
         try:
             key = f'{payroll_period.payroll_key}S{employee.id_number}'

@@ -14,6 +14,16 @@ def user_data(processors, staff):
 
 
 @register.filter
+def user_data_headings(processors, staff):
+    return processors.filter(employee_id=staff.pk).values('earning_and_deductions_type__ed_type')
+
+
+@register.filter
+def payslip_data(processors, staff):
+    return processors.filter(employee_id=staff.pk).values('earning_and_deductions_type__ed_type', 'amount')
+
+
+@register.filter
 def report_key(payroll_period, staff):
     return f'{payroll_period.payroll_key}S{staff.id_number}'
 

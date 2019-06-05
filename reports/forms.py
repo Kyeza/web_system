@@ -39,6 +39,7 @@ class ReportGeneratorForm(forms.Form):
         ('PAYE', 'PAYE'),
         ('BANK', 'Bank'),
         ('SUMMARY', 'Summary report/Pay Slip'),
+        ('LEGER_EXPORT', 'Leger export')
     )
     _month = datetime.now().month
     payroll_center = forms.ModelChoiceField(queryset=PayrollCenter.objects.prefetch_related('payrollperiod_set').all(), widget=forms.Select())

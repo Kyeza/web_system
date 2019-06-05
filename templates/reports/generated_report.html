@@ -7,6 +7,8 @@
                 {% include 'reports/generated_nssf_report.html' %}
             {% elif report == 'LST' %}
                 {% include 'reports/generated_lst_report.html' %}
+            {% elif report == 'LEGER_EXPORT' %}
+                {% include 'reports/generated_leger_report.html' %}
             {% elif report == 'SUMMARY' %}
                 {% include 'reports/generated_summary_report.html' %}
             {% elif report == 'PAYE' %}
@@ -27,6 +29,8 @@
                 scrollX: true,
                 scrollCollapse: true,
                 autoWidth: true,
+                aLengthMenu: [[25, 50, 75, -1], [25, 50, 75, "All"]],
+                pageLength: 25,
                 paging: true,
                 buttons: [
                     'copy', 'csv', 'excel',
@@ -111,6 +115,8 @@
                 fixedHeader: true,
                 dom: 'lBfrtip',
                 scrollX: true,
+                aLengthMenu: [[25, 50, 75, -1], [25, 50, 75, "All"]],
+                pageLength: 25,
                 autoWidth: true,
                 paging: true,
                 buttons: [
@@ -214,9 +220,9 @@
                     'payroll_period': payroll_period
                 };
                 $.post(emailUrl, users_data, function (response) {
-                   if (response.status === 'success') {
-                       alert('Emails have been successfully sent')
-                   }
+                    if (response.status === 'success') {
+                        alert('Emails have been successfully sent')
+                    }
                 });
             } );
         } );

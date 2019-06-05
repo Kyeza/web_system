@@ -154,7 +154,6 @@ class DutyStationCreate(LoginRequiredMixin, CreateView):
 class DutyStationUpdate(LoginRequiredMixin, UpdateView):
     model = DutyStation
     form_class = DutyStationCreationForm
-    fields = ['duty_station', 'description', 'country']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

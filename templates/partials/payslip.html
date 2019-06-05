@@ -69,12 +69,18 @@
                             <h3 class="mt-3 border-top"><strong>Earnings Details</strong></h3>
                         </th>
                     </tr>
-                    {% for processor in data|user_data:staff|category:1 %}
+                    {% for processor in data|payslip_data:staff|category:1 %}
                         <tr>
-                            <th scope="row">{{ processor.earning_and_deductions_type.ed_type|capfirst }}</th>
-                            <td class="d-flex justify-content-end borderless">
-                                {{ processor.amount|intcomma }}
-                            </td>
+                            {% for k, value in processor.items %}
+                                {% if k == 'earning_and_deductions_type__ed_type' %}
+                                    <th>{{ value }}</th>
+                                {% else %}
+                                    <td class="d-flex justify-content-end borderless">
+                                        {{ value|intcomma }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+
                         </tr>
                     {% endfor %}
                     <div class="border-top-3"></div>
@@ -93,21 +99,33 @@
                             <h3 class="mt-3 border-top"><strong>Deductions Details</strong></h3>
                         </th>
                     </tr>
-                    {% for processor in data|user_data:staff|category:2 %}
+                    {% for processor in data|payslip_data:staff|category:2 %}
                         <tr>
-                            <th scope="row" class="borderless">{{ processor.earning_and_deductions_type.ed_type|capfirst }}</th>
-                            <td class="d-flex justify-content-end borderless">
-                                {{ processor.amount|intcomma }}
-                            </td>
+                            {% for k, value in processor.items %}
+                                {% if k == 'earning_and_deductions_type__ed_type' %}
+                                    <th>{{ value }}</th>
+                                {% else %}
+                                    <td class="d-flex justify-content-end borderless">
+                                        {{ value|intcomma }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+
                         </tr>
                     {% endfor %}
 
-                    {% for processor in data|user_data:staff|category:3 %}
+                    {% for processor in data|payslip_data:staff|category:3 %}
                         <tr>
-                            <th scope="row">{{ processor.earning_and_deductions_type.ed_type|capfirst }}</th>
-                            <td class="d-flex justify-content-end borderless">
-                                {{ processor.amount|intcomma }}
-                            </td>
+                            {% for k, value in processor.items %}
+                                {% if k == 'earning_and_deductions_type__ed_type' %}
+                                    <th>{{ value }}</th>
+                                {% else %}
+                                    <td class="d-flex justify-content-end borderless">
+                                        {{ value|intcomma }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+
                         </tr>
                     {% endfor %}
 

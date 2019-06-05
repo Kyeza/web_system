@@ -26,8 +26,10 @@
                 <th>Job Title</th>
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
-                        {% for processor in data|user_data:staff %}
-                            <th>{{ processor.earning_and_deductions_type.ed_type }}</th>
+                        {% for processor in data|user_data_headings:staff %}
+                            {% for k, heading in processor.items %}
+                                <th>{{ heading }}</th>
+                            {% endfor %}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -44,7 +46,9 @@
                     <td>{{ staff.duty_station }}</td>
                     <td>{{ staff.job_title }}</td>
                     {% for info in data|user_data:staff %}
-                        <td>{{ info.amount|intcomma }}</td>
+                        {% for k, amount in info.items %}
+                            <th>{{ amount }}</th>
+                        {% endfor %}
                     {% endfor %}
                     {% with data|user_data:staff|total_amount as total %}
                         <td>{{ total }}</td>
