@@ -24,6 +24,7 @@
                 <th>Name</th>
                 <th>Duty Station</th>
                 <th>Job Title</th>
+                <th>Gross</th>
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
                         {% for processor in data|user_data_headings:staff %}
@@ -45,6 +46,9 @@
                     <td>{{ staff.user.get_full_name }}</td>
                     <td>{{ staff.duty_station }}</td>
                     <td>{{ staff.job_title }}</td>
+                    {% with staff|report:period as report %}
+                        <td>{{ report.gross_earning|intcomma }}</td>
+                    {% endwith %}
                     {% for info in data|user_data:staff %}
                         {% for k, amount in info.items %}
                             <th>{{ amount }}</th>

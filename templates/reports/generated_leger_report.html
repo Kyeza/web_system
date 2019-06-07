@@ -19,14 +19,19 @@
         <tr>
             <th>Account</th>
             <th>Description</th>
+            <th>Account description</th>
             <th>Cost centre</th>
+            <th>Project</th>
             <th>Analysis</th>
             <th>Local COA</th>
             <th>Local COA description</th>
             <th>Country</th>
             <th>Currency</th>
             <th>Currency amount</th>
-            <th>Description</th>
+            <th>Employee name</th>
+            <th>Employee job title</th>
+            <th>Transaction date</th>
+            <th>PayCentre</th>
         </tr>
         </thead>
         <tbody>
@@ -37,11 +42,14 @@
                         <tr>
                             <td>{{ k.account_code }}</td>
                             <td>{{ k.account_name }}</td>
+                            <td>{{ k.agresso_type }}</td>
                             {% if v.employee.employee_projects.exists %}
                                 {% with v.employee.employee_projects.first as project %}
                                     <td>{{ project.cost_center.cost_centre }}</td>
+                                    <td>{{ project.project_code.project_code }}</td>
                                 {% endwith %}
                             {% else %}
+                                <td></td>
                                 <td></td>
                             {% endif %}
                             <td>{{ v.employee.agresso_number }}</td>
@@ -55,16 +63,22 @@
                                 <td>{{ v.amount|intcomma }}</td>
                             {% endif %}
                             <td>{{ v.employee.user.get_full_name }}</td>
+                            <td>{{ v.employee.job_title }}</td>
+                            <td>{{ trans_date }}</td>
+                            <td>{{ v.employee.category.name }}</td>
                         </tr>
                     {% else %}
                         <tr>
                             <td>{{ k.account_code }}</td>
                             <td></td>
+                            <td>{{ k.agresso_type }}</td>
                             {% if v.employee.employee_projects.exists %}
                                 {% with v.employee.employee_projects.first as project %}
                                     <td>{{ project.cost_center.cost_centre }}</td>
+                                    <td>{{ project.project_code.project_code }}</td>
                                 {% endwith %}
                             {% else %}
+                                <td></td>
                                 <td></td>
                             {% endif %}
                             <td>{{ v.employee.agresso_number }}</td>
@@ -78,6 +92,9 @@
                                 <td>{{ v.amount|intcomma }}</td>
                             {% endif %}
                             <td>{{ v.employee.user.get_full_name }}</td>
+                            <td>{{ v.employee.job_title }}</td>
+                            <td>{{ trans_date }}</td>
+                            <td>{{ v.employee.category.name }}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -85,7 +102,9 @@
                 <tr>
                     <td>{{ k.account_code }}</td>
                     <td>{{ k.account_name }}</td>
+                    <td>{{ k.agresso_type }}</td>
                     <td> 80012 </td>
+                    <td></td>
                     <td> 8000177 </td>
                     <td> 0 </td>
                     <td> n/a </td>
@@ -96,7 +115,10 @@
                     {% else %}
                         <td>{{ values|intcomma }}</td>
                     {% endif %}
-                    <td>{{ k.ed_type }}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ trans_date }}</td>
+                    <td></td>
                 </tr>
             {% endif %}
         {% endfor %}

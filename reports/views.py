@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import weasyprint
@@ -11,7 +12,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from payroll.models import PayrollPeriod, EarningDeductionType, PAYERates
+from payroll.models import PayrollPeriod
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
@@ -223,6 +224,24 @@ def generate_reports(request):
                         'report': report,
                         'results': results,
                     }
+
+                    if report == 'LEGER_EXPORT':
+                        NUM_MONTHS = {
+                            'JANUARY': 1,
+                            'FEBRUARY': 2,
+                            'MARCH': 3,
+                            'APRIL': 4,
+                            'MAY': 5,
+                            'JUNE': 6,
+                            'JULY': 7,
+                            'AUGUST': 8,
+                            'SEPTEMBER': 9,
+                            'OCTOBER': 10,
+                            'NOVEMBER': 11,
+                            'DECEMBER': 12
+                        }
+                        context['trans_date'] = datetime.datetime(int(year), NUM_MONTHS[payroll_period.month], 28)\
+                            .strftime("%d/%m/%Y")
 
                     if report == 'PAYE':
                         context['earnings'] = earnings
