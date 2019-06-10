@@ -297,7 +297,7 @@ def send_mass_mail(request):
     if request.method == 'POST':
         users = request.POST.getlist('users[]')
         period_id = request.POST.get('payroll_period')
-        employees = [Employee.objects.get(id_number=int(sap_no)) for sap_no in users]
+        employees = [Employee.objects.get(agresso_number=int(sap_no)) for sap_no in users]
         payroll_period = get_object_or_404(PayrollPeriod, pk=int(period_id))
 
         emails = []
