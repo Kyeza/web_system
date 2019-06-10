@@ -14,18 +14,32 @@
                     <th>Category</th>
                     <th>Recurrent</th>
                     <th>Taxable</th>
+                    <th>Account code</th>
+                    <th>Account name</th>
+                    <th>Debit/Credit sign</th>
+                    <th>Agresso type</th>
+                    <th>Factor</th>
+                    <th>Export</th>
+                    <th>Summarize</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for ed_type in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'payroll:ed-type-detail' ed_type.id %}">{{ ed_type.ed_type }}</a>
+                            <a href="{% url 'payroll:ed-type-update' ed_type.id %}">{{ ed_type.ed_type }}</a>
                         </td>
                         <td>{{ ed_type.description }}</td>
                         <td>{{ ed_type.ed_category }}</td>
                         <td>{{ ed_type.recurrent }}</td>
                         <td>{{ ed_type.taxable }}</td>
+                        <td>{{ ed_type.account_code }}</td>
+                        <td>{{ ed_type.account_name }}</td>
+                        <td>{{ ed_type.debit_credit_sign }}</td>
+                        <td>{{ ed_type.agresso_type }}</td>
+                        <td>{{ ed_type.factor }}</td>
+                        <td>{{ ed_type.export }}</td>
+                        <td>{{ ed_type.summarize }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

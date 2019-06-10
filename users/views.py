@@ -664,7 +664,27 @@ def create_employee_project(request, pk):
         'form': form
     }
 
-    return render(request, 'users/employeeproject/employee_project_form.html', context)
+    return render(request, 'users/employeeproject/employeeproject_form.html', context)
+
+
+class EmployeeProjectCreation(CreateView):
+    model = EmployeeProject
+    fields = ['employee', 'cost_center', 'project_code', 'sof_code', 'dea_code']
+    template_name = 'users/employeeproject/employeeproject_form.html'
+
+    def get_initial(self):
+        context = super().get_initial()
+        employee = Employee.objects.get(pk=self.kwargs.get('pk'))
+        context['employee'] = employee
+        return context
+
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        employee = Employee.objects.get(pk=self.kwargs.get('pk'))
+        project.employee = employee
+        project.save()
+        messages.success(self.request, f'Successfully assigned project to {employee.user.get_full_name()}')
+        return redirect('users:employee-assign-project')
 
 
 class CostCentreCreate(LoginRequiredMixin, CreateView):

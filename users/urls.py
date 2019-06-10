@@ -7,7 +7,7 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SOFCreate, SOFUpdate, SOFDetailView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
     EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
-    ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView
+    ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation
 
 app_name = 'users'
 urlpatterns = [
@@ -27,7 +27,7 @@ urlpatterns = [
     path('payroll_period/<int:pk>/process/', views.process_payroll_period, name='process_payroll-period'),
     path('terminate_employee/<int:pk>/', views.terminate_employee, name='terminate-employee'),
     path('employee/assign/projects/', AssignProjectListView.as_view(), name='employee-assign-project'),
-    path('employee/assign/project/<int:pk>/', views.create_employee_project, name='employee-project-creation'),
+    path('employee/assign/project/<int:pk>/', EmployeeProjectCreation.as_view(), name='employee-project-creation'),
     path('cost_centres/add/', CostCentreCreate.as_view(), name='cost-centre-create'),
     path('cost_centre/<int:pk>/edit/', CostCentreUpdate.as_view(), name='cost-centre-update'),
     path('cost_centres/', CostCentreListView.as_view(), name='cost-centre-list'),

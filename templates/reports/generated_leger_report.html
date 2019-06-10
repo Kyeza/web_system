@@ -43,8 +43,8 @@
                             <td>{{ k.account_code }}</td>
                             <td>{{ k.account_name }}</td>
                             <td>{{ k.agresso_type }}</td>
-                            {% if v.employee.employee_projects.exists %}
-                                {% with v.employee.employee_projects.first as project %}
+                            {% if v.employee.employeeproject_set.exists %}
+                                {% with v.employee.employeeproject_set.first as project %}
                                     <td>{{ project.cost_center.cost_centre }}</td>
                                     <td>{{ project.project_code.project_code }}</td>
                                 {% endwith %}
@@ -72,8 +72,8 @@
                             <td>{{ k.account_code }}</td>
                             <td></td>
                             <td>{{ k.agresso_type }}</td>
-                            {% if v.employee.employee_projects.exists %}
-                                {% with v.employee.employee_projects.first as project %}
+                            {% if v.employee.employeeproject_set.exists %}
+                                {% with v.employee.employeeproject_set.first as project %}
                                     <td>{{ project.cost_center.cost_centre }}</td>
                                     <td>{{ project.project_code.project_code }}</td>
                                 {% endwith %}

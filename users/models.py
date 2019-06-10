@@ -204,7 +204,7 @@ class DEA(models.Model):
 
 
 class EmployeeProject(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     cost_center = models.ForeignKey(CostCentre, on_delete=models.SET_NULL, null=True)
     project_code = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
     sof_code = models.ForeignKey(SOF, on_delete=models.SET_NULL, null=True)

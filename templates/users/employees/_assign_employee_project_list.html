@@ -30,7 +30,7 @@
                         <td>{{ employee.department }}</td>
                         <td class="text-success">{{ employee.employment_status }}</td>
                         <td><a class="btn btn-primary btn-sm"
-                               href="{% url 'users:employee-project-creation' employee.pk %}">
+                               href="{% url 'users:employee-project-creation' pk=employee.pk %}">
                             ASSIGN PROJECT
                         </a></td>
                     </tr>

@@ -28,6 +28,7 @@
                 <th>No.</th>
                 <th>Agresso/Staff ID</th>
                 <th>Duty Station</th>
+                <th>Category</th>
                 <th>Name</th>
                 <th>Job Title</th>
                 {% for staff in data|get_distinct_employee_set %}
@@ -65,6 +66,7 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ staff.agresso_number }}</td>
                     <td>{{ staff.duty_station }}</td>
+                    <td>{{ staff.category.name }}</td>
                     <td>
                         <a href="{% url 'reports:generate-payslip' period.id staff.pk %}">
                             {{ staff.user.get_full_name }}
@@ -95,7 +97,7 @@
             {% for staff in data|get_distinct_employee_set %}
                 {% if forloop.first %}
                     <tr>
-                        <th colspan="5">Total:</th>
+                        <th colspan="6">Total:</th>
                         {% for info in data|user_data:staff|category:1 %}
                             <th></th>
                         {% endfor %}

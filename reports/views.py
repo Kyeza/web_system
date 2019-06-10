@@ -75,8 +75,9 @@ def update_summary_report(request, pp, user):
     employee = get_object_or_404(Employee, pk=user)
     processors = PayrollProcessors.objects \
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user',
-                        'employee__job_title', 'employee__duty_station') \
-        .filter(payroll_period=payroll_period).filter(employee=employee)
+                        'employee__job_title', 'employee__duty_station', 'employee__category') \
+        .filter(payroll_period=payroll_period).filter(employee=employee)\
+
 
     # Categories: earning, deductions and statutory
     cat_e = processors.filter(earning_and_deductions_category=1).all()
@@ -171,7 +172,9 @@ def generate(payroll_period, report):
 def generate_leger_export(results, period):
     logger.debug('initializing leger export')
 
-    results_data = results[period]
+    results_data = results[period].filter(amount__gt=0).filter(employee__category_id=2)\
+        .prefetch_related('employee__employeeproject_set', 'employee__employeeproject_set__cost_center',
+                          'employee__employeeproject_set__project_code')
 
     ed_types = set()
     for processor in results_data.iterator():
