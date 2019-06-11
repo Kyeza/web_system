@@ -17,6 +17,7 @@ from django.views.decorators.cache import cache_page
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from django.views.decorators.cache import never_cache
 
 from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
                             PayrollCenterEds, LSTRates)
@@ -29,6 +30,7 @@ from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, Prof
 logger = logging.getLogger('payroll')
 
 
+@never_cache
 @login_required
 @permission_required(('users.add_user', 'users.add_employee'), raise_exception=True)
 @transaction.atomic
@@ -67,6 +69,7 @@ def register_employee(request):
     return render(request, 'users/auth/register.html', context)
 
 
+@never_cache
 @login_required
 @transaction.atomic
 def profile(request):
@@ -106,6 +109,7 @@ def profile(request):
     return render(request, 'users/auth/profile.html', context)
 
 
+@never_cache
 @login_required
 @permission_required(('users.change_user', 'users.change_employee'), raise_exception=True)
 @transaction.atomic
@@ -384,10 +388,10 @@ def processor(payroll_period, process_lst='False', method='GET'):
         response['status'] = 'Failed'
 
     period_processes = PayrollProcessors.objects \
-        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__nationality',
-                        'employee__grade', 'employee__duty_station', 'employee__duty_country', 'employee__department', 'employee__job_title',
-                        'employee__reports_to', 'employee__contract_type', 'employee__payroll_center',
-                        'employee__bank_1', 'employee__bank_2', 'employee__category') \
+        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
+                        'employee__nationality', 'employee__grade', 'employee__duty_station', 'employee__duty_country',
+                        'employee__department', 'employee__job_title', 'employee__reports_to', 'employee__contract_type'
+                        ,'employee__payroll_center', 'employee__bank_1', 'employee__bank_2', 'employee__category') \
         .filter(payroll_period=payroll_period).all()\
         .prefetch_related('employee__report', 'employee__report__payroll_period')
 
