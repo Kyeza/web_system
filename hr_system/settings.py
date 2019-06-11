@@ -228,6 +228,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'uganda.payroll@savethechildren.org'
 EMAIL_HOST_PASSWORD = 'Welcome2'
+EMAIL_FROM = 'uganda.payroll@savethechildren.org'
 
 CACHES = {
     'default': {

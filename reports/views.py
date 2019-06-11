@@ -2,6 +2,7 @@ import datetime
 import logging
 
 import weasyprint
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import EmailMessage, get_connection
@@ -323,7 +324,8 @@ def send_mass_mail(request):
             subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
             body = html_mail
             to = (employee.user.email,)
-            email = EmailMessage(subject=subject, body=body, to=to, reply_to=['replyto@noreply.com'])
+            email = EmailMessage(subject=subject, body=body, to=to, reply_to=['replyto@noreply.com'],
+                                 from_email=settings.EMAIL_FROM)
             email.content_subtype = 'html'
             email.attach('payslip.pdf', pdf, 'application/pdf')
 
