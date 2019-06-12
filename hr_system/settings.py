@@ -223,12 +223,12 @@ LOGGING = {
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.office365.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'uganda.payroll@savethechildren.org'
-EMAIL_HOST_PASSWORD = 'Welcome2'
-EMAIL_FROM = 'uganda.payroll@savethechildren.org'
+EMAIL_HOST_USER = 'kyezaarnold63@gmail.com'
+EMAIL_HOST_PASSWORD = 'KAM12345'
+DEFAULT_FROM_EMAIL = 'kyezaarnold63@gmail.com'
 
 CACHES = {
     'default': {

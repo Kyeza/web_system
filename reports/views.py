@@ -5,7 +5,7 @@ import weasyprint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.mail import EmailMessage, get_connection
+from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
 from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect, JsonResponse
@@ -77,10 +77,9 @@ def update_summary_report(request, pp, user):
     processors = PayrollProcessors.objects \
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user',
                         'employee__job_title', 'employee__duty_station', 'employee__category') \
-        .filter(payroll_period=payroll_period).filter(employee=employee)\
-
-
-    # Categories: earning, deductions and statutory
+        .filter(payroll_period=payroll_period).filter(employee=employee) \
+ \
+        # Categories: earning, deductions and statutory
     cat_e = processors.filter(earning_and_deductions_category=1).all()
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
@@ -173,7 +172,7 @@ def generate(payroll_period, report):
 def generate_leger_export(results, period):
     logger.debug('initializing leger export')
 
-    results_data = results[period].filter(amount__gt=0).filter(employee__category_id=2)\
+    results_data = results[period].filter(amount__gt=0).filter(employee__category_id=2) \
         .prefetch_related('employee__employeeproject_set', 'employee__employeeproject_set__cost_center',
                           'employee__employeeproject_set__project_code')
 
@@ -244,7 +243,7 @@ def generate_reports(request):
                             'NOVEMBER': 11,
                             'DECEMBER': 12
                         }
-                        context['trans_date'] = datetime.datetime(int(year), NUM_MONTHS[payroll_period.month], 28)\
+                        context['trans_date'] = datetime.datetime(int(year), NUM_MONTHS[payroll_period.month], 28) \
                             .strftime("%d/%m/%Y")
 
                     if report == 'PAYE':
@@ -312,22 +311,25 @@ def send_mass_mail(request):
                 'data': data,
                 'user_reports': user_reports,
             }
-            html_mail = ''
+            html = ''
             pdf = None
             try:
-                html_mail = render_to_string('partials/payslip.html', context)
-                pdf = weasyprint.HTML(string=html_mail).write_pdf()
+                html = render_to_string('partials/payslip.html', context)
+                html_mail = weasyprint.HTML(string=html, base_url=request.build_absolute_uri())
+                pdf = html_mail.write_pdf(presentational_hints=True)
             except Exception as e:
-                # log
+                logger.debug('An error occurred while creating payslip pdf')
                 print(e.args)
 
             subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
-            body = html_mail
-            to = (employee.user.email,)
-            email = EmailMessage(subject=subject, body=body, to=to, reply_to=['replyto@noreply.com'],
-                                 from_email=settings.EMAIL_FROM)
-            email.content_subtype = 'html'
+            email_to = (employee.user.email,)
+            email = EmailMultiAlternatives(subject=subject,
+                                           body='Please find attached your payslip for this month.\nKindly report to the finance department for any inquires.n\n\nWarm regards',
+                                           to=email_to, reply_to=['replyto@noreply.com'],
+                                           from_email=settings.DEFAULT_FROM_EMAIL)
+            email.attach_alternative(html, "text/html")
             email.attach('payslip.pdf', pdf, 'application/pdf')
+            email.mixed_subtype = 'related'
 
             emails.append(email)
 
