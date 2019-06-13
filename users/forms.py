@@ -4,12 +4,14 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
-from hr_system.constants import YES_OR_NO_TYPES
-from payroll.models import Currency, PayrollCenter, Bank, EarningDeductionType
-from support_data.models import Nationality, ContractType, Country, DutyStation, Department, JobTitle, Grade, \
-    Relationship
-from .constants import GENDER, MARITAL_STATUS, EMP_STATUS_APP_TER, EMP_APPROVE_OR_REJECT
+from payroll.models import EarningDeductionType
+from .constants import GENDER, EMP_APPROVE_OR_REJECT
 from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=30, label="Username", required=True)
+    password = forms.CharField(widget=forms.PasswordInput(), label="Password", required=True)
 
 
 class StaffCreationForm(UserCreationForm):

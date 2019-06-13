@@ -43,7 +43,10 @@ INSTALLED_APPS = [
     'crispy_forms',
     'bootstrap4',
     'debug_toolbar',
+    'django.contrib.sites',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',
@@ -168,6 +171,7 @@ LOGIN_REDIRECT_URL = 'payroll:index'
 LOGIN_URL = 'login'
 
 LOGOUT_REDIRECT_URL = 'payroll:index'
+LOGOUT_RESET_REDIRECT_URL = 'password_reset'
 
 AUTH_USER_MODEL = 'users.User'
 

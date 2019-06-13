@@ -5,6 +5,7 @@ from builtins import super
 from decimal import Decimal
 
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
@@ -14,20 +15,40 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import never_cache
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
-from django.views.decorators.cache import never_cache
 
-from payroll.models import (PayrollPeriod, EarningDeductionCategory, PAYERates,
-                            PayrollCenterEds, LSTRates)
+from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
-from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, \
-    EmployeeProject, Category, Project
+from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
-    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm
+    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm
 
 logger = logging.getLogger('payroll')
+
+
+@never_cache
+def login_admin(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None and user.is_active:
+                login(request, user)
+                return redirect('payroll/')
+            else:
+                messages.warning(request, 'Invalid Username or Password!')
+                return render(request, 'users/auth/login.html', {'form': form})
+    else:
+        form = LoginForm()
+
+    return render(request, 'users/auth/login.html', {'form': form})
 
 
 @never_cache
@@ -391,8 +412,8 @@ def processor(payroll_period, process_lst='False', method='GET'):
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                         'employee__nationality', 'employee__grade', 'employee__duty_station', 'employee__duty_country',
                         'employee__department', 'employee__job_title', 'employee__reports_to', 'employee__contract_type'
-                        ,'employee__payroll_center', 'employee__bank_1', 'employee__bank_2', 'employee__category') \
-        .filter(payroll_period=payroll_period).all()\
+                        , 'employee__payroll_center', 'employee__bank_1', 'employee__bank_2', 'employee__category') \
+        .filter(payroll_period=payroll_period).all() \
         .prefetch_related('employee__report', 'employee__report__payroll_period')
 
     # removing any terminated employees before processing
@@ -499,7 +520,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
         arrears = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=11).first()
         if employer_pension:
-            employer_pension.amount = (employee.gross_salary / Decimal(8.33/100)) + arrears.amount
+            employer_pension.amount = (employee.gross_salary / Decimal(8.33 / 100)) + arrears.amount
             employer_pension.save(update_fields=['amount'])
 
         # update NSSF 10% if exists in payroll center
@@ -580,7 +601,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
 @login_required
 @transaction.atomic()
 @cache_page(60 * 15)
-@permission_required('can.process_payrollperiod', raise_exception=True)
+@permission_required('payroll.process_payrollperiod', raise_exception=True)
 def process_payroll_period(request, pk):
     if request.method == 'POST' and request.is_ajax():
         logger.info(f'Starting whole processing process')

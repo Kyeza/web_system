@@ -194,7 +194,7 @@ def generate_leger_export(results, period):
 
 
 @login_required
-@permission_required(('users.view_user', 'users.view_employee', 'can.process_payrollperiod'), raise_exception=True)
+@permission_required(('payroll.process_payrollperiod',), raise_exception=True)
 def generate_reports(request):
     if request.method == 'POST':
         form = ReportGeneratorForm(request.POST)
