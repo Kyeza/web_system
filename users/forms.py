@@ -15,11 +15,9 @@ class LoginForm(forms.Form):
 
 
 class StaffCreationForm(UserCreationForm):
-    """docstring for StaffCreationForm"""
     email = forms.EmailField()
 
     class Meta:
-        """docstring for Meta"""
         model = get_user_model()
         fields = ('username', 'first_name', 'last_name',
                   'email', 'password1', 'password2',
@@ -27,11 +25,9 @@ class StaffCreationForm(UserCreationForm):
 
 
 class StaffUpdateForm(forms.ModelForm):
-    """docstring for StaffUpdateForm"""
     email = forms.EmailField()
 
     class Meta:
-        """docstring for Meta"""
         model = get_user_model()
         fields = ('username', 'first_name', 'last_name',
                   'email',
@@ -39,7 +35,6 @@ class StaffUpdateForm(forms.ModelForm):
 
 
 class ProfileCreationForm(forms.ModelForm):
-    """docstring for ProfileCreationForm"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -59,6 +54,7 @@ class ProfileCreationForm(forms.ModelForm):
         input_formats=['%Y-%m-%d']
     )
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=True)
     appointment_date = forms.DateField(
         input_formats=['%Y-%m-%d'],
         initial=timezone.now(),
@@ -70,29 +66,40 @@ class ProfileCreationForm(forms.ModelForm):
     )
 
     class Meta:
-        """docstring for Meta"""
         model = Employee
         fields = '__all__'
 
 
-class ProfileUpdateForm(ProfileCreationForm):
-    """docstring for ProfileUpdateForm"""
+class ProfileGroupForm(forms.ModelForm):
 
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False)
 
     class Meta:
-        """docstring for Meta"""
+        model = Employee
+        fields = ['user_group']
+
+    def save(self, commit=True):
+        return super().save(commit)
+
+
+class ProfileUpdateForm(ProfileCreationForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user_group'].widget.attrs['disabled'] = 'disabled'
+
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False)
+
+    class Meta:
         model = Employee
         fields = '__all__'
 
 
 class EmployeeApprovalForm(ProfileCreationForm):
-    """docstring for EmployeeApprovalForm"""
 
     employment_status = forms.ChoiceField(choices=EMP_APPROVE_OR_REJECT, widget=forms.Select(), required=False)
 
     class Meta:
-        """docstring for Meta"""
         model = Employee
         fields = '__all__'
 

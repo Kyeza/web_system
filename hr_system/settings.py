@@ -188,38 +188,16 @@ LOGGING = {
             'style': '{',
         },
     },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
     'handlers': {
         'console': {
             'level': 'DEBUG',
-            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'users_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/debug.log',
-            'formatter': 'verbose'
-        },
-        'reports_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/reports_debug.log',
             'formatter': 'verbose'
         },
     },
     'loggers': {
         'payroll': {
-            'handlers': ['console', 'users_file'],
-            'level': 'DEBUG'
-        },
-        'payroll.reports': {
-            'handlers': ['console', 'reports_file'],
+            'handlers': ['console'],
             'level': 'DEBUG'
         }
     }

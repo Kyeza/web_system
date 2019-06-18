@@ -18,6 +18,7 @@ class User(AbstractUser):
             ("approve_employee", "Can approve Employee"),
             ("terminate_employee", "Can terminate Employee"),
             ("assign_employee", "Can assign Project"),
+            ("can_change_user_group", "Can change user group")
         ]
 
     def __str__(self):
@@ -54,7 +55,7 @@ class District(models.Model):
 
 class Employee(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, primary_key=True, editable=False)
-    user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
+    user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS, null=True)
     image = models.ImageField(default='default.png', upload_to=get_image_filename, blank=True, null=True)
     mobile_number = models.CharField(max_length=50, null=True, blank=True)

@@ -7,7 +7,8 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SOFCreate, SOFUpdate, SOFDetailView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
     EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
-    ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation
+    ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation, \
+    ChangeGroupEmployeeListView
 
 app_name = 'users'
 urlpatterns = [
@@ -50,4 +51,6 @@ urlpatterns = [
     path('employee_category/<int:pk>/edit/', CategoryUpdateView.as_view(), name='category_update'),
     path('employee_categories/', CategoryListView.as_view(), name='category_list'),
     path('employee_category/<int:pk>/', CategoryDetailView.as_view(), name='category_detail'),
+    path('change_user_group/<int:pk>', views.user_change_group, name='user_change_group'),
+    path('change/group/', ChangeGroupEmployeeListView.as_view(), name='change_employee_user_group')
 ]

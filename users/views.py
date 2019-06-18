@@ -24,7 +24,7 @@ from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
-    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm
+    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm
 
 logger = logging.getLogger('payroll')
 
@@ -145,8 +145,12 @@ def user_update_profile(request, pk=None):
             user = user_update_form.save(commit=False)
             user.save()
             user_profile = profile_update_form.save(commit=False)
-            group = Group.objects.get(pk=request.POST.get('user_group'))
-            user_profile.user_group = group
+            try:
+                group = Group.objects.get(pk=request.POST.get('user_group'))
+                user_profile.user_group = group
+            except Group.DoesNotExist:
+                logger.error(f'UserUpdateView: user {user.username} doesn\'t belong any Group.')
+
             user_profile.save()
 
             if user.groups.first():
@@ -155,8 +159,9 @@ def user_update_profile(request, pk=None):
                         user.groups.first().user_set.remove(user)
                         user_profile.user_group.user_set.add(user)
             else:
-                if user not in user_profile.user_group.user_set.all():
-                    user_profile.user_group.user_set.add(user)
+                if user_profile.user_group:
+                    if user not in user_profile.user_group.user_set.all():
+                        user_profile.user_group.user_set.add(user)
 
             # add user to PayrollProcessor
             add_user_to_payroll_processor(user)
@@ -173,6 +178,55 @@ def user_update_profile(request, pk=None):
         'profile_update_form': profile_update_form,
     }
     return render(request, 'users/auth/profile.html', context)
+
+
+@never_cache
+@login_required
+@permission_required('users.can_change_user_group', raise_exception=True)
+@transaction.atomic
+def user_change_group(request, pk=None):
+    employee = get_object_or_404(Employee, pk=pk)
+    user = employee.user
+
+    if request.method == 'POST':
+        user_update_form = StaffUpdateForm(request.POST, instance=user)
+        profile_update_form = ProfileGroupForm(request.POST, request.FILES, instance=employee)
+
+        if user_update_form.is_valid() and profile_update_form.is_valid():
+            user = user_update_form.save(commit=False)
+            user.save()
+            user_profile = profile_update_form.save(commit=False)
+
+            group = Group.objects.get(pk=request.POST.get('user_group'))
+            user_profile.user_group = group
+
+            user_profile.save()
+
+            current_user_group = user.groups.first()
+
+            if current_user_group is not None:
+                if user_profile.user_group:
+                    if not user.groups.first() == user_profile.user_group:
+                        user.groups.first().user_set.remove(user)
+                        user_profile.user_group.user_set.add(user)
+            else:
+                if user_profile.user_group:
+                    if user not in user_profile.user_group.user_set.all():
+                        user_profile.user_group.user_set.add(user)
+
+            logger.info(f'Employee {user.get_full_name()} has been add to user group {group}')
+            messages.success(request, 'Employee\'s User group has been changed successfully')
+            return redirect('payroll:index')
+    else:
+        user_update_form = StaffUpdateForm(instance=user)
+        profile_update_form = ProfileGroupForm(instance=employee)
+
+    context = {
+        'profile_user': user,
+        'user_update_form': user_update_form,
+        'profile_update_form': profile_update_form,
+    }
+    return render(request, 'users/auth/change_user_group_form.html', context)
 
 
 def add_users_for_period(payroll_period, instance):
@@ -336,6 +390,24 @@ class RecruitedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
 class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.change_user', 'users.change_employee')
     model = Employee
+
+    def get_queryset(self):
+        return Employee.objects \
+            .select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country', 'department', 'job_title',
+                            'reports_to', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
+                            'currency', 'kin_relationship', 'district') \
+            .filter(employment_status='Approved').iterator()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['title'] = 'Staff'
+        return context
+
+
+class ChangeGroupEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ('users.can_change_user_group',)
+    model = Employee
+    template_name = 'users/employees/change_group_employee_list.html'
 
     def get_queryset(self):
         return Employee.objects \

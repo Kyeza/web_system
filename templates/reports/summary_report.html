@@ -91,7 +91,7 @@
                         {% endwith %}
                         {% with staff|report:payroll_period as report %}
                             <td>{{ report.total_deductions|intcomma }}</td>
-                            <td>{{ report.net_pay|intcomma }}</td>
+                            <td>{{ report.gross_earning|intcomma }}</td>
                             <td>{{ report.net_pay|intcomma }}</td>
                         {% endwith %}
                     </tr>

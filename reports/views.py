@@ -19,7 +19,7 @@ from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
 from .models import ExTraSummaryReportInfo
 
-logger = logging.getLogger('payroll.reports')
+logger = logging.getLogger('payroll')
 
 
 @login_required
