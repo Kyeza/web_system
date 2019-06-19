@@ -91,7 +91,8 @@
                 }
             } );
 
-            let period_month = $('#time').value;
+            let id = $('.payroll_period').attr('id');
+            let period_month = document.getElementById(id).innerHTML;
             console.log(period_month);
 
             let summaryReportTable = $('#summary_id').DataTable( {
