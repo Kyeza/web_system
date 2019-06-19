@@ -586,7 +586,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         employee_pension_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=75).first()
-        if employee_paye_processor:
+        if employee_paye_processor and employee.category_id == 2:
             employee_pension_processor.amount = employee.gross_salary * Decimal(5 / 100)
             employee_pension_processor.save(update_fields=['amount'])
 
