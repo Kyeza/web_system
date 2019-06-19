@@ -4,6 +4,7 @@ import time
 from builtins import super
 from decimal import Decimal
 
+from dateutil.parser import parser
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
@@ -460,10 +461,10 @@ def processor(payroll_period, process_lst='False', method='GET'):
     start = time.time()
     print(f'Start: {start}')
     response = {}
-    users = Employee.objects.all()
+    payroll_center = payroll_period.payroll_center
+    users = payroll_center.employee_set.all()
     if users.exists():
-
-        logger.critical(f'Adding users for Period {payroll_period} to processor')
+        logger.critical(f'Adding Payroll center users for Period {payroll_period} to processor')
         for employee in users:
             if employee.employment_status == 'APPROVED':
                 user = employee.user
@@ -506,6 +507,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             response['status'] = 'Failed'
     else:
         logger.error(f'No Employees in the system')
+
     # getting updated payroll processors in case any employees have been removed
     # period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
     paye_rates = PAYERates.objects.all()

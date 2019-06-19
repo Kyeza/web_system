@@ -45,7 +45,7 @@
                 <tbody>
                 {% for staff in employees_to_process %}
                     <tr>
-                        <td>{{ staff.id_number }}</td>
+                        <td>{{ forloop.counter }}</td>
                         <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
                             {{ staff.user.get_full_name }}
                         </a></td>
