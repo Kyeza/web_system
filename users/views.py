@@ -22,7 +22,9 @@ from django.views.generic.list import ListView
 
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
-from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project
+from users.mixins import NeverCacheMixin
+from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
+    TerminatedEmployees
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm
 
@@ -437,7 +439,7 @@ class RejectedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
         return context
 
 
-class SeparatedEmployeesListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, PermissionRequiredMixin, ListView):
     permission_required = ('users.view_user', 'users.view_employee')
     model = Employee
     template_name = 'users/employees/_separated_employee_list.html'
@@ -483,8 +485,9 @@ def processor(payroll_period, process_lst='False', method='GET'):
     period_processes = PayrollProcessors.objects \
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                         'employee__nationality', 'employee__grade', 'employee__duty_station', 'employee__duty_country',
-                        'employee__department', 'employee__job_title', 'employee__reports_to', 'employee__contract_type'
-                        , 'employee__payroll_center', 'employee__bank_1', 'employee__bank_2', 'employee__category') \
+                        'employee__department', 'employee__job_title', 'employee__reports_to',
+                        'employee__contract_type', 'employee__payroll_center', 'employee__bank_1', 'employee__bank_2',
+                        'employee__category') \
         .filter(payroll_period=payroll_period).all() \
         .prefetch_related('employee__report', 'employee__report__payroll_period')
 
@@ -552,8 +555,12 @@ def processor(payroll_period, process_lst='False', method='GET'):
 
         # calculating NSSF 5% and 10%
         logger.info(f'Processing for user {employee}: calculating NSSF')
-        nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
-        nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
+        if employee.social_security == 'YES':
+            nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
+            nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
+        else:
+            nssf_5 = 0
+            nssf_10 = 0
 
         # update PAYE if exists in payroll center
         logger.info(f'Processing for user {employee}: updating PAYE')
@@ -575,14 +582,10 @@ def processor(payroll_period, process_lst='False', method='GET'):
         # update Pension if exists in payroll center
         logger.info(f'Processing for user {employee}: updating Pension')
 
-        pension = 0
-        if employee.category_id == 2:
-            pension = employee.gross_salary * Decimal(5 / 100)
-
         employee_pension_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=75).first()
         if employee_paye_processor:
-            employee_pension_processor.amount = pension
+            employee_pension_processor.amount = employee.gross_salary * Decimal(5 / 100)
             employee_pension_processor.save(update_fields=['amount'])
 
         # update Employer Pension if exists in payroll center
@@ -591,8 +594,13 @@ def processor(payroll_period, process_lst='False', method='GET'):
             .filter(earning_and_deductions_type_id=76).first()
         arrears = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=11).first()
+
+        employer_pension_amt = 0
+        if employee.category_id == 2:
+            employer_pension_amt = (employee.gross_salary / Decimal(8.33 / 100)) + arrears.amount
+
         if employer_pension:
-            employer_pension.amount = (employee.gross_salary / Decimal(8.33 / 100)) + arrears.amount
+            employer_pension.amount = employer_pension_amt
             employer_pension.save(update_fields=['amount'])
 
         # update NSSF 10% if exists in payroll center
@@ -720,6 +728,20 @@ def terminate_employee(request, pk):
         'form': form,
     }
     return render(request, 'users/employees/_terminate_employee_form.html', context)
+
+
+@never_cache
+@login_required
+@permission_required('users.approve_employee', raise_exception=True)
+def reactivate_employee(request, pk):
+    user_profile = get_object_or_404(Employee, pk=pk)
+    termination_form = TerminatedEmployees.objects.filter(employee=user_profile).first()
+    if termination_form:
+        termination_form.delete()
+    user_profile.employment_status = 'RECRUIT'
+    user_profile.save()
+    messages.success(request, 'Employee successfully reactivated')
+    return redirect('users:separated-employee')
 
 
 class EmployeeBirthdayList(LoginRequiredMixin, PermissionRequiredMixin, ListView):

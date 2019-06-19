@@ -91,39 +91,48 @@
                 }
             } );
 
-            // Setup - add a text input to each footer cell
-            $('#summary_id thead tr').clone(true).appendTo( '#summary_id thead' );
-            $('#summary_id thead tr:eq(1) th').each( function (i) {
-                let title = $(this).text();
-                $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-
-                $( 'input', this ).on( 'keyup change', function () {
-                    let table = $('#summary_id').DataTable();
-                    if ( table.column(i).search() !== this.value ) {
-                        table
-                            .column(i)
-                            .search( this.value )
-                            .draw();
-                    }
-                } );
-            } );
+            let period_month = $('#time').value;
+            console.log(period_month);
 
             let summaryReportTable = $('#summary_id').DataTable( {
                 orderCellsTop: true,
                 fixedHeader: true,
                 dom: 'lBfrtip',
                 scrollX: true,
+                scrollCollapse: true,
                 autoWidth: true,
                 paging: true,
                 buttons: [
-                    'selectAll',
-                    'selectNone',
-                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'copyHtml5',
+                        footer: true
+                    },
+                    {
+                        extend: 'csv',
+                        footer: true
+                    },
+                    {
+                        extend: 'excel',
+                        footer: true
+                    },
                     {
                         extend: 'pdfHtml5',
                         orientation: 'landscape',
+                        pageSize: 'A2',
+                        footer: true,
+                        filename: 'summary_report',
+                        title: 'SAVE THE CHILDREN\n' +
+                            'PAYROLL FOR THE MONTH OF ' + period_month,
+                        messageBottom: '\n\n\n\n\nPrepared By..................................................................' +
+                            '\tChecked By........................................................' +
+                            '\tApproved By..................................................'
                     },
-                    'print'
+                    {
+                        extend: 'print',
+                        orientation: 'landscape',
+                        pageSize: 'A2',
+                        footer: true
+                    },
                 ],
                 "footerCallback": function ( row, data, start, end, display ) {
                     var api = this.api(), data;
@@ -142,7 +151,7 @@
                     let pageTotal = [];
                     for (i = 0; i < colCount; i++) {
                         // Total over this page
-                        if (i > 4 && i < colCount-1) {
+                        if (i > 5 && i < colCount-1) {
                             pageTotal[i] = api
                                 .column( i, { page: 'current'} )
                                 .data()
@@ -154,7 +163,7 @@
 
                     for (i = 0; i < colCount; i++) {
                         // Update footer
-                        if (i > 4 && i < colCount-1) {
+                        if (i > 5 && i < colCount-1) {
                             $( api.column( i ).footer() ).html(
                                 pageTotal[i].toLocaleString()
                             );

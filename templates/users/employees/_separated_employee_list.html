@@ -15,7 +15,7 @@
                     <th>Email</th>
                     <th>Mobile No</th>
                     <th>Department</th>
-                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -27,7 +27,7 @@
                         <td>{{ employee.user.email }}</td>
                         <td>{{ employee.mobile_number }}</td>
                         <td>{{ employee.department }}</td>
-                        <td class="text-warning">{{ employee.employment_status }}</td>
+                        <td><a class="btn btn-sm btn-primary" href="{% url 'users:reactivate_employee' pk=employee.pk %}">REACTIVATE</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

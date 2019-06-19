@@ -6,9 +6,9 @@
     <h4 class="border-top pt-4 mb-2 text-center">
         {{ period.payroll_center }}
     </h4>
-    <h5 class="border-bottom mb-5 text-center">
-        {{ report }} REPORT FOR PERIOD
-        <span  id="{{ period.id }}" class="payroll_period" style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
+    <h5 id="time" class="border-bottom mb-5 text-center">
+        PAYROLL FOR THE MONTH OF
+        <span  id="{{ period.id }}" class="payroll_period" style="color: #2196F3">{{ period.month }}-{{ period.year }}</span>
     </h5>
     <div class="d-flex flex-row-reverse">
         <div class="p-2">
@@ -19,10 +19,6 @@
     </div>
     <div class="table-responsive">
         <table id="summary_id" class="table table-sm table-striped table-bordered w-100">
-            <caption class="border-bottom mb-5">
-                {{ report }} REPORT FOR PERIOD
-                <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
-            </caption>
             <thead class="thead-dark">
             <tr>
                 <th>No.</th>
@@ -44,11 +40,6 @@
                             {% endfor %}
                         {% endfor %}
                         {% for processor in data|user_data_headings:staff|category:3 %}
-                            {% for k, heading in processor.items %}
-                                <th>{{ heading }}</th>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for processor in data|user_data_headings:staff|category:4 %}
                             {% for k, heading in processor.items %}
                                 <th>{{ heading }}</th>
                             {% endfor %}
@@ -82,9 +73,6 @@
                     {% for info in data|user_data:staff|category:3 %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
-                    {% for info in data|user_data:staff|category:4 %}
-                        <td>{{ info.amount|intcomma }}</td>
-                    {% endfor %}
                     {% with staff|report:period as report %}
                         <td>{{ report.total_deductions|intcomma }}</td>
                         <td>{{ report.net_pay|intcomma }}</td>
@@ -97,7 +85,8 @@
             {% for staff in data|get_distinct_employee_set %}
                 {% if forloop.first %}
                     <tr>
-                        <th colspan="6">Total:</th>
+                        <th colspan="5"></th>
+                        <th>Total:</th>
                         {% for info in data|user_data:staff|category:1 %}
                             <th></th>
                         {% endfor %}
@@ -107,11 +96,9 @@
                         {% for info in data|user_data:staff|category:3 %}
                             <th></th>
                         {% endfor %}
-                        {% for info in data|user_data:staff|category:4 %}
-                            <th></th>
-                        {% endfor %}
                         <th></th>
-                        <th colspan="2"></th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 {% endif %}
             {% endfor %}

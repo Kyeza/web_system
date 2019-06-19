@@ -4,14 +4,11 @@
 
 {% block content %}
     <div class="content-section">
-        <h5 class="border-bottom mb-4">
-            {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
+        <h5 id="summary_title" class="border-bottom mb-4">
+            PAYROLL FOR THE MONTH OF {{ payroll_period.month }} - {{ payroll_period.year }}
         </h5>
         <div class="table-responsive">
             <table id="table_id" class="table table-sm table-striped table-bordered w-100">
-                <caption class="border-bottom mb-4">
-                    {{ payroll_period }} Payroll Information for {{ payroll_period.month }}, {{ payroll_period.year }}
-                </caption>
                 <thead class="thead-dark">
                 <tr>
                     {% for staff in employees_to_process %}
@@ -34,11 +31,6 @@
                                 {% endfor %}
                             {% endfor %}
                             {% for heading in headings_3 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_4 %}
                                 {% for title in heading %}
                                     <th>{{ title }}</th>
                                 {% endfor %}
@@ -82,13 +74,6 @@
                                 {% endfor %}
                             {% endfor %}
                         {% endwith %}
-                        {% with period_processes|category:4|user_data:staff as user_others %}
-                            {% for other in user_others %}
-                                {% for k, amount in other.items %}
-                                    <td>{{ amount|intcomma }}</td>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endwith %}
                         {% with staff|report:payroll_period as report %}
                             <td>{{ report.total_deductions|intcomma }}</td>
                             <td>{{ report.gross_earning|intcomma }}</td>
@@ -101,9 +86,8 @@
                 <tr>
                     {% for staff in employees_to_process %}
                         {% if forloop.last %}
-                            <th class="font-weight-light text-info text-center" colspan="4">Total</th>
-                            <th></th>
-                            <th></th>
+                            <th colspan="5"></th>
+                            <th class="font-weight-light text-info text-center">Total: </th>
                             {% for heading in headings_1 %}
                                 {% for title in heading %}
                                     <th></th>
@@ -115,11 +99,6 @@
                                 {% endfor %}
                             {% endfor %}
                             {% for heading in headings_3 %}
-                                {% for title in heading %}
-                                    <th></th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_4 %}
                                 {% for title in heading %}
                                     <th></th>
                                 {% endfor %}
@@ -138,6 +117,8 @@
 {% block scripts %}
     <script>
         $(document).ready(function() {
+            var title = $('#summary_title').value;
+            console.log(title);
             $('#table_id').DataTable( {
                 dom: 'lBfrtip',
                 scrollX: true,
@@ -145,13 +126,35 @@
                 autoWidth: true,
                 paging: true,
                 buttons: [
-                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'copyHtml5',
+                        footer: true
+                    },
+                    {
+                        extend: 'csv',
+                        footer: true
+                    },
+                    {
+                        extend: 'excel',
+                        footer: true
+                    },
                     {
                         extend: 'pdfHtml5',
                         orientation: 'landscape',
                         pageSize: 'A2',
+                        footer: true,
+                        filename: 'summary_report',
+                        title: 'SAVE THE CHILDREN\n' + title,
+                        messageBottom: '\n\n\n\n\nPrepared By..................................................................' +
+                            '\tChecked By........................................................' +
+                            '\tApproved By..................................................'
                     },
-                    'print'
+                    {
+                        extend: 'print',
+                        orientation: 'landscape',
+                        pageSize: 'A2',
+                        footer: true
+                    },
                 ],
                 "footerCallback": function ( row, data, start, end, display ) {
                     var api = this.api(), data;
@@ -189,26 +192,6 @@
                         }
                     }
                 },
-                initComplete: function () {
-                    this.api().columns([4,5]).every( function () {
-                        var column = this;
-                        var select = $('<select><option value=""></option></select>')
-                            .appendTo( $(column.footer()).empty() )
-                            .on( 'change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
-                                );
-
-                                column
-                                    .search( val ? '^'+val+'$' : '', true, false )
-                                    .draw();
-                            } );
-
-                        column.data().unique().sort().each( function ( d, j ) {
-                            select.append( '<option value="'+d+'">'+d+'</option>' )
-                        } );
-                    } );
-                }
             } );
         } );
     </script>

@@ -40,7 +40,7 @@ def generate_summary_data(payroll_period):
     employees_in_period = set()
 
     i = 1
-    headings_1, headings_2, headings_3, headings_4 = None, None, None, None
+    headings_1, headings_2, headings_3 = None, None, None
     for process in period_processes.iterator():
         if i == 1:
             e = process.employee
@@ -50,8 +50,6 @@ def generate_summary_data(payroll_period):
             headings_2 = list(headings.filter(earning_and_deductions_category_id=2)
                               .values_list('earning_and_deductions_type__ed_type'))
             headings_3 = list(headings.filter(earning_and_deductions_category_id=3)
-                              .values_list('earning_and_deductions_type__ed_type'))
-            headings_4 = list(headings.filter(earning_and_deductions_category_id=4)
                               .values_list('earning_and_deductions_type__ed_type'))
             i = 0
         employees_in_period.add(process.employee)
@@ -63,7 +61,6 @@ def generate_summary_data(payroll_period):
         'headings_1': headings_1,
         'headings_2': headings_2,
         'headings_3': headings_3,
-        'headings_4': headings_4,
     }
 
     return context

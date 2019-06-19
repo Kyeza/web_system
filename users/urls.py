@@ -52,5 +52,6 @@ urlpatterns = [
     path('employee_categories/', CategoryListView.as_view(), name='category_list'),
     path('employee_category/<int:pk>/', CategoryDetailView.as_view(), name='category_detail'),
     path('change_user_group/<int:pk>', views.user_change_group, name='user_change_group'),
-    path('change/group/', ChangeGroupEmployeeListView.as_view(), name='change_employee_user_group')
+    path('change/group/', ChangeGroupEmployeeListView.as_view(), name='change_employee_user_group'),
+    path('employee/reactivate/<int:pk>', views.reactivate_employee, name='reactivate_employee'),
 ]
