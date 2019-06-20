@@ -456,14 +456,13 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
         return context
 
 
-def processor(payroll_period, process_lst='False', method='GET'):
+def processor(payroll_period, process_lst='False', method='GET', user=None):
     logger.debug(f'started processing')
-    start = time.time()
-    print(f'Start: {start}')
     response = {}
     payroll_center = payroll_period.payroll_center
     users = payroll_center.employee_set.all()
-    if users.exists():
+    employees_in_period = set()
+    if users.exists() and user is None:
         logger.critical(f'Adding Payroll center users for Period {payroll_period} to processor')
         for employee in users:
             if employee.employment_status == 'APPROVED':
@@ -473,28 +472,41 @@ def processor(payroll_period, process_lst='False', method='GET'):
                 except Exception as e:
                     logger.error(f'Something went wrong')
                     logger.error(f'{e.args}')
-        end = time.time()
-        elapsed = end - start
-        print(f'End: {end}')
-        print(f'Elaspsed: {elapsed}')
         logger.critical(f'Successfully added users for Period {payroll_period} to processor')
+    elif user:
+        employees_in_period.add(user)
     else:
         logger.error(f'No Employees in the system')
         response['message'] = 'Something went wrong'
         response['status'] = 'Failed'
 
-    period_processes = PayrollProcessors.objects \
-        .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
-                        'employee__nationality', 'employee__grade', 'employee__duty_station', 'employee__duty_country',
-                        'employee__department', 'employee__job_title', 'employee__reports_to',
-                        'employee__contract_type', 'employee__payroll_center', 'employee__bank_1', 'employee__bank_2',
-                        'employee__category') \
-        .filter(payroll_period=payroll_period).all() \
-        .prefetch_related('employee__report', 'employee__report__payroll_period')
+    if user:
+        period_processes = PayrollProcessors.objects \
+            .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
+                            'employee__nationality', 'employee__grade', 'employee__duty_station',
+                            'employee__duty_country',
+                            'employee__department', 'employee__job_title', 'employee__reports_to',
+                            'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
+                            'employee__bank_2',
+                            'employee__category') \
+            .filter(payroll_period=payroll_period).filter(employee=user)\
+            .filter(payroll_period__payroll_center_id=payroll_center.id).all() \
+            .prefetch_related('employee__report', 'employee__report__payroll_period')
+        logger.debug(f'Processors: {period_processes.count()}')
+    else:
+        period_processes = PayrollProcessors.objects \
+            .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
+                            'employee__nationality', 'employee__grade', 'employee__duty_station',
+                            'employee__duty_country',
+                            'employee__department', 'employee__job_title', 'employee__reports_to',
+                            'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
+                            'employee__bank_2',
+                            'employee__category') \
+            .filter(payroll_period=payroll_period).filter(payroll_period__payroll_center_id=payroll_center.id).all() \
+            .prefetch_related('employee__report', 'employee__report__payroll_period')
 
     # removing any terminated employees before processing
-    employees_in_period = set()
-    if users.exists():
+    if users.exists() and user is None:
         if period_processes.exists():
             for process in period_processes.iterator():
                 if process.employee.employment_status == 'TERMINATED':
@@ -505,7 +517,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
             logger.error(f'Here - > There are currently no Employees for this Payroll Period')
             response['message'] = 'There are currently no Employees for this Payroll Period'
             response['status'] = 'Failed'
-    else:
+    elif len(employees_in_period) == 0:
         logger.error(f'No Employees in the system')
 
     # getting updated payroll processors in case any employees have been removed
@@ -523,10 +535,10 @@ def processor(payroll_period, process_lst='False', method='GET'):
         logger.info(f'Processing for user {employee}: calculating gross earnings')
         if ge_data.exists():
             for inst in ge_data.iterator():
-                if inst.earning_and_deductions_type.ed_type == 'Basic Salary':
+                if inst.earning_and_deductions_type.id == 1:
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
-                elif inst.earning_and_deductions_type.ed_type.lower().__contains__('hardship'):
+                elif inst.earning_and_deductions_type.id == 2 and user is None:
                     if employee.duty_station:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
@@ -684,7 +696,7 @@ def processor(payroll_period, process_lst='False', method='GET'):
 @transaction.atomic()
 @cache_page(60 * 15)
 @permission_required('payroll.process_payrollperiod', raise_exception=True)
-def process_payroll_period(request, pk):
+def process_payroll_period(request, pk, user=None):
     if request.method == 'POST' and request.is_ajax():
         logger.info(f'Starting whole processing process')
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
@@ -702,9 +714,11 @@ def process_payroll_period(request, pk):
             return JsonResponse(response)
 
     elif request.method == 'GET':
+        employee = Employee.objects.get(pk=user)
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        processor(payroll_period)
-        return HttpResponseRedirect(reverse('reports:display-summary-report', args=(payroll_period.id,)))
+        processor(payroll_period, user=employee)
+        # return HttpResponseRedirect(reverse('reports:display-summary-report', args=(payroll_period.id,)))
+        return redirect('reports:display-summary-report', payroll_period.id)
 
 
 @login_required

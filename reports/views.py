@@ -5,6 +5,7 @@ import weasyprint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.cache import cache
 from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
 from django.db.models import Q
 from django.forms import formset_factory
@@ -25,8 +26,12 @@ logger = logging.getLogger('payroll')
 @login_required
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-
-    context = generate_summary_data(payroll_period)
+    cache_key = payroll_period.payroll_key
+    if cache.get(cache_key):
+        context = cache.get(cache_key)
+    else:
+        context = generate_summary_data(payroll_period)
+        cache.set(cache_key, context, 1800)
     return render(request, 'reports/summary_report.html', context)
 
 
@@ -74,9 +79,9 @@ def update_summary_report(request, pp, user):
     processors = PayrollProcessors.objects \
         .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category', 'employee__user',
                         'employee__job_title', 'employee__duty_station', 'employee__category') \
-        .filter(payroll_period=payroll_period).filter(employee=employee) \
- \
-        # Categories: earning, deductions and statutory
+        .filter(payroll_period=payroll_period).filter(employee=employee)
+
+    # Categories: earning, deductions and statutory
     cat_e = processors.filter(earning_and_deductions_category=1).all()
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
@@ -118,7 +123,8 @@ def update_summary_report(request, pp, user):
                 f.earning_and_deductions_category_id = 3
                 f.save()
 
-            return HttpResponseRedirect(reverse('users:process_payroll-period', args=(payroll_period.id,)))
+            return HttpResponseRedirect(reverse('users:process_payroll-period',
+                                                kwargs={'pk': payroll_period.id, 'user': user}))
 
     else:
         e_formset = e_FormSet(initial=e_data, prefix='earnings')
