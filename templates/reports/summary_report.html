@@ -9,7 +9,7 @@
         </h5>
         <div class="table-responsive" style="font-size: 11px;">
             <table id="table_id" class="table table-sm table-striped table-bordered w-100">
-                <thead>
+                <thead class="thead-dark">
                 <tr>
                     {% for staff in employees_to_process %}
                         {% if forloop.first %}
@@ -149,17 +149,16 @@
                             objLayout['paddingRight'] = function(i) { return 8; };
                             doc.content[1].layout = objLayout;
                         },
-                        orientation: 'landscape',
-                        pageSize: 'A2',
                         exportOptions: {
                             columns: ':visible',
                             search: 'applied',
                             order: 'applied'
                         },
+                        orientation: 'landscape',
+                        pageSize: 'A2',
                         footer: true,
                         filename: 'summary_report',
-                        title: 'SAVE THE CHILDREN\n' +
-                            'PAYROLL FOR THE MONTH OF ' + period_month,
+                        title: 'SAVE THE CHILDREN\n' + title,
                         messageBottom: '\n\n\n\n\nPrepared By..................................................................' +
                             '\tChecked By........................................................' +
                             '\tApproved By..................................................'
