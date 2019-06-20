@@ -163,17 +163,17 @@
                                 i : 0;
                     };
 
+                    // Total over all pages
                     let i;
-                    let pageTotal = [];
+                    let total = [];
                     for (i = 0; i < colCount; i++) {
-                        // Total over this page
                         if (i > 5 && i < colCount-1) {
-                            pageTotal[i] = api
-                                .column( i, { page: 'current'} )
+                            total[i] = api
+                                .column(i)
                                 .data()
-                                .reduce( function (a, b) {
-                                    return Math.round((intVal(a) + intVal(b))* 100) / 100;
-                                }, 0 );
+                                .reduce(function (a, b) {
+                                    return Math.round((intVal(a) + intVal(b)) * 100) / 100;
+                                }, 0);
                         }
                     }
 
@@ -181,7 +181,7 @@
                         // Update footer
                         if (i > 5 && i < colCount-1) {
                             $( api.column( i ).footer() ).html(
-                                pageTotal[i].toLocaleString()
+                                total[i].toLocaleString()
                             );
                         }
                     }
