@@ -96,8 +96,6 @@
             console.log(period_month);
 
             let summaryReportTable = $('#summary_id').DataTable( {
-                orderCellsTop: true,
-                fixedHeader: true,
                 dom: 'lBfrtip',
                 scrollX: true,
                 scrollCollapse: true,
@@ -120,8 +118,23 @@
                     },
                     {
                         extend: 'pdfHtml5',
+                        customize: function (doc) {
+                            var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#aaa'; };
+                            objLayout['vLineColor'] = function(i) { return '#aaa'; };
+                            objLayout['paddingLeft'] = function(i) { return 8; };
+                            objLayout['paddingRight'] = function(i) { return 8; };
+                            doc.content[1].layout = objLayout;
+                        },
                         orientation: 'landscape',
                         pageSize: 'A2',
+                        exportOptions: {
+                            columns: ':visible',
+                            search: 'applied',
+                            order: 'applied'
+                        },
                         footer: true,
                         filename: 'summary_report',
                         title: 'SAVE THE CHILDREN\n' +

@@ -8,7 +8,7 @@
             PAYROLL FOR THE MONTH OF {{ payroll_period.month }} - {{ payroll_period.year }}
         </h5>
         <div class="table-responsive" style="font-size: 11px;">
-            <table id="table_id" class="table table-sm table-bordered">
+            <table id="table_id" class="table table-sm table-striped table-bordered w-100">
                 <thead>
                 <tr>
                     {% for staff in employees_to_process %}
@@ -139,11 +139,27 @@
                     },
                     {
                         extend: 'pdfHtml5',
+                        customize: function (doc) {
+                            var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#aaa'; };
+                            objLayout['vLineColor'] = function(i) { return '#aaa'; };
+                            objLayout['paddingLeft'] = function(i) { return 8; };
+                            objLayout['paddingRight'] = function(i) { return 8; };
+                            doc.content[1].layout = objLayout;
+                        },
                         orientation: 'landscape',
                         pageSize: 'A2',
+                        exportOptions: {
+                            columns: ':visible',
+                            search: 'applied',
+                            order: 'applied'
+                        },
                         footer: true,
                         filename: 'summary_report',
-                        title: 'SAVE THE CHILDREN\n' + title,
+                        title: 'SAVE THE CHILDREN\n' +
+                            'PAYROLL FOR THE MONTH OF ' + period_month,
                         messageBottom: '\n\n\n\n\nPrepared By..................................................................' +
                             '\tChecked By........................................................' +
                             '\tApproved By..................................................'

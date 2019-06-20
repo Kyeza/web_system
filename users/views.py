@@ -466,9 +466,9 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         logger.critical(f'Adding Payroll center users for Period {payroll_period} to processor')
         for employee in users:
             if employee.employment_status == 'APPROVED':
-                user = employee.user
+                inst = employee.user
                 try:
-                    add_user_to_payroll_processor(user, payroll_period)
+                    add_user_to_payroll_processor(inst, payroll_period)
                 except Exception as e:
                     logger.error(f'Something went wrong')
                     logger.error(f'{e.args}')
@@ -706,7 +706,6 @@ def process_payroll_period(request, pk, user=None):
         except Exception as e:
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
-
             logger.error(f'Something went wrong {e.args}')
             response = {'status': 'Failed', 'message': ''}
             return JsonResponse(response)
