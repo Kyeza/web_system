@@ -31,7 +31,7 @@ def display_summary_report(request, pk):
         context = cache.get(cache_key)
     else:
         context = generate_summary_data(payroll_period)
-        cache.set(cache_key, context, 1800)
+        cache.set(cache_key, context, 180)
     return render(request, 'reports/summary_report.html', context)
 
 

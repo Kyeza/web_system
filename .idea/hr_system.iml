@@ -33,6 +33,7 @@
     <orderEntry type="library" name="vfs_fonts" level="application" />
     <orderEntry type="library" name="datatables" level="application" />
     <orderEntry type="library" name="jquery.datetimepicker.full" level="application" />
+    <orderEntry type="library" name="Google App Engine SDK" level="project" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
