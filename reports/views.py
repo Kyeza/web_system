@@ -5,8 +5,7 @@ import weasyprint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.cache import cache
-from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect, JsonResponse
