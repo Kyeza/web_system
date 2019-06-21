@@ -69,7 +69,6 @@ def generate_summary_data(payroll_period):
         'headings_2': headings_2,
         'headings_3': headings_3,
     }
-
     return context
 
 
@@ -302,9 +301,8 @@ def send_mass_mail(request):
     if request.method == 'POST':
         users = request.POST.getlist('users[]')
         period_id = request.POST.get('payroll_period')
-        employees = [Employee.objects.get(agresso_number=int(sap_no)) for sap_no in users]
+        employees = [Employee.objects.filter(agresso_number=sap_no).first() for sap_no in users]
         payroll_period = get_object_or_404(PayrollPeriod, pk=int(period_id))
-
         emails = []
         for employee in employees:
             data = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
@@ -316,23 +314,20 @@ def send_mass_mail(request):
                 'data': data,
                 'user_reports': user_reports,
             }
-            html = ''
             pdf = None
             try:
                 html = render_to_string('partials/payslip.html', context)
                 html_mail = weasyprint.HTML(string=html, base_url=request.build_absolute_uri())
                 pdf = html_mail.write_pdf(presentational_hints=True)
             except Exception as e:
-                logger.debug('An error occurred while creating payslip pdf')
-                print(e.args)
+                logger.debug(f'An error occurred while creating payslip pdf {e.args}')
 
             subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
             email_to = (employee.user.email,)
             email = EmailMultiAlternatives(subject=subject,
-                                           body='Please find attached your payslip for this month.\nKindly report to the finance department for any inquires.n\n\nWarm regards',
+                                           body=f'Please find attached your payslip for {payroll_period.month}.\nKindly report to the finance department for any inquires\n\nWarm regards\nFinance Department',
                                            to=email_to, reply_to=['replyto@noreply.com'],
                                            from_email=settings.DEFAULT_FROM_EMAIL)
-            email.attach_alternative(html, "text/html")
             email.attach('payslip.pdf', pdf, 'application/pdf')
             email.mixed_subtype = 'related'
 
