@@ -539,7 +539,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station:
+                    if employee.duty_station and employee.duty_station.earning_amount and inst.amount == employee.duty_station.earning_amount:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
