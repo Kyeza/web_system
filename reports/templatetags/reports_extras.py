@@ -39,3 +39,10 @@ def bank_percentage(net_pay, percentage):
         return round(net_pay * Decimal((percentage/100)), 2)
     else:
         return net_pay
+
+
+@register.filter
+def contains_time(value):
+    if value.__contains__('time'):
+        return True
+    return False

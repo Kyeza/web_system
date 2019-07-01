@@ -7,7 +7,7 @@
 <html lang="">
 <head>
     <title>Pay Slip</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'payslip.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'reports/payslip.css' %}">
 </head>
 <body>
 <div class="content">
@@ -100,34 +100,75 @@
                                 {{ value|intcomma }}
                             </td>
                         {% endif %}
+                        {% if k == 'earning_and_deductions_type__ed_type' %}
+                            {% if value|contains_time %}
+                                <th>0 Hrs</th>
+                            {% else %}
+                                <th></th>
+                            {% endif %}
+                        {% endif %}
                     {% endfor %}
                 </tr>
             {% endfor %}
-            <tr>
-                <th>Earning</th>
-                <td class="amount">45,000</td>
-                <td>0 Hrs</td>
-            </tr>
-            <tr class="horizontal-line">
-                <th>Total Earnings</th>
-                <td colspan="2" class="total">45,000</td>
-                <td></td>
-            </tr>
+            {% with staff|report:period as report %}
+                <tr class="horizontal-line">
+                    <th>Total Earnings</th>
+                    <td colspan="2" class="total">{{ report.gross_earning|intcomma }}</td>
+                    <td></td>
+                </tr>
+            {% endwith %}
             <tr class="horizontal-line">
                 <th class="sub-title">Deduction Details:</th>
                 <td colspan="2"></td>
                 <td></td>
             </tr>
-            <tr>
-                <th>Earning</th>
-                <td class="amount">45,000</td>
-                <td>0 Hrs</td>
-            </tr>
-            <tr class="horizontal-line">
-                <th>Total Deductions</th>
-                <td colspan="2" class="total">45,000</td>
-                <td></td>
-            </tr>
+            {% for processor in data|payslip_data:staff|category:2 %}
+                <tr>
+                    {% for k, value in processor.items %}
+                        {% if k == 'earning_and_deductions_type__ed_type' %}
+                            <th>{{ value }}</th>
+                        {% else %}
+                            <td class="amount">
+                                {{ value|intcomma }}
+                            </td>
+                        {% endif %}
+                        {% if k == 'earning_and_deductions_type__ed_type' %}
+                            {% if value|contains_time %}
+                                <th>0 Hrs</th>
+                            {% else %}
+                                <th></th>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            {% for processor in data|payslip_data:staff|category:3 %}
+                <tr>
+                    {% for k, value in processor.items %}
+                        {% if k == 'earning_and_deductions_type__ed_type' %}
+                            <th>{{ value }}</th>
+                        {% else %}
+                            <td class="amount">
+                                {{ value|intcomma }}
+                            </td>
+                        {% endif %}
+                        {% if k == 'earning_and_deductions_type__ed_type' %}
+                            {% if value|contains_time %}
+                                <th>0 Hrs</th>
+                            {% else %}
+                                <th></th>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            {% with staff|report:period as report %}
+                <tr class="horizontal-line">
+                    <th>Total Deductions</th>
+                    <td colspan="2" class="total">{{ report.total_deductions|intcomma }}</td>
+                    <td></td>
+                </tr>
+            {% endwith %}
             <tr>
                 <th></th>
                 <td></td>
@@ -138,11 +179,13 @@
                 <td></td>
                 <td></td>
             </tr>
-            <tr class="horizontal-line-1">
-                <th>Net Pay</th>
-                <td colspan="2" class="total">45,000</td>
-                <td></td>
-            </tr>
+            {% with staff|report:period as report %}
+                <tr class="horizontal-line-1">
+                    <th>Net Pay</th>
+                    <td colspan="2" class="total">{{ report.net_pay|intcomma }}</td>
+                    <td></td>
+                </tr>
+            {% endwith %}
             <tr class="horizontal-line-1">
                 <th></th>
                 <td colspan="2"></td>
@@ -151,7 +194,6 @@
         {% endfor %}
         </tbody>
     </table>
-
     <p class="footer">Perpared by:.....................................................................................</p>
     <p class="footer">Checked by:......................................................................................</p>
 </div>
