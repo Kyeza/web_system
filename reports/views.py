@@ -5,8 +5,7 @@ import weasyprint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.cache import cache
-from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect, JsonResponse
@@ -46,28 +45,13 @@ def generate_summary_data(payroll_period):
         .prefetch_related('employee__report', 'employee__report__payroll_period')
     employees_in_period = set()
 
-    i = 1
-    headings_1, headings_2, headings_3 = None, None, None
     for process in period_processes.iterator():
-        if i == 1:
-            e = process.employee
-            headings = period_processes.filter(employee=e)
-            headings_1 = list(headings.filter(earning_and_deductions_category_id=1)
-                              .values_list('earning_and_deductions_type__ed_type'))
-            headings_2 = list(headings.filter(earning_and_deductions_category_id=2)
-                              .values_list('earning_and_deductions_type__ed_type'))
-            headings_3 = list(headings.filter(earning_and_deductions_category_id=3)
-                              .values_list('earning_and_deductions_type__ed_type'))
-            i = 0
         employees_in_period.add(process.employee)
 
     context = {
         'payroll_period': payroll_period,
         'period_processes': period_processes,
         'employees_to_process': employees_in_period,
-        'headings_1': headings_1,
-        'headings_2': headings_2,
-        'headings_3': headings_3,
     }
     return context
 
