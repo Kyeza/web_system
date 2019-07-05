@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="google-appengine-python" name="Google App Engine (Python)">
       <configuration>
-        <option name="rootFolder" value="D:\projects-work-space\PycharmProjects\hr_system" />
+        <option name="rootFolder" value="$MODULE_DIR$" />
         <option name="sdkFolder" value="C:\Users\Arnold Kyeza\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin" />
       </configuration>
     </facet>
@@ -33,6 +33,9 @@
     <orderEntry type="library" name="vfs_fonts" level="application" />
     <orderEntry type="library" name="datatables" level="application" />
     <orderEntry type="library" name="jquery.datetimepicker.full" level="application" />
+    <orderEntry type="library" name="Google App Engine SDK" level="project" />
+    <orderEntry type="library" name="R User Library" level="project" />
+    <orderEntry type="library" name="R Skeletons" level="application" />
     <orderEntry type="library" name="Google App Engine SDK" level="project" />
   </component>
   <component name="TemplatesService">
