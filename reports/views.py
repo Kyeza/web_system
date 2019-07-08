@@ -18,6 +18,7 @@ from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
 from .models import ExTraSummaryReportInfo
+from payroll.models import EarningDeductionType
 
 logger = logging.getLogger('payroll')
 
@@ -160,22 +161,24 @@ def generate(payroll_period, report):
 def generate_leger_export(results, period):
     logger.debug('initializing leger export')
 
-    results_data = results[period].filter(amount__gt=0).filter(employee__category_id=2) \
+    results_data = results[period].filter(amount__gt=0) \
         .prefetch_related('employee__employeeproject_set', 'employee__employeeproject_set__cost_center',
                           'employee__employeeproject_set__project_code')
 
-    ed_types = set()
-    for processor in results_data.iterator():
-        ed_types.add(processor.earning_and_deductions_type)
+    ed_types = EarningDeductionType.objects.filter(export='YES').all()
 
     data = {}
-    for ed_type in ed_types:
+    for ed_type in ed_types.iterator():
         if ed_type.export == 'YES':
-            data[ed_type] = list(results_data.filter(earning_and_deductions_type_id=ed_type.pk))
+            processes = list(results_data.filter(earning_and_deductions_type_id=ed_type.pk).all())
+            data[ed_type] = processes
             if ed_type.summarize == 'YES':
                 total = 0
-                for i in data[ed_type]:
+                c = 1
+                for i in processes:
+                    print(f'{ed_type} - earning for {i}: {c}')
                     total += i.amount
+                    c = c + 1
                 data[ed_type] = total
 
     return data

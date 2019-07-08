@@ -34,7 +34,7 @@
                     {% with staff|report:period as report %}
                         <td>{{ report.gross_earning|intcomma }}</td>
                     {% endwith %}
-                    {% for info in data|user_data:staff|category:2 %}
+                    {% for info in data|category:2|user_data:staff %}
                         {% for k, amount in info.items %}
                                 <th>{{ amount }}</th>
                             {% endfor %}

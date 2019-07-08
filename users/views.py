@@ -1,20 +1,16 @@
 import logging
 import re
-import time
 from builtins import super
 from decimal import Decimal
 
-from dateutil.parser import parser
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.db import transaction
-from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import never_cache
 from django.views.generic.detail import DetailView
@@ -489,7 +485,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                             'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
                             'employee__bank_2',
                             'employee__category') \
-            .filter(payroll_period=payroll_period).filter(employee=user)\
+            .filter(payroll_period=payroll_period).filter(employee=user) \
             .filter(payroll_period__payroll_center_id=payroll_center.id).all() \
             .prefetch_related('employee__report', 'employee__report__payroll_period')
         logger.debug(f'Processors: {period_processes.count()}')
@@ -611,7 +607,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
         employer_pension_amt = 0
         if employee.category_id == 2:
-            employer_pension_amt = (employee.gross_salary / Decimal(8.33 / 100)) + arrears.amount
+            employer_pension_amt = (employee.gross_salary * Decimal(8.33 / 100)) + arrears.amount
 
         if employer_pension:
             employer_pension.amount = employer_pension_amt
@@ -660,6 +656,30 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         if employee_net_pay:
             employee_net_pay.amount = net_pay
             employee_net_pay.save(update_fields=['amount'])
+
+        # update accrued salary ap if exists in payroll center
+        logger.info(f'Processing for user {employee}: Accrued Salary AP')
+        employee_accrued_salary_ap = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=72).first()
+        if employee_accrued_salary_ap:
+            employee_accrued_salary_ap.amount = (employee.gross_salary * Decimal(8.33 / 100)) + arrears.amount
+            employee_accrued_salary_ap.save(update_fields=['amount'])
+
+        # update accrued salary gl if exists in payroll center
+        logger.info(f'Processing for user {employee}: Accrued Salary AL')
+        employee_accrued_salary_gl = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=73).first()
+        if employee_accrued_salary_gl:
+            employee_accrued_salary_gl.amount = (employee.gross_salary * Decimal(8.33 / 100)) + arrears.amount
+            employee_accrued_salary_gl.save(update_fields=['amount'])
+
+        # updating NSSF export
+        logger.info(f'Processing for user {employee}: NSSF Export')
+        employee_nssf_export = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=77).first()
+        if employee_nssf_export:
+            employee_nssf_export.amount = nssf_5 + nssf_10
+            employee_nssf_export.save(update_fields=['amount'])
 
         try:
             key = f'{payroll_period.payroll_key}S{employee.pk}'
