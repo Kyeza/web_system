@@ -90,7 +90,7 @@
                 <td colspan="2"></td>
                 <td></td>
             </tr>
-            {% for processor in data|payslip_data:staff|category:1 %}
+            {% for processor in data|category:1|payslip_data:staff %}
                 <tr>
                     {% for k, value in processor.items %}
                         {% if k == 'earning_and_deductions_type__ed_type' %}
@@ -122,7 +122,7 @@
                 <td colspan="2"></td>
                 <td></td>
             </tr>
-            {% for processor in data|payslip_data:staff|category:2 %}
+            {% for processor in data|category:2|payslip_data:staff %}
                 <tr>
                     {% for k, value in processor.items %}
                         {% if k == 'earning_and_deductions_type__ed_type' %}
@@ -142,7 +142,7 @@
                     {% endfor %}
                 </tr>
             {% endfor %}
-            {% for processor in data|payslip_data:staff|category:3 %}
+            {% for processor in data|category:3|payslip_data:staff %}
                 <tr>
                     {% for k, value in processor.items %}
                         {% if k == 'earning_and_deductions_type__ed_type' %}

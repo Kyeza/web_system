@@ -5,18 +5,18 @@ register = template.Library()
 
 @register.filter
 def category(processors, category_id):
-    data = None
+    data = processors.filter(earning_and_deductions_category_id=category_id).all()
+    return data
+
+
+@register.filter
+def category_display(processors, category_id):
     if category_id == 1:
-        data = processors.filter(earning_and_deductions_category_id=category_id) \
-            .filter(earning_and_deductions_type__display_number__lt=7).values().all()
-    elif category_id == 2:
-        data = processors.filter(earning_and_deductions_category_id=category_id) \
-            .filter(earning_and_deductions_type__display_number__gt=6)\
-            .filter(earning_and_deductions_type__display_number__lt=20).values().all()
-    elif category_id == 3:
-        data = processors.filter(earning_and_deductions_category_id=category_id) \
-            .filter(earning_and_deductions_type__display_number__gt=7)\
-            .filter(earning_and_deductions_type__display_number__lt=9).values().all()
+        data = processors.filter(earning_and_deductions_type__display_number__lt=7).all()
+    else:
+        data = processors.filter(earning_and_deductions_type__display_number__gt=6)\
+            .filter(earning_and_deductions_type__display_number__lt=20).all()
+
     return data
 
 
