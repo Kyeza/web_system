@@ -38,70 +38,39 @@
         {% for k, values in results.items %}
             {% if k.summarize == 'NO' %}
                 {% for v in values %}
-                    {% if forloop.first %}
-                        <tr>
-                            <td>{{ k.account_code }}</td>
-                            <td>{{ k.account_name }}</td>
-                            <td>{{ k.agresso_type }}</td>
-                            {% if v.employee.employeeproject_set.exists %}
-                                {% with v.employee.employeeproject_set.first as project %}
-                                    <td>{{ project.cost_center.cost_centre }}</td>
-                                    <td>{{ project.project_code.project_code }}</td>
-                                {% endwith %}
-                            {% else %}
-                                <td></td>
-                                <td></td>
-                            {% endif %}
-                            <td>{{ v.employee.agresso_number }}</td>
-                            <td> 0</td>
-                            <td> n/a</td>
-                            <td> 800</td>
-                            <td>{{ v.employee.currency }}</td>
-                            {% if k.debit_credit_sign == 'C' %}
-                                <td>{{ v.amount|credit|intcomma }}</td>
-                            {% else %}
-                                <td>{{ v.amount|intcomma }}</td>
-                            {% endif %}
-                            <td>{{ v.employee.user.get_full_name }}</td>
-                            <td>{{ v.employee.job_title }}</td>
-                            <td>{{ trans_date }}</td>
-                            <td>{{ v.employee.category.name }}</td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td>{{ k.account_code }}</td>
+                    <tr>
+                        <td>{{ k.account_code }}</td>
+                        <td>{{ k.account_name }} - {{ k.ed_type }}</td>
+                        <td>{{ k.agresso_type }}</td>
+                        {% if v.employee.employeeproject_set.exists %}
+                            {% with v.employee.employeeproject_set.first as project %}
+                                <td>{{ project.cost_center.cost_centre }}</td>
+                                <td>{{ project.project_code.project_code }}</td>
+                            {% endwith %}
+                        {% else %}
                             <td></td>
-                            <td>{{ k.agresso_type }}</td>
-                            {% if v.employee.employeeproject_set.exists %}
-                                {% with v.employee.employeeproject_set.first as project %}
-                                    <td>{{ project.cost_center.cost_centre }}</td>
-                                    <td>{{ project.project_code.project_code }}</td>
-                                {% endwith %}
-                            {% else %}
-                                <td></td>
-                                <td></td>
-                            {% endif %}
-                            <td>{{ v.employee.agresso_number }}</td>
-                            <td> 0</td>
-                            <td> n/a</td>
-                            <td> 800</td>
-                            <td>{{ v.employee.currency }}</td>
-                            {% if k.debit_credit_sign == 'C' %}
-                                <td>{{ v.amount|credit|intcomma }}</td>
-                            {% else %}
-                                <td>{{ v.amount|intcomma }}</td>
-                            {% endif %}
-                            <td>{{ v.employee.user.get_full_name }}</td>
-                            <td>{{ v.employee.job_title }}</td>
-                            <td>{{ trans_date }}</td>
-                            <td>{{ v.employee.category.name }}</td>
-                        </tr>
-                    {% endif %}
+                            <td></td>
+                        {% endif %}
+                        <td>{{ v.employee.agresso_number }}</td>
+                        <td> 0</td>
+                        <td> n/a</td>
+                        <td> 800</td>
+                        <td>{{ v.employee.currency }}</td>
+                        {% if k.debit_credit_sign == 'C' %}
+                            <td>{{ v.amount|credit|intcomma }}</td>
+                        {% else %}
+                            <td>{{ v.amount|intcomma }}</td>
+                        {% endif %}
+                        <td>{{ v.employee.user.get_full_name }}</td>
+                        <td>{{ v.employee.job_title }}</td>
+                        <td>{{ trans_date }}</td>
+                        <td>{{ v.employee.category.name }}</td>
+                    </tr>
                 {% endfor %}
             {% else %}
                 <tr>
                     <td>{{ k.account_code }}</td>
-                    <td>{{ k.account_name }}</td>
+                    <td>{{ k.account_name }} - {{ k.ed_type }}</td>
                     <td>{{ k.agresso_type }}</td>
                     <td> 80012</td>
                     <td></td>
