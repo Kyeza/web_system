@@ -18,17 +18,19 @@ class EarningDeductionCategory(models.Model):
 
 class EarningDeductionType(models.Model):
     AGGRESSO_TYPES = (
-        ('SALARY COSTS', 'SALARY COSTS'),
-        ('SALARIES', 'SALARIES'),
-        ('BENEFITS', 'BENEFITS'),
-        ('OVERTIME', 'OVERTIME'),
-        ('SALARY ADVANCES', 'SALARY ADVANCES'),
-        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
-        ('DEDUCTIONS', 'DEDUCTIONS'),
-        ('PENSION COSTS', 'PENSION COSTS'),
-        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
-        ('PAYMENTS', 'PAYMENTS'),
+        ('STAFF ADVANCES', 'STAFF ADVANCES'),
         ('ACCRUED PAYROLL', 'ACCRUED PAYROLL'),
+        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
+        ('STAFF EXPENSES', 'STAFF EXPENSES'),
+        ('SALARY ADVANCES', 'SALARY ADVANCES'),
+        ('PAYE', 'PAYE'),
+        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
+        ('SALARIES', 'SALARIES'),
+        ('OVERTIME', 'OVERTIME'),
+        ('ADDITIONAL SALARY COSTS', 'ADDITIONAL SALARY COSTS'),
+        ('BENEFIT - LIVING ACCOMMODATION', 'BENEFIT - LIVING ACCOMMODATION'),
+        ('SEVERANCE PAYMENTS', 'SEVERANCE PAYMENTS'),
+        ('PENSION COSTS', 'PENSION COSTS'),
     )
     ed_type = models.CharField(max_length=100, null=True)
     description = models.CharField(max_length=150, null=True, blank=True)

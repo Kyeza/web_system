@@ -40,7 +40,7 @@
                 {% for v in values %}
                     <tr>
                         <td>{{ k.account_code }}</td>
-                        <td>{{ k.account_name }} - {{ k.ed_type }}</td>
+                        <td>{{ k.ed_type }} - {{ k.account_name }}</td>
                         <td>{{ k.agresso_type }}</td>
                         {% if v.employee.employeeproject_set.exists %}
                             {% with v.employee.employeeproject_set.first as project %}
@@ -70,7 +70,7 @@
             {% else %}
                 <tr>
                     <td>{{ k.account_code }}</td>
-                    <td>{{ k.account_name }} - {{ k.ed_type }}</td>
+                    <td>{{ k.ed_type }} - {{ k.account_name }}</td>
                     <td>{{ k.agresso_type }}</td>
                     <td> 80012</td>
                     <td></td>

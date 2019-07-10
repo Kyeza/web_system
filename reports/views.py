@@ -639,6 +639,3 @@ def generate_reconciliation_report(request):
 
     return render(request, 'reports/generate_reconciliation_report.html', context)
 
-
-def leger_export_report():
-    pass
