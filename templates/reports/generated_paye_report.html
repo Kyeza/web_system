@@ -28,7 +28,7 @@
                             {% endfor %}
                         {% endfor %}
                         <th>Gross</th>
-                        {% for processor in data|user_data_headings:staff|category:3 %}
+                        {% for processor in data|user_data_headings:staff|category:2 %}
                             {% for k, heading in processor.items %}
                                 <th>{{ heading }}</th>
                             {% endfor %}
@@ -48,7 +48,7 @@
                     {% with staff|report:period as report %}
                         <td>{{ report.gross_earning|intcomma }}</td>
                     {% endwith %}
-                    {% for info in data|user_data:staff|category:3 %}
+                    {% for info in data|category:2|user_data:staff %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
                 </tr>
