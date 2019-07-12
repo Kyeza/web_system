@@ -20,6 +20,7 @@
             <tr>
                 <th>No.</th>
                 <th>Name</th>
+                <th>TIN number</th>
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
                         {% for processor in earnings|user_data_headings:staff %}
@@ -42,6 +43,7 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ staff.user.get_full_name }}</td>
+                    <td>{{ staff.tin_number }}</td>
                     {% for info in earnings|user_data:staff %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}

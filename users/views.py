@@ -823,7 +823,7 @@ def create_employee_project(request, pk):
 
 class EmployeeProjectCreation(CreateView):
     model = EmployeeProject
-    fields = ['employee', 'cost_center', 'project_code', 'sof_code', 'dea_code']
+    fields = ['employee', 'cost_center', 'project_code', 'sof_code', 'dea_code', 'contribution_percentage']
     template_name = 'users/employeeproject/employeeproject_form.html'
 
     def get_initial(self):
