@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from hr_system import settings
 from hr_system.constants import YES_OR_NO_TYPES
-from .constants import MONTHS, PAYROLL_YEARS, KV_MONTH
+from .constants import MONTHS, PAYROLL_YEARS, KV_MONTH, DISPLAY_NUMS
 
 
 class EarningDeductionCategory(models.Model):
@@ -18,17 +18,19 @@ class EarningDeductionCategory(models.Model):
 
 class EarningDeductionType(models.Model):
     AGGRESSO_TYPES = (
-        ('SALARY COSTS', 'SALARY COSTS'),
-        ('SALARIES', 'SALARIES'),
-        ('BENEFITS', 'BENEFITS'),
-        ('OVERTIME', 'OVERTIME'),
-        ('SALARY ADVANCES', 'SALARY ADVANCES'),
-        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
-        ('DEDUCTIONS', 'DEDUCTIONS'),
-        ('PENSION COSTS', 'PENSION COSTS'),
-        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
-        ('PAYMENTS', 'PAYMENTS'),
+        ('STAFF ADVANCES', 'STAFF ADVANCES'),
         ('ACCRUED PAYROLL', 'ACCRUED PAYROLL'),
+        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
+        ('STAFF EXPENSES', 'STAFF EXPENSES'),
+        ('SALARY ADVANCES', 'SALARY ADVANCES'),
+        ('PAYE', 'PAYE'),
+        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
+        ('SALARIES', 'SALARIES'),
+        ('OVERTIME', 'OVERTIME'),
+        ('ADDITIONAL SALARY COSTS', 'ADDITIONAL SALARY COSTS'),
+        ('BENEFIT - LIVING ACCOMMODATION', 'BENEFIT - LIVING ACCOMMODATION'),
+        ('SEVERANCE PAYMENTS', 'SEVERANCE PAYMENTS'),
+        ('PENSION COSTS', 'PENSION COSTS'),
     )
     ed_type = models.CharField(max_length=100, null=True)
     description = models.CharField(max_length=150, null=True, blank=True)
@@ -43,6 +45,7 @@ class EarningDeductionType(models.Model):
     agresso_type = models.CharField(max_length=50, null=True, blank=True, choices=AGGRESSO_TYPES)
     account_code = models.CharField(max_length=15, null=True, blank=True)
     debit_credit_sign = models.CharField(max_length=15, null=True, blank=True)
+    display_number = models.IntegerField(null=True, blank=True, default=0)
 
     def get_absolute_url(self):
         return reverse('payroll:ed-type-detail', kwargs={'pk': self.pk})

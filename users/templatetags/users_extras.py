@@ -5,17 +5,32 @@ register = template.Library()
 
 @register.filter
 def category(processors, category_id):
-    return processors.filter(earning_and_deductions_category_id=category_id)
+    data = processors.filter(earning_and_deductions_category_id=category_id).all()
+    return data
+
+
+@register.filter
+def category_display(processors, category_id):
+    if category_id == 1:
+        data = processors.filter(earning_and_deductions_type__display_number__lt=7).all()
+    else:
+        data = processors.filter(earning_and_deductions_type__display_number__gt=6)\
+            .filter(earning_and_deductions_type__display_number__lt=20).all()
+
+    return data
 
 
 @register.filter
 def user_data(processors, staff):
-    return processors.filter(employee_id=staff.pk).values('amount')
+    data = processors.filter(employee_id=staff.pk).values('amount')\
+        .order_by('earning_and_deductions_type__display_number').all()
+    return list(data)
 
 
 @register.filter
 def user_data_headings(processors, staff):
-    return processors.filter(employee_id=staff.pk).values('earning_and_deductions_type__ed_type')
+    return processors.filter(employee_id=staff.pk).values('earning_and_deductions_type__ed_type')\
+        .order_by('earning_and_deductions_type__display_number').all()
 
 
 @register.filter

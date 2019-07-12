@@ -10,7 +10,7 @@
     <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
 </h5>
 <div class="table-responsive">
-    <table id="table_id" class="table table-sm table-striped table-bordered w-100">
+    <table id="leger_id" class="table table-sm table-striped table-bordered w-100">
         <caption class="border-bottom mb-5">
             {{ report }} REPORT FOR PERIOD
             <span style="color: #2196F3">{{ period.month }}, {{ period.year }}</span>
@@ -38,90 +38,78 @@
         {% for k, values in results.items %}
             {% if k.summarize == 'NO' %}
                 {% for v in values %}
-                    {% if forloop.first %}
-                        <tr>
-                            <td>{{ k.account_code }}</td>
-                            <td>{{ k.account_name }}</td>
-                            <td>{{ k.agresso_type }}</td>
-                            {% if v.employee.employeeproject_set.exists %}
-                                {% with v.employee.employeeproject_set.first as project %}
-                                    <td>{{ project.cost_center.cost_centre }}</td>
-                                    <td>{{ project.project_code.project_code }}</td>
-                                {% endwith %}
-                            {% else %}
-                                <td></td>
-                                <td></td>
-                            {% endif %}
-                            <td>{{ v.employee.agresso_number }}</td>
-                            <td> 0 </td>
-                            <td> n/a </td>
-                            <td> 800 </td>
-                            <td>{{ v.employee.currency }}</td>
-                            {% if k.debit_credit_sign == 'C' %}
-                                <td>{{ v.amount|credit|intcomma }}</td>
-                            {% else %}
-                                <td>{{ v.amount|intcomma }}</td>
-                            {% endif %}
-                            <td>{{ v.employee.user.get_full_name }}</td>
-                            <td>{{ v.employee.job_title }}</td>
-                            <td>{{ trans_date }}</td>
-                            <td>{{ v.employee.category.name }}</td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td>{{ k.account_code }}</td>
+                    <tr>
+                        <td>{{ k.account_code }}</td>
+                        <td>{{ k.ed_type }} - {{ k.account_name }}</td>
+                        <td>{{ k.agresso_type }}</td>
+                        {% if v.employee.employeeproject_set.exists %}
+                            {% with v.employee.employeeproject_set.first as project %}
+                                <td>{{ project.cost_center.cost_centre }}</td>
+                                <td>{{ project.project_code.project_code }}</td>
+                            {% endwith %}
+                        {% else %}
                             <td></td>
-                            <td>{{ k.agresso_type }}</td>
-                            {% if v.employee.employeeproject_set.exists %}
-                                {% with v.employee.employeeproject_set.first as project %}
-                                    <td>{{ project.cost_center.cost_centre }}</td>
-                                    <td>{{ project.project_code.project_code }}</td>
-                                {% endwith %}
-                            {% else %}
-                                <td></td>
-                                <td></td>
-                            {% endif %}
-                            <td>{{ v.employee.agresso_number }}</td>
-                            <td> 0 </td>
-                            <td> n/a </td>
-                            <td> 800 </td>
-                            <td>{{ v.employee.currency }}</td>
-                            {% if k.debit_credit_sign == 'C' %}
-                                <td>{{ v.amount|credit|intcomma }}</td>
-                            {% else %}
-                                <td>{{ v.amount|intcomma }}</td>
-                            {% endif %}
-                            <td>{{ v.employee.user.get_full_name }}</td>
-                            <td>{{ v.employee.job_title }}</td>
-                            <td>{{ trans_date }}</td>
-                            <td>{{ v.employee.category.name }}</td>
-                        </tr>
-                    {% endif %}
+                            <td></td>
+                        {% endif %}
+                        <td>{{ v.employee.agresso_number }}</td>
+                        <td> 0</td>
+                        <td> n/a</td>
+                        <td> 800</td>
+                        <td>{{ v.employee.currency }}</td>
+                        {% if k.debit_credit_sign == 'C' %}
+                            <td>{{ v.amount|credit|intcomma }}</td>
+                        {% else %}
+                            <td>{{ v.amount|intcomma }}</td>
+                        {% endif %}
+                        <td>{{ v.employee.user.get_full_name }}</td>
+                        <td>{{ v.employee.job_title }}</td>
+                        <td>{{ trans_date }}</td>
+                        <td>{{ v.employee.category.name }}</td>
+                    </tr>
                 {% endfor %}
             {% else %}
                 <tr>
                     <td>{{ k.account_code }}</td>
-                    <td>{{ k.account_name }}</td>
+                    <td>{{ k.ed_type }} - {{ k.account_name }}</td>
                     <td>{{ k.agresso_type }}</td>
-                    <td> 80012 </td>
+                    <td> 80000</td>
                     <td></td>
-                    <td> 8000177 </td>
-                    <td> 0 </td>
-                    <td> n/a </td>
-                    <td> 800 </td>
-                    <td> UGX </td>
+                    <td></td>
+                    <td> 0</td>
+                    <td> n/a</td>
+                    <td> 800</td>
+                    <td> UGX</td>
                     {% if k.debit_credit_sign == 'C' %}
                         <td>{{ values|credit|intcomma }}</td>
                     {% else %}
                         <td>{{ values|intcomma }}</td>
                     {% endif %}
-                    <td></td>
-                    <td></td>
+                    <td>{{ k.ed_type }}</td>
+                    <td>{{ k.ed_type }}</td>
                     <td>{{ trans_date }}</td>
                     <td></td>
                 </tr>
             {% endif %}
         {% endfor %}
         </tbody>
+        <tfoot class="thead-dark">
+        <tr>
+            <th>Total</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </tfoot>
     </table>
 </div>

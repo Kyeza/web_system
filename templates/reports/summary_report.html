@@ -7,76 +7,64 @@
         <h5 id="summary_title" class="border-bottom mb-4">
             PAYROLL FOR THE MONTH OF {{ payroll_period.month }} - {{ payroll_period.year }}
         </h5>
-        <div class="table-responsive" style="font-size: 11px;">
+        <div class="table-responsive" style="font-size: 9px; font-family: TimesNewRoman,'Times New Roman',serif;">
             <table id="table_id" class="table table-sm table-striped table-bordered w-100">
                 <thead class="thead-dark">
                 <tr>
-                    {% for staff in employees_to_process %}
-                        {% if forloop.first %}
-                            <th></th>
-                            <th>Staff</th>
-                            <th>Agresso no.</th>
-                            <th>Job title</th>
-                            <th>Duty station</th>
-                            <th>Category</th>
-
-                            {% for heading in headings_1 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_2 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_3 %}
-                                {% for title in heading %}
-                                    <th>{{ title }}</th>
-                                {% endfor %}
-                            {% endfor %}
-                            <th>Total Deductions</th>
-                            <th>Gross Salary</th>
-                            <th>Net Pay</th>
-                        {% endif %}
-                    {% endfor %}
+                    <th></th>
+                    <th>Analysis</th>
+                    <th>Employee Names</th>
+                    <th>Job title</th>
+                    <th>Basic Pay</th>
+                    <th>Arrears</th>
+                    <th>Overtime</th>
+                    <th>Hardship</th>
+                    <th>Acting Allowance</th>
+                    <th>Other Earnings</th>
+                    <th>Gross</th>
+                    <th>NSSF 5%</th>
+                    <th>PAYE</th>
+                    <th>PENSION</th>
+                    <th>Telephone</th>
+                    <th>Lunch</th>
+                    <th>Debtors</th>
+                    <th>Local Service Tax</th>
+                    <th>Salary Advance</th>
+                    <th>Vehicle Benefit Ded.</th>
+                    <th>Total Deductions</th>
+                    <th>Net Pay</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for staff in employees_to_process %}
                     <tr>
                         <td></td>
-                        <td><a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
-                            {{ staff.user.get_full_name }}
-                        </a></td>
                         <td>{{ staff.agresso_number }}</td>
+                        <td>
+                            <a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
+                                {{ staff.user.get_full_name }}
+                            </a>
+                        </td>
                         <td>{{ staff.job_title }}</td>
-                        <td>{{ staff.duty_station }}</td>
-                        <td>{{ staff.category.name }}</td>
-                        {% with period_processes|category:1|user_data:staff as user_earnings %}
+                        {% with period_processes|category_display:1|user_data:staff as user_earnings %}
                             {% for earning in user_earnings %}
                                 {% for k, amount in earning.items %}
                                     <td>{{ amount|intcomma }}</td>
                                 {% endfor %}
                             {% endfor %}
                         {% endwith %}
-                        {% with period_processes|category:2|user_data:staff as user_deductions %}
+                        {% with staff|report:payroll_period as report %}
+                            <td>{{ report.gross_earning|intcomma }}</td>
+                        {% endwith %}
+                        {% with period_processes|category_display:2|user_data:staff as user_deductions %}
                             {% for deduction in user_deductions %}
                                 {% for k, amount in deduction.items %}
                                     <td>{{ amount|intcomma }}</td>
                                 {% endfor %}
                             {% endfor %}
                         {% endwith %}
-                        {% with period_processes|category:3|user_data:staff as user_statutory %}
-                            {% for statutory in user_statutory %}
-                                {% for k, amount in statutory.items %}
-                                    <td>{{ amount|intcomma }}</td>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endwith %}
                         {% with staff|report:payroll_period as report %}
                             <td>{{ report.total_deductions|intcomma }}</td>
-                            <td>{{ report.gross_earning|intcomma }}</td>
                             <td>{{ report.net_pay|intcomma }}</td>
                         {% endwith %}
                     </tr>
@@ -84,31 +72,26 @@
                 </tbody>
                 <tfoot>
                 <tr>
-                    {% for staff in employees_to_process %}
-                        {% if forloop.last %}
-                            <th></th>
-                            <th colspan="4"></th>
-                            <th class="font-weight-light text-info text-center">Total: </th>
-                            {% for heading in headings_1 %}
-                                {% for title in heading %}
-                                    <th></th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_2 %}
-                                {% for title in heading %}
-                                    <th>}</th>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for heading in headings_3 %}
-                                {% for title in heading %}
-                                    <th></th>
-                                {% endfor %}
-                            {% endfor %}
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        {% endif %}
-                    {% endfor %}
+                    <th></th>
+                    <th colspan="3" class="font-weight-light text-info text-center">Total:</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 </tfoot>
             </table>
@@ -117,15 +100,15 @@
 {% endblock content %}
 {% block scripts %}
     <script>
-        $(document).ready(function() {
-            var title =  document.getElementById("summary_title").innerHTML;
-            var table = $('#table_id').DataTable( {
-                columnDefs: [ {
+        $(document).ready(function () {
+            var title = document.getElementById("summary_title").innerHTML;
+            var table = $('#table_id').DataTable({
+                columnDefs: [{
                     searchable: false,
                     orderable: false,
                     targets: 0
-                } ],
-                order: [[ 1, 'asc' ]],
+                }],
+                order: [[1, 'asc']],
                 dom: 'lBfrtip',
                 scrollX: true,
                 scrollCollapse: true,
@@ -157,12 +140,27 @@
                         extend: 'pdfHtml5',
                         customize: function (doc) {
                             var objLayout = {};
-                            objLayout['hLineWidth'] = function(i) { return .8; };
-                            objLayout['vLineWidth'] = function(i) { return .5; };
-                            objLayout['hLineColor'] = function(i) { return '#aaa'; };
-                            objLayout['vLineColor'] = function(i) { return '#aaa'; };
-                            objLayout['paddingLeft'] = function(i) { return 8; };
-                            objLayout['paddingRight'] = function(i) { return 8; };
+                            objLayout['hLineWidth'] = function (i, node) {
+                                return (i === 0 || i === node.table.body.length) ? 2 : 1;
+                            };
+                            objLayout['vLineWidth'] = function (i, node) {
+                                return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+                            };
+                            objLayout['hLineColor'] = function (i, node) {
+                                return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                            };
+                            objLayout['fillColor'] = function (rowIndex, node, columnIndex) {
+                                return (rowIndex % 2 === 0) ? '#ffffff' : '#ffffff';
+                            };
+                            objLayout['vLineColor'] = function (i, node) {
+                                return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                            };
+                            objLayout['paddingLeft'] = function (i) {
+                                return 8;
+                            };
+                            objLayout['paddingRight'] = function (i) {
+                                return 8;
+                            };
                             doc.content[1].layout = objLayout;
                         },
                         exportOptions: {
@@ -189,15 +187,15 @@
                         }
                     },
                 ],
-                "footerCallback": function ( row, data, start, end, display ) {
+                "footerCallback": function (row, data, start, end, display) {
                     var api = this.api(), data;
 
                     let colCount = api.columns().header().length;
 
                     // Remove the formatting to get integer data for summation
-                    let intVal = function ( i ) {
+                    let intVal = function (i) {
                         return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '')*1 :
+                            i.replace(/[\$,]/g, '') * 1 :
                             typeof i === 'number' ?
                                 i : 0;
                     };
@@ -206,7 +204,7 @@
                     let i;
                     let total = [];
                     for (i = 0; i < colCount; i++) {
-                        if (i > 5) {
+                        if (i > 3) {
                             total[i] = api
                                 .column(i)
                                 .data()
@@ -218,21 +216,21 @@
 
                     for (i = 0; i < colCount; i++) {
                         // Update footer
-                        if (i > 5) {
-                            $( api.column( i ).footer() ).html(
+                        if (i > 3) {
+                            $(api.column(i).footer()).html(
                                 total[i].toLocaleString()
                             );
                         }
                     }
                 },
-            } );
+            });
 
-            table.on( 'order.dt search.dt', function () {
-                table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                    cell.innerHTML = i+1;
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
                     table.cell(cell).invalidate('dom');
-                } );
-            } ).draw();
-        } );
+                });
+            }).draw();
+        });
     </script>
 {% endblock scripts %}

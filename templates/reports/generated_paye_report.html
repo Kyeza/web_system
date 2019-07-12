@@ -20,6 +20,7 @@
             <tr>
                 <th>No.</th>
                 <th>Name</th>
+                <th>TIN number</th>
                 {% for staff in data|get_distinct_employee_set %}
                     {% if forloop.first %}
                         {% for processor in earnings|user_data_headings:staff %}
@@ -28,7 +29,7 @@
                             {% endfor %}
                         {% endfor %}
                         <th>Gross</th>
-                        {% for processor in data|user_data_headings:staff|category:3 %}
+                        {% for processor in data|user_data_headings:staff|category:2 %}
                             {% for k, heading in processor.items %}
                                 <th>{{ heading }}</th>
                             {% endfor %}
@@ -42,13 +43,14 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ staff.user.get_full_name }}</td>
+                    <td>{{ staff.tin_number }}</td>
                     {% for info in earnings|user_data:staff %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
                     {% with staff|report:period as report %}
                         <td>{{ report.gross_earning|intcomma }}</td>
                     {% endwith %}
-                    {% for info in data|user_data:staff|category:3 %}
+                    {% for info in data|category:2|user_data:staff %}
                         <td>{{ info.amount|intcomma }}</td>
                     {% endfor %}
                 </tr>
