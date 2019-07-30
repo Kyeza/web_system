@@ -694,7 +694,10 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             logger.info(f'Successfully processed {employee} Payroll Period')
 
         except ExTraSummaryReportInfo.DoesNotExist:
-            report = ExTraSummaryReportInfo(employee=employee,
+            report = ExTraSummaryReportInfo(analysis=employee.agresso_number,
+                                            employee_id=employee.pk,
+                                            employee_name=employee.user.get_full_name(),
+                                            job_title=employee.job_title,
                                             payroll_period=payroll_period,
                                             net_pay=net_pay,
                                             gross_earning=gross_earnings,

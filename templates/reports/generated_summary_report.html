@@ -25,7 +25,7 @@
             <tr>
                 <th></th>
                 <th>Analysis</th>
-                <th>Employee Names</th>
+                <th>Employee Name</th>
                 <th>Job title</th>
                 <th>Basic Pay</th>
                 <th>Arrears</th>
@@ -52,35 +52,33 @@
             {% for staff in data|get_distinct_employee_set %}
                 <tr>
                     <td></td>
-                    <td>{{ staff.agresso_number }}</td>
-                    <td>
-                        <a href="{% url 'reports:generate-payslip' pp=period.id user=staff.pk %}">
-                            {{ staff.user.get_full_name }}
-                        </a>
-                    </td>
-                    <td>{{ staff.job_title }}</td>
-                    {% with data|category_display:1|user_data:staff as user_earnings %}
-                        {% for earning in user_earnings %}
-                            {% for k, amount in earning.items %}
-                                <td>{{ amount|intcomma }}</td>
-                            {% endfor %}
-                        {% endfor %}
-                    {% endwith %}
                     {% with staff|report:period as report %}
+                        <td>{{ report.analysis }}</td>
+                        <td>
+                            <a href="{% url 'reports:generate-payslip' pp=period.id user=staff.pk %}">
+                                {{ report.employee_name }}
+                            </a>
+                        </td>
+                        <td>{{ report.job_title }}</td>
+                        {% with data|category_display:1|user_data:staff as user_earnings %}
+                            {% for earning in user_earnings %}
+                                {% for k, amount in earning.items %}
+                                    <td>{{ amount|intcomma }}</td>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endwith %}
                         <td>{{ report.gross_earning|intcomma }}</td>
-                    {% endwith %}
-                    {% with data|category_display:2|user_data:staff as user_deductions %}
-                        {% for deduction in user_deductions %}
-                            {% for k, amount in deduction.items %}
-                                <td>{{ amount|intcomma }}</td>
+                        {% with data|category_display:2|user_data:staff as user_deductions %}
+                            {% for deduction in user_deductions %}
+                                {% for k, amount in deduction.items %}
+                                    <td>{{ amount|intcomma }}</td>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                    {% endwith %}
-                    {% with staff|report:period as report %}
+                        {% endwith %}
                         <td>{{ report.total_deductions|intcomma }}</td>
                         <td>{{ report.net_pay|intcomma }}</td>
+                        <td></td>
                     {% endwith %}
-                    <td></td>
                 </tr>
             {% endfor %}
             </tbody>

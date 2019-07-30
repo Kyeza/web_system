@@ -26,13 +26,6 @@ logger = logging.getLogger('payroll')
 @login_required
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-    # cache_key = payroll_period.payroll_key
-    # if cache.get(cache_key):
-    #     context = cache.get(cache_key)
-    # else:
-    #     context = generate_summary_data(payroll_period)
-    #     cache.set(cache_key, context, 180)
-
     context = generate_summary_data(payroll_period)
     return render(request, 'reports/summary_report.html', context)
 
@@ -140,8 +133,17 @@ def generate(payroll_period, report):
         .filter(payroll_period_id=payroll_period.pk).all() \
         .prefetch_related('employee__report', 'employee__report__payroll_period').all()
     if payroll_period:
-        if report == 'BANK' or report == 'SUMMARY' or report == 'LEGER_EXPORT':
-            results[payroll_period] = processors
+        if report == 'BANK' or report == 'SUMMARY':
+            results[payroll_period] = PayrollProcessors.objects \
+                .select_related('employee', 'payroll_period', 'payroll_period__payroll_center',
+                                'earning_and_deductions_type',
+                                'earning_and_deductions_category', 'employee__user', 'employee__job_title',
+                                'employee__duty_country',
+                                'employee__duty_station', 'employee__currency', 'employee__bank_1', 'employee__bank_2') \
+                .filter(payroll_period_id=payroll_period.pk).all() \
+                .prefetch_related('employee__report', 'employee__report__payroll_period').all()
+        elif report == 'LEGER_EXPORT':
+            results[payroll_period] = processors.exclude(amount=0)
         elif report == 'LST':
             p = processors.filter(earning_and_deductions_type_id=65).all()
             results[payroll_period] = p
@@ -161,7 +163,7 @@ def generate(payroll_period, report):
 def generate_leger_export(results, period):
     logger.debug('initializing leger export')
 
-    results_data = results[period].filter(amount__gt=0) \
+    results_data = results[period] \
         .prefetch_related('employee__employeeproject_set', 'employee__employeeproject_set__cost_center',
                           'employee__employeeproject_set__project_code')
 
@@ -638,4 +640,3 @@ def generate_reconciliation_report(request):
     }
 
     return render(request, 'reports/generate_reconciliation_report.html', context)
-
