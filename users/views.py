@@ -535,7 +535,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station and employee.duty_station.earning_amount and inst.amount == employee.duty_station.earning_amount:
+                    if employee.duty_station and (employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
@@ -607,7 +607,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
         employer_pension_amt = 0
         if employee.category_id == 2:
-            employer_pension_amt = (employee.gross_salary + arrears.amount) * Decimal(8.33 / 100)
+            employer_pension_amt = (employee.gross_salary + arrears.amount) / Decimal(12)
 
         if employer_pension:
             employer_pension.amount = employer_pension_amt
@@ -662,7 +662,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_accrued_salary_ap = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=72).first()
         if employee_accrued_salary_ap:
-            employee_accrued_salary_ap.amount = (employee.gross_salary + arrears.amount) * Decimal(8.33 / 100)
+            employee_accrued_salary_ap.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
             employee_accrued_salary_ap.save(update_fields=['amount'])
 
         # update accrued salary gl if exists in payroll center
@@ -670,7 +670,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_accrued_salary_gl = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=73).first()
         if employee_accrued_salary_gl:
-            employee_accrued_salary_gl.amount = (employee.gross_salary + arrears.amount) * Decimal(8.33 / 100)
+            employee_accrued_salary_gl.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
             employee_accrued_salary_gl.save(update_fields=['amount'])
 
         # updating NSSF export
