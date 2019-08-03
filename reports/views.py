@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from payroll.models import PayrollPeriod
+from reports.helpers.mailer import Mailer
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
@@ -293,6 +294,7 @@ def send_mass_mail(request):
         employees = [Employee.objects.filter(agresso_number=sap_no).first() for sap_no in users]
         payroll_period = get_object_or_404(PayrollPeriod, pk=int(period_id))
         emails = []
+        user_payslip_data = dict()
         for employee in employees:
             data = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
             info_key = f'{payroll_period.payroll_key}S{employee.pk}'
@@ -303,27 +305,13 @@ def send_mass_mail(request):
                 'data': data,
                 'user_reports': user_reports,
             }
-            pdf = None
-            try:
-                html = render_to_string('partials/payslip.html', context)
-                html_mail = weasyprint.HTML(string=html, base_url=request.build_absolute_uri())
-                pdf = html_mail.write_pdf(presentational_hints=True)
-            except Exception as e:
-                logger.debug(f'An error occurred while creating payslip pdf {e.args}')
+            user_payslip_data[employee.user.email] = context
 
-            subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
-            email_to = (employee.user.email,)
-            email = EmailMultiAlternatives(subject=subject,
-                                           body=f'Please find attached your payslip for {payroll_period.month}.\nKindly report to the finance department for any inquires\n\nWarm regards\nFinance Department',
-                                           to=email_to, reply_to=['replyto@noreply.com'],
-                                           from_email=settings.DEFAULT_FROM_EMAIL)
-            email.attach('payslip.pdf', pdf, 'application/pdf')
-            email.mixed_subtype = 'related'
-
-            emails.append(email)
-
-        connection = get_connection()
-        connection.send_messages(emails)
+        mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+        subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
+        body = f'Please find attached your payslip for {payroll_period.month}.\nKindly report to the finance department for any inquires\n\nWarm regards\nFinance Department'
+        template = 'partials/payslip.html'
+        mailer.send_messages(subject, body, template, user_payslip_data, request)
 
         response = {'status': 'success'}
 
