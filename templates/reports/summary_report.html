@@ -39,31 +39,29 @@
                 {% for staff in employees_to_process %}
                     <tr>
                         <td></td>
-                        <td>{{ staff.agresso_number }}</td>
-                        <td>
-                            <a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
-                                {{ staff.user.get_full_name }}
-                            </a>
-                        </td>
-                        <td>{{ staff.job_title }}</td>
-                        {% with period_processes|category_display:1|user_data:staff as user_earnings %}
-                            {% for earning in user_earnings %}
-                                {% for k, amount in earning.items %}
-                                    <td>{{ amount|intcomma }}</td>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endwith %}
                         {% with staff|report:payroll_period as report %}
+                            <td>{{ report.analysis }}</td>
+                            <td>
+                                <a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=staff.pk %}">
+                                    {{ report.employee_name }}
+                                </a>
+                            </td>
+                            <td>{{ report.job_title }}</td>
+                            {% with period_processes|category_display:1|user_data:staff as user_earnings %}
+                                {% for earning in user_earnings %}
+                                    {% for k, amount in earning.items %}
+                                        <td>{{ amount|intcomma }}</td>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endwith %}
                             <td>{{ report.gross_earning|intcomma }}</td>
-                        {% endwith %}
-                        {% with period_processes|category_display:2|user_data:staff as user_deductions %}
-                            {% for deduction in user_deductions %}
-                                {% for k, amount in deduction.items %}
-                                    <td>{{ amount|intcomma }}</td>
+                            {% with period_processes|category_display:2|user_data:staff as user_deductions %}
+                                {% for deduction in user_deductions %}
+                                    {% for k, amount in deduction.items %}
+                                        <td>{{ amount|intcomma }}</td>
+                                    {% endfor %}
                                 {% endfor %}
-                            {% endfor %}
-                        {% endwith %}
-                        {% with staff|report:payroll_period as report %}
+                            {% endwith %}
                             <td>{{ report.total_deductions|intcomma }}</td>
                             <td>{{ report.net_pay|intcomma }}</td>
                         {% endwith %}

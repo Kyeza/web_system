@@ -29,7 +29,7 @@ class SummaryReportUpdateForm(forms.ModelForm):
 
     class Meta:
         model = ExTraSummaryReportInfo
-        fields = ['employee', 'payroll_period', 'total_deductions', 'net_pay', 'gross_earning']
+        exclude = ['key']
 
 
 class ReportGeneratorForm(forms.Form):

@@ -27,13 +27,6 @@ logger = logging.getLogger('payroll')
 @login_required
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-    # cache_key = payroll_period.payroll_key
-    # if cache.get(cache_key):
-    #     context = cache.get(cache_key)
-    # else:
-    #     context = generate_summary_data(payroll_period)
-    #     cache.set(cache_key, context, 180)
-
     context = generate_summary_data(payroll_period)
     return render(request, 'reports/summary_report.html', context)
 
