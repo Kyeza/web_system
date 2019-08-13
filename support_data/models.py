@@ -26,7 +26,7 @@ class Nationality(models.Model):
     country_nationality = models.CharField(max_length=36)
 
     def get_absolute_url(self):
-        return reverse('support_data:nationality-detail-detail', kwargs={'pk': self.pk})
+        return reverse('support_data:nationality-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.country_nationality

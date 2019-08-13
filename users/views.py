@@ -535,7 +535,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station and (employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
+                    if employee.duty_station and (
+                            employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
@@ -1027,3 +1028,14 @@ class CategoryListView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Categories'
         return context
+
+
+class EmployeeMovementsListView(ListView):
+    model = Employee
+    template_name = 'users/employees/employee_movements_listview.html'
+
+    def get_queryset(self):
+        return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
+                                               'department', 'job_title','reports_to', 'contract_type', 'payroll_center',
+                                               'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
+                                               'district').filter(employment_status='Approved').iterator()
