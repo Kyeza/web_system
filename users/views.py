@@ -534,9 +534,11 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 if inst.earning_and_deductions_type.id == 1:
                     inst.amount = employee.gross_salary
                     inst.save(update_fields=['amount'])
+
+                # TODO: not changing hardship when payroll is run again
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station and (
-                            employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
+                    if employee.duty_station and (employee.duty_station.earning_amount is not None) and \
+                            inst.amount != employee.duty_station.earning_amount:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
@@ -1036,6 +1038,6 @@ class EmployeeMovementsListView(ListView):
 
     def get_queryset(self):
         return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
-                                               'department', 'job_title','reports_to', 'contract_type', 'payroll_center',
+                                               'department', 'job_title', 'reports_to', 'contract_type', 'payroll_center',
                                                'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
                                                'district').filter(employment_status='Approved').iterator()

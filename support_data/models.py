@@ -127,3 +127,10 @@ class Tax(models.Model):
 
     def __str__(self):
         return self.country
+
+
+class MovementParameter(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name

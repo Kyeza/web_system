@@ -244,3 +244,15 @@ class EmployeeProject(models.Model):
 
     def __str__(self):
         return f'{self.employee} project'
+
+
+class EmployeeMovements(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, editable=False)
+    employee_name = models.CharField(max_length=300, null=True, blank=True)
+    department = models.CharField(max_length=300, null=True, blank=True)
+    job_title = models.CharField(max_length=300, null=True, blank=True)
+    parameter = models.ForeignKey('support_data.MovementParameter', on_delete=models.PROTECT)
+    move_from = models.CharField(max_length=150, null=True, blank=True)
+    move_to = models.CharField(max_length=150, null=True, blank=True)
+    date = models.DateField(auto_now=True)
+    remarks = models.TextField(null=True, blank=True)
