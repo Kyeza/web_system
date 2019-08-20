@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ form|crispy }}
+                <button type="submit">CREATE</button>
+                <a href="{% url 'users:employee_movements_changelist' %}">CANCEL</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

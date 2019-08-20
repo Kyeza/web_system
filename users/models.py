@@ -246,7 +246,7 @@ class EmployeeProject(models.Model):
         return f'{self.employee} project'
 
 
-class EmployeeMovements(models.Model):
+class EmployeeMovement(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, editable=False)
     employee_name = models.CharField(max_length=300, null=True, blank=True)
     department = models.CharField(max_length=300, null=True, blank=True)

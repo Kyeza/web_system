@@ -8,7 +8,7 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
     EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
     ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation, \
-    ChangeGroupEmployeeListView, EmployeeMovementsListView
+    ChangeGroupEmployeeListView, EmployeeMovementsListView, EmployeeMovementsCreate, ApprovedEmployeeMovementsListView
 
 app_name = 'users'
 urlpatterns = [
@@ -55,5 +55,8 @@ urlpatterns = [
     path('change_user_group/<int:pk>', views.user_change_group, name='user_change_group'),
     path('change/group/', ChangeGroupEmployeeListView.as_view(), name='change_employee_user_group'),
     path('employee/reactivate/<int:pk>', views.reactivate_employee, name='reactivate_employee'),
-    path('employee/movements/', EmployeeMovementsListView.as_view(), name='employee_movements')
+    path('employee/', ApprovedEmployeeMovementsListView.as_view(), name='employee_movements'),
+    path('employee/movements/', EmployeeMovementsListView.as_view(), name='employee_movements_changelist'),
+    path('employee/movements/add/<int:user_id>', EmployeeMovementsCreate.as_view(), name='employee_movements_add'),
+    path('ajax/load_movements', views.load_movements, name='ajax_load_movements')
 ]
