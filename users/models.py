@@ -12,6 +12,7 @@ from .utils import get_image_filename
 
 
 class User(AbstractUser):
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         permissions = [
@@ -58,44 +59,60 @@ class Employee(models.Model):
     user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS, null=True)
     image = models.ImageField(default='default.png', upload_to=get_image_filename, blank=True, null=True)
-    mobile_number = models.CharField(max_length=50, null=True, blank=True)
-    date_of_birth = models.DateField(default=timezone.now, null=True)
+    mobile_number = models.CharField('Mobile No.', max_length=50, null=True, blank=True)
+    date_of_birth = models.DateField('D.O.B', default=timezone.now, null=True)
     sex = models.CharField(max_length=6, choices=GENDER, null=True)
-    id_number = models.CharField(max_length=200, null=True, db_index=True)
-    passport_number = models.CharField(max_length=200, blank=True, null=True)
+    id_number = models.CharField('ID No.', max_length=200, null=True, db_index=True)
+    passport_number = models.CharField('Passport No.', max_length=200, blank=True, null=True)
     home_address = models.CharField(max_length=200, blank=True, null=True)
     residential_address = models.CharField(max_length=200, blank=True, null=True)
     district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True)
-    gross_salary = models.DecimalField(max_digits=12, decimal_places=2, null=True)
-    tin_number = models.CharField(max_length=200, null=True, blank=True)
+    basic_salary = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    tin_number = models.CharField('PIT/TIN', max_length=200, null=True, blank=True)
     nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True)
     grade = models.ForeignKey('support_data.Grade', on_delete=models.SET_NULL, null=True, blank=True)
     duty_station = models.ForeignKey('support_data.DutyStation', on_delete=models.SET_NULL, null=True, blank=True)
     duty_country = models.ForeignKey('support_data.Country', on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey('support_data.Department', on_delete=models.SET_NULL, null=True, blank=True)
-    job_title = models.ForeignKey('support_data.JobTitle', on_delete=models.SET_NULL, null=True, blank=True)
-    reports_to = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                   related_name='reports_to', null=True, blank=True)
-    contract_type = models.ForeignKey('support_data.ContractType', on_delete=models.SET_NULL, null=True, blank=True)
+    job_title = models.ForeignKey('support_data.JobTitle', on_delete=models.SET_NULL, null=True, blank=True,
+                                  verbose_name='Job Title')
+    line_manager = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='reports_to', null=True,
+                                     blank=True)
+    contract_type = models.ForeignKey('support_data.ContractType', on_delete=models.SET_NULL, null=True, blank=True,
+                                      verbose_name='Contract Type')
     contract_expiry = models.DateField(null=True, blank=True)
     appointment_date = models.DateField(default=timezone.now, null=True, blank=True)
-    social_security = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
+    social_security = models.CharField('Security Security', max_length=3, choices=YES_OR_NO_TYPES, null=True,
+                                       blank=True, default=YES_OR_NO_TYPES[1][0])
     payroll_center = models.ForeignKey('payroll.PayrollCenter', on_delete=models.SET_NULL, null=True)
-    bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True, blank=True)
-    bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True, blank=True)
+    bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True,
+                               blank=True, verbose_name='Bank 1')
+    bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True,
+                               blank=True, verbose_name='Bank 2')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, )
-    first_account_number = models.CharField(max_length=200, null=True, blank=True)
-    second_account_number = models.CharField(max_length=200, null=True, blank=True)
-    first_bank_percentage = models.IntegerField(null=True, blank=True, default=0)
-    second_bank_percentage = models.IntegerField(null=True, blank=True, default=0)
-    social_security_number = models.CharField(max_length=200, null=True, blank=True)
+    first_account_number = models.CharField('A/C No.1', max_length=200, null=True, blank=True)
+    second_account_number = models.CharField('A/C No.2', max_length=200, null=True, blank=True)
+    first_bank_percentage = models.IntegerField('Percentage', null=True, blank=True, default=0)
+    second_bank_percentage = models.IntegerField('Percentage', null=True, blank=True, default=0)
+    social_security_number = models.CharField('Social Security No.', max_length=200, null=True, blank=True)
+    nhif_number = models.CharField('NHIF No.', max_length=200, null=True, blank=True)
     currency = models.ForeignKey('payroll.Currency', on_delete=models.SET_NULL, null=True, blank=True)
-    kin_full_name = models.CharField(max_length=250, null=True, blank=True)
-    kin_phone_number = models.CharField(max_length=50, blank=True, null=True)
-    kin_email = models.EmailField(null=True, blank=True)
-    kin_relationship = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True, blank=True)
-    dr_ac_code = models.CharField(max_length=50, null=True, blank=True)
-    cr_ac_code = models.CharField(max_length=50, null=True, blank=True)
+    kin_full_name = models.CharField('Full name', max_length=250, null=True, blank=True)
+    kin_phone_number = models.CharField('Mobile No.', max_length=50, blank=True, null=True)
+    cost_centre = models.ForeignKey('users.CostCentre', on_delete=models.SET_NULL, null=True, blank=True,
+                                    verbose_name='Cost Centre')
+    payment_type = models.ForeignKey('support_data.PaymentType', on_delete=models.SET_NULL, null=True, blank=True,
+                                     verbose_name='Payment Type')
+    medical_insurance_category = models.ForeignKey('support_data.MedicalInsuranceCategory', on_delete=models.SET_NULL,
+                                                   null=True, blank=True, verbose_name='Medical Insurance Category')
+    medical_insurance_number = models.CharField(max_length=200, null=True, blank=True,
+                                                verbose_name='Medical Insurance No.')
+    transferable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
+    kin_email = models.EmailField('Email', null=True, blank=True)
+    kin_relationship = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True, blank=True,
+                                         verbose_name='Relationship')
+    dr_ac_code = models.CharField('DR A/C code', max_length=50, null=True, blank=True)
+    cr_ac_code = models.CharField('CR A/C code', max_length=50, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
@@ -104,7 +121,7 @@ class Employee(models.Model):
         if self.payroll_center is None:
             raise ValidationError("Payroll Canter required.")
 
-        if self.gross_salary is None:
+        if self.basic_salary is None:
             raise ValidationError("Basic salary required.")
 
         if self.first_bank_percentage > 0:

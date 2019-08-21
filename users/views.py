@@ -393,7 +393,7 @@ class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
     def get_queryset(self):
         return Employee.objects \
             .select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country', 'department', 'job_title',
-                            'reports_to', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
+                            'line_manager', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
                             'currency', 'kin_relationship', 'district') \
             .filter(employment_status='Approved').iterator()
 
@@ -411,7 +411,7 @@ class ChangeGroupEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, L
     def get_queryset(self):
         return Employee.objects \
             .select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country', 'department', 'job_title',
-                            'reports_to', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
+                            'line_manager', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
                             'currency', 'kin_relationship', 'district') \
             .filter(employment_status='Approved').iterator()
 

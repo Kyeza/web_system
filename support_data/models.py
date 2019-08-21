@@ -127,3 +127,17 @@ class Tax(models.Model):
 
     def __str__(self):
         return self.country
+
+
+class PaymentType(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class MedicalInsuranceCategory(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name

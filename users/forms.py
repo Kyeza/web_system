@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
+from hr_system.constants import YES_OR_NO_TYPES
 from payroll.models import EarningDeductionType
 from .constants import GENDER, EMP_APPROVE_OR_REJECT
 from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project
@@ -19,9 +20,8 @@ class StaffCreationForm(UserCreationForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name',
-                  'email', 'password1', 'password2',
-                  )
+        fields = ['username', 'first_name', 'last_name', 'middle_name',
+                  'email', 'password1', 'password2']
 
 
 class StaffUpdateForm(forms.ModelForm):
@@ -35,39 +35,18 @@ class StaffUpdateForm(forms.ModelForm):
 
 
 class ProfileCreationForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['first_account_number'].label = "Account Number 1"
-        self.fields['second_account_number'].label = "Account Number 2"
-        self.fields['first_bank_percentage'].label = "Percentage"
-        self.fields['second_bank_percentage'].label = "Percentage"
-        self.fields['kin_full_name'].label = "Full name"
-        self.fields['kin_email'].label = "Email"
-        self.fields['kin_phone_number'].label = "Phone"
-        self.fields['kin_relationship'].label = "Relationship"
-        self.fields['dr_ac_code'].label = "DR A/C code"
-        self.fields['cr_ac_code'].label = "CR A/C code"
-        self.fields['tin_number'].label = "TIN number"
-
-    date_of_birth = forms.DateField(
-        input_formats=['%Y-%m-%d']
-    )
-    sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
-    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=True)
-    appointment_date = forms.DateField(
-        input_formats=['%Y-%m-%d'],
-        initial=timezone.now(),
-        required=False
-    )
-    contract_expiry = forms.DateField(
-        input_formats=['%Y-%m-%d'],
-        required=False
-    )
-
     class Meta:
         model = Employee
         fields = '__all__'
+
+    date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
+    sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=True)
+    appointment_date = forms.DateField(input_formats=['%Y-%m-%d'], initial=timezone.now(), required=False)
+    contract_expiry = forms.DateField(input_formats=['%Y-%m-%d'], required=False)
+    social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False,
+                                        initial=YES_OR_NO_TYPES[1][0])
+    transferable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
 
 
 class ProfileGroupForm(forms.ModelForm):

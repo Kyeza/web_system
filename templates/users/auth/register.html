@@ -66,10 +66,13 @@
                                  aria-labelledby="bio-data-tab">
                                 {{ profile_creation_form.image|as_crispy_field }}
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ user_creation_form.first_name|as_crispy_field }}
                                     </div>
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ user_creation_form.middle_name|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ user_creation_form.last_name|as_crispy_field }}
                                     </div>
                                 </div>
@@ -136,7 +139,7 @@
                                         {{ profile_creation_form.job_title|as_crispy_field }}
                                     </div>
                                     <div class="form-group col-md-4 mb-0">
-                                        {{ profile_creation_form.reports_to|as_crispy_field }}
+                                        {{ profile_creation_form.line_manager|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -160,7 +163,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
-                                        {{ profile_creation_form.gross_salary|as_crispy_field }}
+                                        {{ profile_creation_form.basic_salary|as_crispy_field }}
                                     </div>
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.currency|as_crispy_field }}
@@ -177,21 +180,39 @@
                             <div class="tab-pane fade" id="payroll-info" role="tabpanel"
                                  aria-labelledby="payroll-info-tab">
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_creation_form.social_security|as_crispy_field }}
                                     </div>
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_creation_form.social_security_number|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
-                                        {{ profile_creation_form.agresso_number|as_crispy_field }}
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_creation_form.nhif_number|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_creation_form.agresso_number|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_creation_form.cost_centre|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-4 mb-0">
+                                        {{ profile_creation_form.payment_type|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4 mb-0">
                                         {{ profile_creation_form.payroll_center|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-3 mb-0">
+                                        {{ profile_creation_form.medical_insurance_category|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-3 mb-0">
+                                        {{ profile_creation_form.medical_insurance_number|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-md-2 mb-0">
+                                        {{ profile_creation_form.transferable|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -287,13 +308,15 @@
                 + "@" + last.value.toLowerCase().trim()[0] + "12345";
         }
 
+        $('#id_social_security_number').attr('disabled', true);
+
         $(':radio[name="social_security"]').change(function() {
             let value = $(this).filter(':checked').val();
             console.log(value);
             if(value === 'YES') {
-                $(':input[name="social_security_number"]').attr('disabled', false)
+                $(':input[name="social_security_number"]').attr('disabled', false);
             } else {
-                $(':input[name="social_security_number"]').attr('disabled', true)
+                $(':input[name="social_security_number"]').attr('disabled', true);
             }
         });
 
