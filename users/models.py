@@ -107,6 +107,18 @@ class Employee(models.Model):
                                                    null=True, blank=True, verbose_name='Medical Insurance Category')
     medical_insurance_number = models.CharField(max_length=200, null=True, blank=True,
                                                 verbose_name='Medical Insurance No.')
+    sos_contact_1 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
+    sos_address_1 = models.CharField('Emergency contact name', max_length=250, null=True, blank=True)
+    sos_relationship_1 = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True,
+                                           blank=True, verbose_name='Relationship', related_name='sos_relationship_1')
+    sos_contact_2 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
+    sos_address_2 = models.CharField('Emergency contact name', max_length=250, null=True, blank=True)
+    sos_relationship_2 = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True,
+                                           blank=True, verbose_name='Relationship', related_name='sos_relationship_2')
+    sos_contact_3 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
+    sos_address_3 = models.CharField('Emergency contact name', max_length=250, null=True, blank=True)
+    sos_relationship_3 = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True,
+                                           blank=True, verbose_name='Relationship', related_name='sos_relationship_3')
     transferable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
     kin_email = models.EmailField('Email', null=True, blank=True)
     kin_relationship = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True, blank=True,
