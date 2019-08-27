@@ -6,7 +6,8 @@ from django.views.generic.list import ListView
 
 from payroll.models import EarningDeductionType
 from .forms import DutyStationCreationForm
-from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade
+from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade, \
+    PaymentType
 
 
 class OrganizationCreate(LoginRequiredMixin, CreateView):
@@ -289,3 +290,21 @@ class GradeDetailView(LoginRequiredMixin, DetailView):
 class GradeListView(LoginRequiredMixin, ListView):
     model = Grade
     fields = ['grade', 'description']
+
+
+class PaymentTypeListView(LoginRequiredMixin, ListView):
+    model = PaymentType
+    fields = ['name']
+    success_url = ''
+
+
+class PaymentTypeCreateView(LoginRequiredMixin, CreateView):
+    model = PaymentType
+    fields = ['name']
+    success_url = ''
+
+
+class PaymentTypeUpdateView(LoginRequiredMixin, UpdateView):
+    model = PaymentType
+    fields = ['name']
+    success_url = ''

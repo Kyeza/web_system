@@ -69,7 +69,8 @@ class Employee(models.Model):
     district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True)
     basic_salary = models.DecimalField(max_digits=12, decimal_places=2, null=True)
     tin_number = models.CharField('PIT/TIN', max_length=200, null=True, blank=True)
-    nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True)
+    nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True,
+                                    related_name='employee_nationality')
     grade = models.ForeignKey('support_data.Grade', on_delete=models.SET_NULL, null=True, blank=True)
     duty_station = models.ForeignKey('support_data.DutyStation', on_delete=models.SET_NULL, null=True, blank=True)
     duty_country = models.ForeignKey('support_data.Country', on_delete=models.SET_NULL, null=True, blank=True)
@@ -97,8 +98,6 @@ class Employee(models.Model):
     social_security_number = models.CharField('Social Security No.', max_length=200, null=True, blank=True)
     nhif_number = models.CharField('NHIF No.', max_length=200, null=True, blank=True)
     currency = models.ForeignKey('payroll.Currency', on_delete=models.SET_NULL, null=True, blank=True)
-    kin_full_name = models.CharField('Full name', max_length=250, null=True, blank=True)
-    kin_phone_number = models.CharField('Mobile No.', max_length=50, blank=True, null=True)
     cost_centre = models.ForeignKey('users.CostCentre', on_delete=models.SET_NULL, null=True, blank=True,
                                     verbose_name='Cost Centre')
     payment_type = models.ForeignKey('support_data.PaymentType', on_delete=models.SET_NULL, null=True, blank=True,
@@ -107,22 +106,31 @@ class Employee(models.Model):
                                                    null=True, blank=True, verbose_name='Medical Insurance Category')
     medical_insurance_number = models.CharField(max_length=200, null=True, blank=True,
                                                 verbose_name='Medical Insurance No.')
-    sos_contact_1 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
-    sos_address_1 = models.CharField('Emergency contact name', max_length=250, null=True, blank=True)
+    sos_name_1 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
+    sos_phone_number_1 = models.CharField('Emergency contact Phone No.', max_length=50, blank=True, null=True)
+    sos_address_1 = models.CharField('Emergency contact address', max_length=250, null=True, blank=True)
     sos_relationship_1 = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True,
                                            blank=True, verbose_name='Relationship', related_name='sos_relationship_1')
-    sos_contact_2 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
-    sos_address_2 = models.CharField('Emergency contact name', max_length=250, null=True, blank=True)
+    sos_name_2 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
+    sos_phone_number_2 = models.CharField('Emergency contact Phone No.', max_length=50, blank=True, null=True)
+    sos_address_2 = models.CharField('Emergency contact address', max_length=250, null=True, blank=True)
     sos_relationship_2 = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True,
                                            blank=True, verbose_name='Relationship', related_name='sos_relationship_2')
-    sos_contact_3 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
-    sos_address_3 = models.CharField('Emergency contact name', max_length=250, null=True, blank=True)
+    sos_name_3 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
+    sos_phone_number_3 = models.CharField('Emergency contact Phone No.', max_length=50, blank=True, null=True)
+    sos_address_3 = models.CharField('Emergency contact address', max_length=250, null=True, blank=True)
     sos_relationship_3 = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True,
                                            blank=True, verbose_name='Relationship', related_name='sos_relationship_3')
     transferable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
-    kin_email = models.EmailField('Email', null=True, blank=True)
+    kin_full_name = models.CharField('Full name', max_length=250, null=True, blank=True)
+    kin_phone_number = models.CharField('Mobile numbers', max_length=100, blank=True, null=True)
     kin_relationship = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True, blank=True,
-                                         verbose_name='Relationship')
+                                         verbose_name='Relationship', related_name='kin_relationship')
+    kin_nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True,
+                                        verbose_name='Nationality')
+    kin_passport_number = models.CharField('Passport No.', max_length=200, blank=True, null=True)
+    kin_date_of_birth = models.DateField('Date of birth', null=True, blank=True)
+    kin_address = models.CharField('Address', max_length=250, null=True, blank=True)
     dr_ac_code = models.CharField('DR A/C code', max_length=50, null=True, blank=True)
     cr_ac_code = models.CharField('CR A/C code', max_length=50, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,

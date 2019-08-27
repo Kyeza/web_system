@@ -40,6 +40,7 @@ class ProfileCreationForm(forms.ModelForm):
         fields = '__all__'
 
     date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
+    kin_date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'], required=False, label='Date of Birth')
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=True)
     appointment_date = forms.DateField(input_formats=['%Y-%m-%d'], initial=timezone.now(), required=False)

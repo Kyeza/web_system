@@ -53,7 +53,6 @@ def login_admin(request):
 @never_cache
 @login_required
 @permission_required(('users.add_user', 'users.add_employee'), raise_exception=True)
-@transaction.atomic
 def register_employee(request):
     if request.method == 'POST':
         user_creation_form = StaffCreationForm(request.POST)
@@ -275,7 +274,7 @@ def add_users_for_period(payroll_period, instance):
                                                      earning_and_deductions_category=pc_ed_type
                                                      .ed_type.ed_category,
                                                      earning_and_deductions_type=pc_ed_type.ed_type,
-                                                     amount=instance.employee.gross_salary,
+                                                     amount=instance.employee.basic_salary,
                                                      payroll_period=payroll_period)
                     logger.info(
                         f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
@@ -481,7 +480,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                             'employee__nationality', 'employee__grade', 'employee__duty_station',
                             'employee__duty_country',
-                            'employee__department', 'employee__job_title', 'employee__reports_to',
+                            'employee__department', 'employee__job_title', 'employee__line_manager',
                             'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
                             'employee__bank_2',
                             'employee__category') \
@@ -494,7 +493,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                             'employee__nationality', 'employee__grade', 'employee__duty_station',
                             'employee__duty_country',
-                            'employee__department', 'employee__job_title', 'employee__reports_to',
+                            'employee__department', 'employee__job_title', 'employee__line_manager',
                             'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
                             'employee__bank_2',
                             'employee__category') \
@@ -532,7 +531,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         if ge_data.exists():
             for inst in ge_data.iterator():
                 if inst.earning_and_deductions_type.id == 1:
-                    inst.amount = employee.gross_salary
+                    inst.amount = employee.basic_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
                     if employee.duty_station and (employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
@@ -559,7 +558,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             if lst_rates.exists():
                 for lst_brac in lst_rates.iterator():
                     if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
-                        fixed_lst = lst_brac.fixed_amount / 4
+                        fixed_lst = lst_brac.fixed_amount
                         break
         lst = fixed_lst
 
@@ -582,12 +581,12 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
         # update LST if exists in payroll center
         logger.info(f'Processing for user {employee}: updating LST')
-
-        employee_lst_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=65).first()
-        if employee_paye_processor:
-            employee_lst_processor.amount = lst
-            employee_lst_processor.save(update_fields=['amount'])
+        if process_lst == 'True':
+            employee_lst_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=65).first()
+            if employee_paye_processor:
+                employee_lst_processor.amount = lst
+                employee_lst_processor.save(update_fields=['amount'])
 
         # update Pension if exists in payroll center
         logger.info(f'Processing for user {employee}: updating Pension')
@@ -595,7 +594,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_pension_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=75).first()
         if employee_paye_processor and employee.category_id == 2:
-            employee_pension_processor.amount = employee.gross_salary * Decimal(5 / 100)
+            employee_pension_processor.amount = employee.basic_salary * Decimal(5 / 100)
             employee_pension_processor.save(update_fields=['amount'])
 
         # update Employer Pension if exists in payroll center
@@ -607,7 +606,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
         employer_pension_amt = 0
         if employee.category_id == 2:
-            employer_pension_amt = (employee.gross_salary + arrears.amount) / Decimal(12)
+            employer_pension_amt = (employee.basic_salary + arrears.amount) / Decimal(12)
 
         if employer_pension:
             employer_pension.amount = employer_pension_amt
@@ -662,7 +661,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_accrued_salary_ap = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=72).first()
         if employee_accrued_salary_ap:
-            employee_accrued_salary_ap.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
+            employee_accrued_salary_ap.amount = (employee.basic_salary + arrears.amount) / Decimal(12)
             employee_accrued_salary_ap.save(update_fields=['amount'])
 
         # update accrued salary gl if exists in payroll center
@@ -670,7 +669,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_accrued_salary_gl = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=73).first()
         if employee_accrued_salary_gl:
-            employee_accrued_salary_gl.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
+            employee_accrued_salary_gl.amount = (employee.basic_salary + arrears.amount) / Decimal(12)
             employee_accrued_salary_gl.save(update_fields=['amount'])
 
         # updating NSSF export
