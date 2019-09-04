@@ -8,7 +8,7 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
     EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
     ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation, \
-    ChangeGroupEmployeeListView, EmployeeMovementsListView, EmployeeMovementsCreate
+    ChangeGroupEmployeeListView, EmployeeMovementsListView, EmployeeMovementsCreate, ApprovedEmployeeMovementsListView
 
 app_name = 'users'
 urlpatterns = [

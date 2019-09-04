@@ -1030,6 +1030,18 @@ class CategoryListView(ListView):
         return context
 
 
+class ApprovedEmployeeMovementsListView(ListView):
+    model = Employee
+    template_name = 'users/employees/employee_movements_listview.html'
+
+    def get_queryset(self):
+        return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
+                                               'department', 'job_title', 'reports_to', 'contract_type',
+                                               'payroll_center',
+                                               'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
+                                               'district').filter(employment_status='Approved').iterator()
+
+
 class EmployeeMovementsListView(ListView):
     model = EmployeeMovement
 
