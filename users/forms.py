@@ -29,7 +29,7 @@ class StaffUpdateForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name',
+        fields = ('username', 'first_name', 'last_name', 'middle_name',
                   'email',
                   )
 
@@ -51,7 +51,6 @@ class ProfileCreationForm(forms.ModelForm):
 
 
 class ProfileGroupForm(forms.ModelForm):
-
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False)
 
     class Meta:
@@ -62,21 +61,28 @@ class ProfileGroupForm(forms.ModelForm):
         return super().save(commit)
 
 
-class ProfileUpdateForm(ProfileCreationForm):
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['user_group'].widget.attrs['disabled'] = 'disabled'
 
+    date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
+    kin_date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'], required=False, label='Date of Birth')
+    sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=True)
+    appointment_date = forms.DateField(input_formats=['%Y-%m-%d'], initial=timezone.now(), required=False)
+    contract_expiry = forms.DateField(input_formats=['%Y-%m-%d'], required=False)
+    social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False,
+                                        initial=YES_OR_NO_TYPES[1][0])
+    transferable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False)
-
-    class Meta:
-        model = Employee
-        fields = '__all__'
 
 
 class EmployeeApprovalForm(ProfileCreationForm):
-
     employment_status = forms.ChoiceField(choices=EMP_APPROVE_OR_REJECT, widget=forms.Select(), required=False)
 
     class Meta:

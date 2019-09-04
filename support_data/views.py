@@ -7,7 +7,7 @@ from django.views.generic.list import ListView
 from payroll.models import EarningDeductionType
 from .forms import DutyStationCreationForm
 from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade, \
-    PaymentType
+    TerminationReason
 
 
 class OrganizationCreate(LoginRequiredMixin, CreateView):
@@ -292,19 +292,25 @@ class GradeListView(LoginRequiredMixin, ListView):
     fields = ['grade', 'description']
 
 
-class PaymentTypeListView(LoginRequiredMixin, ListView):
-    model = PaymentType
-    fields = ['name']
-    success_url = ''
+class TerminationReasonCreateView(LoginRequiredMixin, CreateView):
+    model = TerminationReason
+    fields = ['reason']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create Termination Reason'
+        return context
 
 
-class PaymentTypeCreateView(LoginRequiredMixin, CreateView):
-    model = PaymentType
-    fields = ['name']
-    success_url = ''
+class TerminationReasonUpdateView(LoginRequiredMixin, UpdateView):
+    model = TerminationReason
+    fields = ['reason']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Termination Reason'
+        return context
 
 
-class PaymentTypeUpdateView(LoginRequiredMixin, UpdateView):
-    model = PaymentType
-    fields = ['name']
-    success_url = ''
+class TerminationReasonListView(LoginRequiredMixin, ListView):
+    model = TerminationReason

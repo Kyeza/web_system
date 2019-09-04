@@ -129,15 +129,8 @@ class Tax(models.Model):
         return self.country
 
 
-class PaymentType(models.Model):
-    name = models.CharField(max_length=200)
+class TerminationReason(models.Model):
+    reason = models.CharField(max_length=350)
 
     def __str__(self):
-        return self.name
-
-
-class MedicalInsuranceCategory(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
+        return self.reason

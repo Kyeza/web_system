@@ -100,10 +100,22 @@ class Employee(models.Model):
     currency = models.ForeignKey('payroll.Currency', on_delete=models.SET_NULL, null=True, blank=True)
     cost_centre = models.ForeignKey('users.CostCentre', on_delete=models.SET_NULL, null=True, blank=True,
                                     verbose_name='Cost Centre')
-    payment_type = models.ForeignKey('support_data.PaymentType', on_delete=models.SET_NULL, null=True, blank=True,
-                                     verbose_name='Payment Type')
-    medical_insurance_category = models.ForeignKey('support_data.MedicalInsuranceCategory', on_delete=models.SET_NULL,
-                                                   null=True, blank=True, verbose_name='Medical Insurance Category')
+
+    PAYMENT_OPTIONS = (
+        ('BANK', 'BANK'),
+        ('CASH', 'CASH')
+    )
+    payment_type = models.CharField(choices=PAYMENT_OPTIONS, max_length=4, null=True, blank=True)
+    INSURANCE_CATEGORIES = (
+        ('M', 'M'),
+        ('M+1', 'M+1'),
+        ('M+2', 'M+2'),
+        ('M+3', 'M+3'),
+        ('M+4', 'M+4'),
+        ('M+5', 'M+5'),
+        ('M+6', 'M+6')
+    )
+    medical_insurance_category = models.CharField(choices=INSURANCE_CATEGORIES, null=True, blank=True, max_length=5)
     medical_insurance_number = models.CharField(max_length=200, null=True, blank=True,
                                                 verbose_name='Medical Insurance No.')
     sos_name_1 = models.CharField('Emergency contact name', max_length=150, null=True, blank=True)
@@ -202,7 +214,25 @@ class TerminatedEmployees(models.Model):
     exit_date = models.DateField(default=timezone.now, null=True, blank=True)
     days_given = models.PositiveIntegerField(null=True, blank=True)
     employable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
-    reason = models.TextField(null=True, blank=True)
+    reason_for_exit = models.ForeignKey('support_data.TerminationReason', on_delete=models.SET_NULL,
+                                        null=True, blank=True, verbose_name='Reason')
+    liked_most = models.TextField(null=True, blank=True,
+                                  verbose_name='What did you like most about working here?')
+    liked_least = models.TextField(null=True, blank=True,
+                                   verbose_name='What did you like least about working here?')
+    change = models.TextField(null=True, blank=True,
+                              verbose_name='If you could change anything about this organization/your department what would it be?')
+    recommend_org = models.CharField(choices=YES_OR_NO_TYPES, max_length=3, null=True, blank=True)
+    reason_for_no = models.TextField(null=True, blank=True)
+    reason_for_coming_back = models.TextField(null=True, blank=True)
+    RATINGS = (
+        ("1", "1"),
+        ("2", "2"),
+        ("3", "3"),
+        ("4", "4"),
+        ("5", "5"),
+    )
+    rating = models.CharField(choices=RATINGS, max_length=3, verbose_name='Rate the organization', null=True)
 
     def __str__(self):
         return f'{self.employee}'

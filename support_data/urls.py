@@ -8,7 +8,8 @@ from .views import OrganizationCreate, OrganizationListView, OrganizationUpdate,
     DepartmentCreate, DepartmentUpdate, DepartmentDetailView, DepartmentListView, \
     JobTitleCreate, JobTitleUpdate, JobTitleDetailView, JobTitleListView, \
     ContractTypeCreate, ContractTypeUpdate, ContractTypeDetailView, ContractTypeListView, \
-    GradeCreate, GradeUpdate, GradeDetailView, GradeListView
+    GradeCreate, GradeUpdate, GradeDetailView, GradeListView, TerminationReasonCreateView, TerminationReasonUpdateView, \
+    TerminationReasonListView
 
 app_name = 'support_data'
 urlpatterns = [
@@ -49,4 +50,7 @@ urlpatterns = [
     path('grade<int:pk>/edit/', GradeUpdate.as_view(), name='grade-update'),
     path('grades/', GradeListView.as_view(), name='grade-list'),
     path('grade/<int:pk>/', GradeDetailView.as_view(), name='grade-detail'),
+    path('separation_reason/add/', TerminationReasonCreateView.as_view(), name='reason-create'),
+    path('separation_reason<int:pk>/edit/', TerminationReasonUpdateView.as_view(), name='reason-update'),
+    path('separation_reason/', TerminationReasonListView.as_view(), name='reason-list'),
 ]
