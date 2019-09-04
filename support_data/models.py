@@ -134,3 +134,10 @@ class TerminationReason(models.Model):
 
     def __str__(self):
         return self.reason
+
+
+class MovementParameter(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name

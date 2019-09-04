@@ -19,9 +19,10 @@ from django.views.generic.list import ListView
 
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
+from support_data.models import JobTitle
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
-    TerminatedEmployees
+    TerminatedEmployees, EmployeeMovement
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm
 
@@ -534,7 +535,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     inst.amount = employee.basic_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station and (employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
+                    if employee.duty_station and (
+                            employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
@@ -1026,3 +1028,42 @@ class CategoryListView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Categories'
         return context
+
+
+class EmployeeMovementsListView(ListView):
+    model = EmployeeMovement
+
+
+class EmployeeMovementsCreate(CreateView):
+    model = EmployeeMovement
+    form_class = EmployeeMovementForm
+    success_url = 'users:employee_movements_changelist'
+
+    def get_initial(self):
+        data = super().get_initial()
+        employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        data['employee'] = employee
+        data['employee_name'] = employee.user.get_full_name()
+        data['department'] = employee.department.department
+        data['job_title'] = employee.job_title.job_title
+        return data
+
+
+class EmployeeMovementsUpdate(UpdateView):
+    model = EmployeeMovement
+    form_class = EmployeeMovementForm
+    success_url = 'users:employee_movements_changelist'
+
+
+def load_movements(request):
+    parameter_id = int(request.GET.get('parameter'))
+    movements = None
+    if parameter_id == 1:
+        movements = JobTitle.objects.all()
+
+    context = {
+        'movements': movements,
+        'parameter_id': parameter_id
+    }
+
+    return render(request, 'users/movements_dropdown_list_options.html', context)
