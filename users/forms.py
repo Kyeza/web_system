@@ -7,7 +7,8 @@ from django.utils import timezone
 from hr_system.constants import YES_OR_NO_TYPES
 from payroll.models import EarningDeductionType
 from .constants import GENDER, EMP_APPROVE_OR_REJECT
-from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project
+from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project, \
+    EmployeeMovement
 
 
 class LoginForm(forms.Form):
@@ -160,3 +161,12 @@ class ProcessUpdateForm(forms.ModelForm):
     class Meta:
         model = PayrollProcessors
         exclude = ['employee', 'payroll_period', 'earning_and_deductions_category']
+
+
+class EmployeeMovementForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeMovement
+        fields = '__all__'
+
+    move_from = forms.CharField(widget=forms.Select())
+    move_to = forms.CharField(widget=forms.Select())
