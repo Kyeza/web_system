@@ -17,6 +17,15 @@
                 Email PaySlips
             </a>
         </div>
+        <div class="p-2">
+            <a id="approval_button" class="btn btn-success btn-md"
+               href="{% url 'support_data:request-approval' period_id=period.id %}">
+                Send for Approval
+            </a>
+        </div>
+        <div class="p-2 mb-2 mr-auto bg-light rounded">
+            <strong>APPROVAL STATUS</strong>: <span id="approval_status"> </span>
+        </div>
     </div>
     <div class="table-responsive table-container"
          style="font-size: 9px; font-family: TimesNewRoman,'Times New Roman',serif;">
@@ -44,7 +53,6 @@
                 <th>Salary Advance</th>
                 <th>Vehicle Benefit Ded.</th>
                 <th>Total Deductions</th>
-                <th>Other deduction</th>
                 <th>Net Pay</th>
                 <th>Pay Method</th>
             </tr>
@@ -87,7 +95,6 @@
             <tr>
                 <th></th>
                 <th colspan="3" class="font-weight-light text-info text-center">Total:</th>
-                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>

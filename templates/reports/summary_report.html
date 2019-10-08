@@ -7,6 +7,22 @@
         <h5 id="summary_title" class="border-bottom mb-4">
             PAYROLL FOR THE MONTH OF {{ payroll_period.month }} - {{ payroll_period.year }}
         </h5>
+        {% if perms.users.can_approve_payroll_summary %}
+            <div class="d-flex flex-row-reverse">
+                <div class="p-2">
+                    <a class="btn btn-danger btn-md" href="#">
+                        DECLINE
+                    </a>
+                </div>
+                <div class="p-2">
+                    <a class="btn btn-success btn-md"
+                       href="{% url 'support_data:approve_payroll' period_id=payroll_period.id  %}">
+                        APPROVE
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="table-responsive" style="font-size: 9px; font-family: TimesNewRoman,'Times New Roman',serif;">
             <table id="table_id" class="table table-sm table-striped table-bordered w-100">
                 <thead class="thead-dark">

@@ -61,7 +61,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="codes-tab" data-toggle="tab" href="#codes"
-                                   role="tab" aria-controls="codes" aria-selected="false">DR/CR CODES</a>
+                                   role="tab" aria-controls="codes" aria-selected="false">DOCUMENTS</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="infoTabContent">
@@ -247,6 +247,8 @@
                             <div class="tab-pane fade" id="emergency-contact" role="tabpanel"
                                  aria-labelledby="emergency-contact-tab">
                                 <div class="form-row">
+                                    <h5 class="mb-0 mt-2">Contact 1</h5>
+                                    <hr class="w-100 mt-0 col-md-12">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_name_1|as_crispy_field }}
                                     </div>
@@ -258,13 +260,13 @@
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_address_1|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_phone_number_1|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
+                                    <h5 class="mb-0">Contact 2</h5>
+                                    <hr class="w-100 mt-0 col-md-12">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_name_2|as_crispy_field }}
                                     </div>
@@ -276,13 +278,13 @@
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_address_2|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_phone_number_2|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
+                                    <h5 class="mb-0">Contact 3</h5>
+                                    <hr class="w-100 mt-0 col-md-12">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_name_3|as_crispy_field }}
                                     </div>
@@ -294,8 +296,6 @@
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_address_3|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_creation_form.sos_phone_number_3|as_crispy_field }}
                                     </div>
@@ -325,15 +325,12 @@
                                 </div>
                             </div>
 
-                            {#                            DR/CR CODE TABS#}
+                            {#                            DOCS TABS#}
                             <div class="tab-pane fade" id="codes" role="tabpanel"
                                  aria-labelledby="codes-tab">
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
-                                        {{ profile_creation_form.dr_ac_code|as_crispy_field }}
-                                    </div>
-                                    <div class="form-group col-md-6 mb-0">
-                                        {{ profile_creation_form.cr_ac_code|as_crispy_field }}
+                                    <div class="form-group col-md-12 mb-0">
+                                        {{ profile_creation_form.documents|as_crispy_field }}
                                     </div>
                                 </div>
                             </div>

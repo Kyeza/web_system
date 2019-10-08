@@ -1,8 +1,10 @@
 import logging
+import os
 import re
 from builtins import super
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
@@ -28,6 +30,10 @@ from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, Prof
 
 logger = logging.getLogger('payroll')
 
+path = settings.MEDIA_ROOT
+
+def get_user_folder_name(user):
+    return '/{0}_documents'.format(user.username.replace('.', '_'))
 
 @never_cache
 def login_admin(request):
@@ -103,14 +109,6 @@ def profile(request):
         user_update_form = StaffUpdateForm(request.POST, instance=user)
         profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=employee)
 
-        logger.debug(f'user_form.is_valid:{user_update_form.is_valid()}')
-        logger.debug(f'user_form.errors:{user_update_form.errors}')
-        logger.debug(f'user_form.non_field_errors:{user_update_form.non_field_errors}')
-
-        logger.debug(f'profile_form.is_valid:{profile_update_form.is_valid()}')
-        logger.debug(f'profile_form.errors:{profile_update_form.errors}')
-        logger.debug(f'profile_form.non_field_errors:{profile_update_form.non_field_errors}')
-
         if user_update_form.is_valid() and profile_update_form.is_valid():
             logger.info(f'Form updated')
             user_update_form.save()
@@ -121,10 +119,17 @@ def profile(request):
         user_update_form = StaffUpdateForm(instance=user)
         profile_update_form = ProfileUpdateForm(instance=employee)
 
+    try:
+        documents_list = os.listdir(path + get_user_folder_name(user))
+    except FileNotFoundError:
+        documents_list = None
+
     context = {
         'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
+        'documents_list': documents_list,
+        'folder_name': get_user_folder_name(user).replace('/', '').replace('/', ''),
     }
     return render(request, 'users/auth/profile.html', context)
 
@@ -171,10 +176,17 @@ def user_update_profile(request, pk=None):
         user_update_form = StaffUpdateForm(instance=user)
         profile_update_form = ProfileUpdateForm(instance=employee, initial={'user_group': employee.user_group})
 
+    try:
+        documents_list = os.listdir(path + get_user_folder_name(user))
+    except FileNotFoundError:
+        documents_list = None
+
     context = {
         'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
+        'documents_list': documents_list,
+        'folder_name': get_user_folder_name(user).replace('/', ''),
     }
     return render(request, 'users/auth/profile.html', context)
 
@@ -368,10 +380,17 @@ def approve_employee(request, pk=None):
         user_update_form = StaffUpdateForm(instance=profile_user)
         profile_update_form = EmployeeApprovalForm(instance=employee)
 
+    try:
+        documents_list = os.listdir(path + get_user_folder_name(profile_user))
+    except FileNotFoundError:
+        documents_list = None
+
     context = {
         'profile_user': profile_user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
+        'documents_list': documents_list,
+        'folder_name': get_user_folder_name(profile_user).replace('/', '').replace('/', ''),
     }
     return render(request, 'users/employees/_approve_employee.html', context)
 
@@ -1036,7 +1055,7 @@ class ApprovedEmployeeMovementsListView(ListView):
 
     def get_queryset(self):
         return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
-                                               'department', 'job_title', 'reports_to', 'contract_type',
+                                               'department', 'job_title', 'line_manager', 'contract_type',
                                                'payroll_center',
                                                'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
                                                'district').filter(employment_status='Approved').iterator()

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load users_extras %}
 
 {% block content %}
     <form id="registrationForm" class="w-100" method="POST" enctype="multipart/form-data">
@@ -62,7 +63,8 @@
                             <li class="nav-item">
                                 <a class="nav-link" id="emergency-contact-tab" data-toggle="tab"
                                    href="#emergency-contact"
-                                   role="tab" aria-controls="emergency-contact" aria-selected="false">EMERGENCY CONTACTS</a>
+                                   role="tab" aria-controls="emergency-contact" aria-selected="false">EMERGENCY
+                                    CONTACTS</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="next-kin-tab" data-toggle="tab" href="#next-kin"
@@ -70,7 +72,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="codes-tab" data-toggle="tab" href="#codes"
-                                   role="tab" aria-controls="codes" aria-selected="false">DR/CR CODES</a>
+                                   role="tab" aria-controls="codes" aria-selected="false">DOCUMENTS</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="infoTabContent">
@@ -256,6 +258,8 @@
                             <div class="tab-pane fade" id="emergency-contact" role="tabpanel"
                                  aria-labelledby="emergency-contact-tab">
                                 <div class="form-row">
+                                    <h5 class="mb-0 mt-2">Contact 1</h5>
+                                    <hr class="w-100 mt-0 col-md-12">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_name_1|as_crispy_field }}
                                     </div>
@@ -267,13 +271,13 @@
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_address_1|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_phone_number_1|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
+                                    <h5 class="mb-0">Contact 2</h5>
+                                    <hr class="w-100 mt-0 col-md-12">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_name_2|as_crispy_field }}
                                     </div>
@@ -285,13 +289,13 @@
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_address_2|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_phone_number_2|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="form-row">
+                                    <h5 class="mb-0">Contact 3</h5>
+                                    <hr class="w-100 mt-0 col-md-12">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_name_3|as_crispy_field }}
                                     </div>
@@ -303,8 +307,6 @@
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_address_3|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group col-md-6 mb-0">
                                         {{ profile_update_form.sos_phone_number_3|as_crispy_field }}
                                     </div>
@@ -334,15 +336,29 @@
                                 </div>
                             </div>
 
-                            {#                            DR/CR CODE TABS#}
+                            {#                            DOCS TABS#}
                             <div class="tab-pane fade" id="codes" role="tabpanel"
                                  aria-labelledby="codes-tab">
                                 <div class="form-row">
-                                    <div class="form-group col-md-6 mb-0">
-                                        {{ profile_update_form.dr_ac_code|as_crispy_field }}
+                                    <div class="form-group col-md-12 mb-0">
+                                        {{ profile_update_form.documents|as_crispy_field }}
                                     </div>
-                                    <div class="form-group col-md-6 mb-0">
-                                        {{ profile_update_form.cr_ac_code|as_crispy_field }}
+                                    <div class="form-group col-md-12 mb-0">
+                                        <h5 class="mb-0">Uploaded documents</h5>
+                                        <hr class="w-100 mt-0 col-md-12">
+                                        <ul style="list-style-type: none">
+                                            {% if documents_list %}
+                                                {% for document in documents_list %}
+                                                    <li>
+                                                        <a href="{{ request.scheme }}://{{ request.get_host }}/media/{{ folder_name }}/{{ document }}">
+                                                            {{ document }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p class="lead">No documents uploaded yet</p>
+                                            {% endif %}
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -358,7 +374,7 @@
                 <fieldset class="form-group">
                     <h5 class="border-bottom mb-4">User Account Settings</h5>
                     {{ user_update_form.username|as_crispy_field }}
-                    {{ profile_update_form.user_group|as_crispy_field  }}
+                    {{ profile_update_form.user_group|as_crispy_field }}
                     <div class="border p-2 rounded">
                         Employee status: <span class="text-success">{{ profile_user.employee.employment_status }}</span>
                     </div>
@@ -369,10 +385,10 @@
 {% endblock content %}
 {% block scripts %}
     <script>
-        $(':radio[name="social_security"]').change(function() {
+        $(':radio[name="social_security"]').change(function () {
             let value = $(this).filter(':checked').val();
             console.log(value);
-            if(value === 'YES') {
+            if (value === 'YES') {
                 $(':input[name="social_security_number"]').attr('disabled', false)
             } else {
                 $(':input[name="social_security_number"]').attr('disabled', true)

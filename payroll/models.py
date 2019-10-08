@@ -3,6 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from hr_system import settings
 from hr_system.constants import YES_OR_NO_TYPES
@@ -181,3 +182,10 @@ class PayrollPeriod(models.Model):
             ("close_payrollperiod", "Can close payroll period"),
             ("process_payrollperiod", "Can process payroll period"),
         ]
+
+
+class PayrollSummaryApprovals(models.Model):
+    approver_names = models.CharField(max_length=300)
+    payroll_summary = models.CharField(max_length=300)
+    signature = models.CharField(max_length=50, primary_key=True)
+    date_of_approval = models.DateField(default=timezone.now)

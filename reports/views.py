@@ -28,6 +28,7 @@ logger = logging.getLogger('payroll')
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
     context = generate_summary_data(payroll_period)
+
     return render(request, 'reports/summary_report.html', context)
 
 
@@ -311,7 +312,7 @@ def send_mass_mail(request):
         subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
         body = f'Please find attached your payslip for {payroll_period.month}.\nKindly report to the finance department for any inquires\n\nWarm regards\nFinance Department'
         template = 'partials/payslip.html'
-        mailer.send_messages(subject, body, template, user_payslip_data, request)
+        mailer.send_messages(subject, body, user_payslip_data, request, template=template)
 
         response = {'status': 'success'}
 

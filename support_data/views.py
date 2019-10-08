@@ -1,13 +1,19 @@
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
-from payroll.models import EarningDeductionType
+from payroll.models import EarningDeductionType, PayrollPeriod, PayrollSummaryApprovals
+from reports.helpers.mailer import Mailer
+from users.models import Employee
 from .forms import DutyStationCreationForm
 from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade, \
-    TerminationReason
+    TerminationReason, PayrollApprover
 
 
 class OrganizationCreate(LoginRequiredMixin, CreateView):
@@ -314,3 +320,59 @@ class TerminationReasonUpdateView(LoginRequiredMixin, UpdateView):
 
 class TerminationReasonListView(LoginRequiredMixin, ListView):
     model = TerminationReason
+
+
+def send_mail_to_approvers(request, period_id):
+    approvers = PayrollApprover.objects.all()
+    payroll_period = PayrollPeriod.objects.get(pk=period_id)
+
+    approvers_mails = []
+    if approvers.exists():
+        for approver in approvers:
+            approvers_mails.append(approver.approver.email)
+        mailer = Mailer(request.user.email)
+        subject = f'PAYROLL APPROVAL FOR MONTH OF {payroll_period.month}'
+        body = f'Please follow this link (http://127.0.0.1:8000/reports/summary_report/{period_id}) to approve the payroll summary'
+        mailer.send_messages(subject, body, approvers_mails)
+
+    messages.success(request, 'Approval request has been successfully sent')
+    return redirect('reports:generate-reports')
+
+
+def sign_off_payroll_summary(request, period_id):
+    # noinspection PyBroadException
+    approver = None
+    try:
+        approver = request.user.employee.id_number
+    except Exception as e:
+        pass
+
+    payroll_period = PayrollPeriod.objects.get(pk=period_id)
+
+    if approver:
+        signature = f'{payroll_period.payroll_key}{approver}'
+        PayrollSummaryApprovals.objects.create(approver_names=request.user.get_full_name(),
+                                               payroll_summary=payroll_period.payroll_key,
+                                               signature=signature)
+    messages.success(request, f'Approved Payroll for {payroll_period.month} successfully.')
+    return redirect('payroll:payroll-period-update', pk=payroll_period.id)
+
+
+def checkout_for_approval_status(request, period_id):
+    payroll_period = PayrollPeriod.objects.get(pk=period_id)
+    payroll_approvers = PayrollApprover.objects.all()
+    confirmatory_signatures = []
+    for user in payroll_approvers.iterator():
+        signature = f'{payroll_period.payroll_key}{user.approver.employee.id_number}'
+        confirmatory_signatures.append(signature)
+
+    approvals = PayrollSummaryApprovals.objects.filter(payroll_summary__exact=payroll_period.payroll_key).values_list(
+        'signature')
+    current_approvals_signatures = []
+    for approval in approvals.iterator():
+        current_approvals_signatures.append(approval[0])
+
+    if current_approvals_signatures == confirmatory_signatures:
+        return JsonResponse({'status': 'YES'})
+    else:
+        return JsonResponse({'status': 'NO'})

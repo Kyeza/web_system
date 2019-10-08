@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
 from .constants import MARITAL_STATUS, GENDER, EMP_STATUS
-from .utils import get_image_filename
+from .utils import get_image_filename, get_doc_filename
 
 
 class User(AbstractUser):
@@ -19,7 +19,8 @@ class User(AbstractUser):
             ("approve_employee", "Can approve Employee"),
             ("terminate_employee", "Can terminate Employee"),
             ("assign_employee", "Can assign Project"),
-            ("can_change_user_group", "Can change user group")
+            ("can_change_user_group", "Can change user group"),
+            ("can_approve_payroll_summary", "Can approve payroll summary")
         ]
 
     def __str__(self):
@@ -143,11 +144,10 @@ class Employee(models.Model):
     kin_passport_number = models.CharField('Passport No.', max_length=200, blank=True, null=True)
     kin_date_of_birth = models.DateField('Date of birth', null=True, blank=True)
     kin_address = models.CharField('Address', max_length=250, null=True, blank=True)
-    dr_ac_code = models.CharField('DR A/C code', max_length=50, null=True, blank=True)
-    cr_ac_code = models.CharField('CR A/C code', max_length=50, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
+    documents = models.FileField(upload_to=get_doc_filename, blank=True, null=True)
 
     def clean(self):
         if self.payroll_center is None:

@@ -1,11 +1,14 @@
 import datetime
 
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 
 from hr_system.constants import YES_OR_NO_TYPES
 from .constants import TAX_YEAR_CHOICES
 from payroll.models import EarningDeductionType
+from users.models import User
 
 
 class Country(models.Model):
@@ -141,3 +144,18 @@ class MovementParameter(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PayrollApprover (models.Model):
+    approver = models.OneToOneField('users.User', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.approver}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        user_content_type = ContentType.objects.get_for_model(User, for_concrete_model=True)
+        permission = Permission.objects.filter(content_type=user_content_type)\
+            .filter(name='Can approve payroll summary').first()
+        self.approver.user_permissions.add(permission)
+        super().save(force_insert, force_update, using, update_fields)

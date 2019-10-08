@@ -321,6 +321,31 @@
                     }
                 });
             } );
+
+            let myTimerId = 0;
+
+            const alertFunction = () => {
+                let status_check_url = '/support_data/check_approval_status/' + $('.payroll_period').attr('id') + '/';
+                if (document.getElementById("approval_status").innerHTML === "YES") {
+                    console.log('I have finished');
+                    clearInterval(myTimerId);
+                    document.getElementById("approval_button").hidden = true;
+                } else {
+                    document.getElementById("approval_button").hidden = false;
+                    $.get(status_check_url, function (data) {
+                        console.log('I am still checking');
+                        console.log('the data has come: ' + data['status']);
+                        document.getElementById("approval_status").innerHTML = data['status'];
+                    });
+                }
+            };
+
+            if ( document.getElementById("approval_status").innerHTML === " " ||
+                document.getElementById("approval_status").innerHTML === "NO" ) {
+                myTimerId = setInterval( alertFunction, 3000 );
+            }
+
+
         } );
     </script>
 {% endblock scripts %}
