@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.urls import reverse
 
@@ -79,7 +80,8 @@ class ContractType(models.Model):
     contract_type = models.CharField(max_length=150, null=True, blank=True)
     contract_expiry = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
     leave_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
-    leave_days_entitled = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
+    leave_days_entitled = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(30)],
+                                              null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('support_data:contract-type-detail', kwargs={'pk': self.pk})
