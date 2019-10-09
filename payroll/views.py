@@ -227,7 +227,7 @@ class LSTListView(LoginRequiredMixin, ListView):
 
 class BankCreate(LoginRequiredMixin, CreateView):
     model = Bank
-    fields = ['bank', 'branch', 'sort_code',  'description']
+    fields = ['bank', 'branch', 'sort_code',  'bank_code']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
