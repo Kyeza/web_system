@@ -237,7 +237,7 @@ class BankCreate(LoginRequiredMixin, CreateView):
 
 class BankUpdate(LoginRequiredMixin, UpdateView):
     model = Bank
-    fields = ['bank', 'branch', 'sort_code', 'description']
+    fields = ['bank', 'branch', 'sort_code', 'bank_code']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -247,7 +247,6 @@ class BankUpdate(LoginRequiredMixin, UpdateView):
 
 class BankDetailView(LoginRequiredMixin, DetailView):
     model = Bank
-    fields = ['bank', 'branch', 'sort_code', 'description']
 
 
 class BankListView(LoginRequiredMixin, ListView):
