@@ -115,6 +115,9 @@ class Grade(models.Model):
     grade = models.CharField(max_length=100)
     description = models.CharField(max_length=150)
 
+    def get_absolute_url(self):
+        return reverse('support_data:grade-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.grade
 
