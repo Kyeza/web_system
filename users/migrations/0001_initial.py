@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
                 ('first_bank_percentage', models.IntegerField(blank=True, default=0, null=True, verbose_name='Percentage')),
                 ('second_bank_percentage', models.IntegerField(blank=True, default=0, null=True, verbose_name='Percentage')),
                 ('social_security_number', models.CharField(blank=True, max_length=200, null=True, verbose_name='Social Security No.')),
-                ('nhif_number', models.CharField(blank=True, max_length=200, null=True, verbose_name='NHIF No.')),
+                ('nhif_number', models.CharField(blank=True, max_length=200, null=True, verbose_name='NSIF No.')),
                 ('payment_type', models.CharField(blank=True, choices=[('BANK', 'BANK'), ('CASH', 'CASH')], max_length=4, null=True)),
                 ('medical_insurance_category', models.CharField(blank=True, choices=[('M', 'M'), ('M+1', 'M+1'), ('M+2', 'M+2'), ('M+3', 'M+3'), ('M+4', 'M+4'), ('M+5', 'M+5'), ('M+6', 'M+6')], max_length=5, null=True)),
                 ('medical_insurance_number', models.CharField(blank=True, max_length=200, null=True, verbose_name='Medical Insurance No.')),

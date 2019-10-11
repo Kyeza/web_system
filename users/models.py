@@ -97,7 +97,7 @@ class Employee(models.Model):
     first_bank_percentage = models.IntegerField('Percentage', null=True, blank=True, default=0)
     second_bank_percentage = models.IntegerField('Percentage', null=True, blank=True, default=0)
     social_security_number = models.CharField('Social Security No.', max_length=200, null=True, blank=True)
-    nhif_number = models.CharField('NHIF No.', max_length=200, null=True, blank=True)
+    nhif_number = models.CharField('NSIF No.', max_length=200, null=True, blank=True)
     currency = models.ForeignKey('payroll.Currency', on_delete=models.SET_NULL, null=True, blank=True)
     cost_centre = models.ForeignKey('users.CostCentre', on_delete=models.SET_NULL, null=True, blank=True,
                                     verbose_name='Cost Centre')
