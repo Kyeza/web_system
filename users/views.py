@@ -34,7 +34,8 @@ path = settings.MEDIA_ROOT
 
 
 def get_user_folder_name(user):
-    return '/{0}_documents'.format(user.username.replace('.', '_'))
+    folder_name = '/{0}_documents'.format(user.username.replace('.', '_').replace('@', ''))
+    return folder_name
 
 
 @never_cache
