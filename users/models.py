@@ -67,7 +67,7 @@ class Employee(models.Model):
     passport_number = models.CharField('Passport No.', max_length=200, blank=True, null=True)
     home_address = models.CharField(max_length=200, blank=True, null=True)
     residential_address = models.CharField(max_length=200, blank=True, null=True)
-    district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True)
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='State')
     basic_salary = models.DecimalField(max_digits=12, decimal_places=2, null=True)
     tin_number = models.CharField('PIT/TIN', max_length=200, null=True, blank=True)
     nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True,
