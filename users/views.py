@@ -474,7 +474,7 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
         return context
 
 
-def processor(payroll_period, process_with_rate, method='GET', user=None):
+def processor(payroll_period, process_with_rate=None, method='GET', user=None):
     logger.info(f'started payroll process processing')
     response = {}
     payroll_center = payroll_period.payroll_center
@@ -735,7 +735,7 @@ def process_payroll_period(request, pk, user=None):
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
             logger.error(f'Something went wrong {e.args}')
-            response = {'status': f'Failed: {e.args}', 'message': ''}
+            response = {'status': f'Failed: line no: 738: {e.args}', 'message': ''}
             return JsonResponse(response)
         else:
             return JsonResponse(response)
