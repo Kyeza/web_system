@@ -17,6 +17,8 @@
                 {% include 'reports/generated_payslip_report.html' %}
             {% elif report == 'BANK' %}
                 {% include 'reports/generated_bank_report.html' %}
+            {% elif report == 'CASH' %}
+                {% include 'reports/generated_cash_report.html' %}
             {% endif %}
         </div>
     </div>
