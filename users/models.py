@@ -156,17 +156,18 @@ class Employee(models.Model):
         if self.basic_salary is None:
             raise ValidationError("Basic salary required.")
 
-        if self.first_bank_percentage > 0:
-            if self.bank_1 is None:
-                raise ValidationError("Bank 1 required.")
-            if self.first_account_number is None:
-                raise ValidationError("Account 1 required.")
-
-        if self.second_bank_percentage > 0:
-            if self.bank_2 is None:
-                raise ValidationError("Bank 2 required.")
-            if self.second_account_number is None:
-                raise ValidationError("Account 2 required.")
+        # TODO: FIND OUT IF THESE VALIDATIONS ARE ACTUALLY NECESSARY
+        # if self.first_bank_percentage > 0:
+        #     if self.bank_1 is None:
+        #         raise ValidationError("Bank 1 required.")
+        #     if self.first_account_number is None:
+        #         raise ValidationError("Account 1 required.")
+        #
+        # if self.second_bank_percentage > 0:
+        #     if self.bank_2 is None:
+        #         raise ValidationError("Bank 2 required.")
+        #     if self.second_account_number is None:
+        #         raise ValidationError("Account 2 required.")
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

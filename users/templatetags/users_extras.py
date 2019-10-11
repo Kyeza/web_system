@@ -58,10 +58,3 @@ def user_profile(user):
             return None
     except Exception:
         return None
-
-
-@register.filter
-def absolute_url(location):
-    url =  HttpRequest.build_absolute_uri(location)
-    print(url)
-    return url

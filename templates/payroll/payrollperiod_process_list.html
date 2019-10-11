@@ -16,7 +16,7 @@
                     <th>Payroll center</th>
                     <th>Month</th>
                     <th>Year</th>
-                    <th>LST</th>
+                    <th>Current Dollar Rate</th>
                     <th>Action</th>
                     <th>Status</th>
                 </tr>
@@ -31,13 +31,18 @@
                         <td>{{ payroll_period.month }}</td>
                         <td>{{ payroll_period.year }}</td>
                         <td>
-                            <label class="switch">
-                                <input id="process_lst_{{ payroll_period.id }}" type="checkbox">
-                                <span class="slider round"></span>
+{#                            <label class="switch">#}
+{#                                <input id="process_lst_{{ payroll_period.id }}" type="checkbox">#}
+{#                                <span class="slider round"></span>#}
+{#                            </label>#}
+                            <label>
+                                <input class="p-1 rounded dollar-rate" id="{{ payroll_period.id }}" type="number">
                             </label>
                         </td>
                         <td>
-                            <button id="{{ payroll_period.id }}" class="btn btn-sm btn-primary process-payroll">
+                            <button id="{{ payroll_period.id }}" style="color: white"
+                                    class="btn btn-sm btn-primary border-0 process_{{ payroll_period.id }}"
+                                    disabled>
                                 Process
                             </button>
                             <div id="loader{{ payroll_period.id }}"></div>
@@ -100,41 +105,44 @@
                     }
                 }
             });
+            $('.dollar-rate').on('change', function () {
+                let rate = $(this).val();
+                if ( rate.valueOf().length > 0 ) {
+                    $('.process_' + $(this).attr('id')).attr('disabled', false).addClass('active')
+                        .on('click', function () {
+                            let id = $(this).attr('id');
+                            let loaderId = '#loader' + id;
+                            let btnId = '#' + id;
+                            $(btnId).hide();
+                            $(loaderId).addClass('loader');
+                            console.log('Processing....');
 
-            $('.process-payroll').on('click', function () {
-                let id = $(this).attr('id');
-                let loaderId = '#loader'+id;
-                let btnId = '#'+id;
-                $(btnId).hide();
-                $(loaderId).addClass('loader');
-                console.log('Processing....');
+                            let processUrl = '/users/payroll_period/' + id + '/process/';
 
-                let processUrl = '/users/payroll_period/' + id + '/process/';
-                let processLST = document.getElementById('process_lst_'+id);
-                let LSTValue;
-                if (processLST.checked === true) {
-                    LSTValue = 'True'
+                            let data = {
+                                'process_with_rate': rate
+                            };
+
+                            $.post(processUrl, data, function (response) {
+                                $(loaderId).removeClass('loader');
+                                $(btnId).show();
+                                console.log('Am back with');
+                                console.log(response);
+                                if (response.status === 'Failed') {
+                                    console.log(response.message);
+                                } else {
+                                    console.log(response.status);
+                                    window.location.href = '/reports/summary_report/' + id;
+                                }
+                            });
+                        });
+                    console.log(typeof rate);
+                    console.log('enabled: ' + rate);
                 } else {
-                    LSTValue = 'False'
+                    $('.process_' + $(this).attr('id')).removeClass('active').attr('disabled', true);
+                    console.log('disabled');
                 }
-
-                let data = {
-                    'process_lst': LSTValue
-                };
-
-                $.post(processUrl, data, function (response) {
-                    $(loaderId).removeClass('loader');
-                    $(btnId).show();
-                    console.log('Am back with');
-                    console.log(response);
-                    if(response.status === 'Failed') {
-                        console.log(response.message);
-                    }else {
-                        console.log(response.status);
-                        window.location.href = '/reports/summary_report/' + id;
-                    }
-                });
-            })
+            });
         });
     </script>
 {% endblock scripts %}
