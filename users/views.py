@@ -478,6 +478,9 @@ def processor(payroll_period, process_with_rate=None, method='GET', user=None):
     logger.info(f'started payroll process processing')
     response = {}
     payroll_center = payroll_period.payroll_center
+    if process_with_rate:
+        payroll_period.processing_dollar_rate = process_with_rate
+        payroll_period.save()
     users = payroll_center.employee_set.all()
     employees_in_period = set()
     if users.exists() and user is None:
@@ -743,7 +746,7 @@ def process_payroll_period(request, pk, user=None):
     elif request.method == 'GET':
         employee = Employee.objects.get(pk=user)
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        processor(payroll_period, user=employee)
+        processor(payroll_period, process_with_rate=payroll_period.processing_dollar_rate, user=employee)
         # return HttpResponseRedirect(reverse('reports:display-summary-report', args=(payroll_period.id,)))
         return redirect('reports:display-summary-report', payroll_period.id)
 
@@ -1053,7 +1056,6 @@ class EmployeeMovementsListView(ListView):
 class EmployeeMovementsCreate(CreateView):
     model = EmployeeMovement
     form_class = EmployeeMovementForm
-    success_url = 'users:employee_movements_changelist'
 
     def get_initial(self):
         data = super().get_initial()
@@ -1068,14 +1070,15 @@ class EmployeeMovementsCreate(CreateView):
 class EmployeeMovementsUpdate(UpdateView):
     model = EmployeeMovement
     form_class = EmployeeMovementForm
-    success_url = 'users:employee_movements_changelist'
 
 
 def load_movements(request):
     parameter_id = int(request.GET.get('parameter'))
     movements = None
     if parameter_id == 1:
-        movements = JobTitle.objects.all()
+        movements = []
+        for m in JobTitle.objects.all():
+            movements.append(m.job_title)
 
     context = {
         'movements': movements,

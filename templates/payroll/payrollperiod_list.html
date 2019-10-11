@@ -13,6 +13,7 @@
                     <th>Payroll center</th>
                     <th>Month</th>
                     <th>Year</th>
+                    <th>Dollar rate</th>
                     <th>Status</th>
                 </tr>
                 </thead>
@@ -25,6 +26,7 @@
                         <td>{{ payroll_period.payroll_center }}</td>
                         <td>{{ payroll_period.month }}</td>
                         <td>{{ payroll_period.year }}</td>
+                        <td>{{ payroll_period.processing_dollar_rate }}</td>
                         <td>{{ payroll_period.status }}</td>
                     </tr>
                 {% endfor %}

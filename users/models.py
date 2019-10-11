@@ -324,3 +324,6 @@ class EmployeeMovement(models.Model):
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
     remarks = models.TextField(null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('users:employee_movements_changelist')

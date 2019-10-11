@@ -1,6 +1,6 @@
 <option value="">------------</option>
 {% if parameter_id == 1 %}
     {% for movement in movements %}
-        <option value="movement.pk">{{ movement.job_title }}</option>
+        <option value="{{ movement }}">{{ movement }}</option>
     {% endfor %}
 {% endif %}

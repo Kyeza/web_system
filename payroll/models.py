@@ -34,7 +34,7 @@ class EarningDeductionType(models.Model):
         ('OVERTIME', 'OVERTIME'),
         ('PAYE', 'PAYE'),
         ('LOAN', 'LOAN'),
-        (' PAYROLL DEDUCTIONS', 'PAYROLL DEDUCTIONS')
+        ('PAYROLL DEDUCTIONS', 'PAYROLL DEDUCTIONS')
     )
     ed_type = models.CharField(max_length=100, null=True)
     description = models.CharField(max_length=150, null=True, blank=True)
@@ -152,6 +152,7 @@ class PayrollPeriod(models.Model):
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year, db_index=True)
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
     status = models.CharField(max_length=6, default='OPEN')
+    processing_dollar_rate = models.FloatField(null=True, blank=True, verbose_name='Dollar rate')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def to_dict(self):
