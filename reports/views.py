@@ -135,7 +135,7 @@ def generate(payroll_period, report):
         .filter(payroll_period_id=payroll_period.pk).all() \
         .prefetch_related('employee__report', 'employee__report__payroll_period').all()
     if payroll_period:
-        if report == 'BANK' or report == 'SUMMARY':
+        if report == 'SUMMARY':
             results[payroll_period] = PayrollProcessors.objects \
                 .select_related('employee', 'payroll_period', 'payroll_period__payroll_center',
                                 'earning_and_deductions_type',
@@ -144,6 +144,16 @@ def generate(payroll_period, report):
                                 'employee__duty_station', 'employee__currency', 'employee__bank_1', 'employee__bank_2') \
                 .filter(payroll_period_id=payroll_period.pk).all() \
                 .prefetch_related('employee__report', 'employee__report__payroll_period').all()
+        elif report == 'BANK' or report == 'CASH':
+            results[payroll_period] = PayrollProcessors.objects \
+                .select_related('employee', 'payroll_period', 'payroll_period__payroll_center',
+                                'earning_and_deductions_type',
+                                'earning_and_deductions_category', 'employee__user', 'employee__job_title',
+                                'employee__duty_country',
+                                'employee__duty_station', 'employee__currency', 'employee__bank_1', 'employee__bank_2') \
+                .filter(payroll_period_id=payroll_period.pk).all() \
+                .prefetch_related('employee__report', 'employee__report__payroll_period') \
+                .filter(employee__payment_type=report).all()
         elif report == 'LEGER_EXPORT':
             results[payroll_period] = processors.exclude(amount=0)
         elif report == 'LST':

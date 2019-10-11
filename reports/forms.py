@@ -34,8 +34,8 @@ class SummaryReportUpdateForm(forms.ModelForm):
 
 class ReportGeneratorForm(forms.Form):
     REPORTS = (
-        ('NSIF', 'NSIF'),
-        ('PIT', 'PIT'),
+        ('NSSF', 'NSIF'),
+        ('PAYE', 'PIT'),
         ('BANK', 'Bank'),
         ('CASH', 'Cash'),
         ('SUMMARY', 'Summary report/Pay Slip'),
