@@ -140,7 +140,7 @@ class Employee(models.Model):
     kin_relationship = models.ForeignKey('support_data.Relationship', on_delete=models.SET_NULL, null=True, blank=True,
                                          verbose_name='Relationship', related_name='kin_relationship')
     kin_nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True,
-                                        verbose_name='Nationality')
+                                        verbose_name='Nationality', blank=True)
     kin_passport_number = models.CharField('Passport No.', max_length=200, blank=True, null=True)
     kin_date_of_birth = models.DateField('Date of birth', null=True, blank=True)
     kin_address = models.CharField('Address', max_length=250, null=True, blank=True)

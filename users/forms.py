@@ -36,6 +36,11 @@ class StaffUpdateForm(forms.ModelForm):
 
 
 class ProfileCreationForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user_group'].widget.attrs['disabled'] = 'disabled'
+
     class Meta:
         model = Employee
         fields = '__all__'
@@ -74,13 +79,12 @@ class ProfileUpdateForm(forms.ModelForm):
     date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
     kin_date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'], required=False, label='Date of Birth')
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
-    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=True)
+    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=False)
     appointment_date = forms.DateField(input_formats=['%Y-%m-%d'], initial=timezone.now(), required=False)
     contract_expiry = forms.DateField(input_formats=['%Y-%m-%d'], required=False)
     social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False,
                                         initial=YES_OR_NO_TYPES[1][0])
     transferable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
-    user_group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False)
 
 
 class EmployeeApprovalForm(ProfileCreationForm):

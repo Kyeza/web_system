@@ -88,7 +88,7 @@ def register_employee(request):
             return redirect('users:new-employee')
     else:
         user_creation_form = StaffCreationForm()
-        profile_creation_form = ProfileCreationForm()
+        profile_creation_form = ProfileCreationForm(initial={'user_group': Group.objects.get(pk=6)})
 
     context = {
         'title': 'New Employee',
@@ -496,7 +496,7 @@ def processor(payroll_period, process_with_rate, method='GET', user=None):
     else:
         logger.error(f'No Employees in the system')
         response['message'] = 'Something went wrong'
-        response['status'] = 'Failed'
+        response['status'] = 'Failed: No Employees in the system'
 
     if user:
         period_processes = PayrollProcessors.objects \
@@ -534,7 +534,7 @@ def processor(payroll_period, process_with_rate, method='GET', user=None):
         else:
             logger.error(f'Here - > There are currently no Employees for this Payroll Period')
             response['message'] = 'There are currently no Employees for this Payroll Period'
-            response['status'] = 'Failed'
+            response['status'] = 'Failed: There are currently no Employees for this Payroll Period'
     elif len(employees_in_period) == 0:
         logger.error(f'No Employees in the system')
 
@@ -735,7 +735,7 @@ def process_payroll_period(request, pk, user=None):
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
             logger.error(f'Something went wrong {e.args}')
-            response = {'status': 'Failed', 'message': ''}
+            response = {'status': f'Failed: {e.args}', 'message': ''}
             return JsonResponse(response)
         else:
             return JsonResponse(response)
