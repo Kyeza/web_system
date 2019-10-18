@@ -142,12 +142,13 @@ class Employee(models.Model):
     kin_nationality = models.ForeignKey('support_data.Nationality', on_delete=models.SET_NULL, null=True,
                                         verbose_name='Nationality', blank=True)
     kin_passport_number = models.CharField('Passport No.', max_length=200, blank=True, null=True)
-    kin_date_of_birth = models.DateField('Date of birth', null=True, blank=True)
     kin_address = models.CharField('Address', max_length=250, null=True, blank=True)
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     documents = models.FileField(upload_to=get_doc_filename, blank=True, null=True)
+    payment_location = models.ForeignKey('support_data.DutyStation', on_delete=models.SET_NULL, null=True, blank=True,
+                                         related_name='payment_location')
 
     def clean(self):
         if self.payroll_center is None:
@@ -324,6 +325,3 @@ class EmployeeMovement(models.Model):
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
     remarks = models.TextField(null=True, blank=True)
-
-    def get_absolute_url(self):
-        return reverse('users:employee_movements_changelist')

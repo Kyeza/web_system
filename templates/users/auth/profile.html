@@ -350,7 +350,8 @@
                                             {% if documents_list %}
                                                 {% for document in documents_list %}
                                                     <li>
-                                                        <a href="{{ request.scheme }}://{{ request.get_host }}/media/{{ folder_name }}/{{ document }}">
+                                                        <a target="_blank"
+                                                           href="{{ request.scheme }}://{{ request.get_host }}/media/{{ folder_name }}/{{ document }}">
                                                             {{ document }}
                                                         </a>
                                                     </li>

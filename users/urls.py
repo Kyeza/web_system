@@ -60,5 +60,6 @@ urlpatterns = [
     path('employee/', ApprovedEmployeeMovementsListView.as_view(), name='employee_movements'),
     path('employee/movements/', EmployeeMovementsListView.as_view(), name='employee_movements_changelist'),
     path('employee/movements/add/<int:user_id>', EmployeeMovementsCreate.as_view(), name='employee_movements_add'),
-    path('ajax/load_movements', views.load_movements, name='ajax_load_movements')
+    path('ajax/load_movements', views.load_movements, name='ajax_load_movements'),
+    path('ajax/load_current_param', views.load_current_param, name='ajax_load_current')
 ]

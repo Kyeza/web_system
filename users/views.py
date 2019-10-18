@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import json
 from builtins import super
 from decimal import Decimal
 
@@ -10,6 +11,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
+from django.core import serializers
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1056,6 +1058,7 @@ class EmployeeMovementsListView(ListView):
 class EmployeeMovementsCreate(CreateView):
     model = EmployeeMovement
     form_class = EmployeeMovementForm
+    success_url = 'users:employee_movements_changelist'
 
     def get_initial(self):
         data = super().get_initial()
@@ -1066,22 +1069,43 @@ class EmployeeMovementsCreate(CreateView):
         data['job_title'] = employee.job_title.job_title
         return data
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_id'] = self.kwargs.get('user_id')
+        return context
+
 
 class EmployeeMovementsUpdate(UpdateView):
     model = EmployeeMovement
     form_class = EmployeeMovementForm
 
 
-def load_movements(request):
+def load_current_param(request):
     parameter_id = int(request.GET.get('parameter'))
-    movements = None
+    user_id = int(request.GET.get('user_id'))
+    user = Employee.objects.get(pk=user_id)
+    movements_from = None
     if parameter_id == 1:
-        movements = []
-        for m in JobTitle.objects.all():
-            movements.append(m.job_title)
+        movements_from = user.job_title.job_title
 
     context = {
-        'movements': movements,
+        'movements_from': movements_from,
+        'parameter_id': parameter_id
+    }
+
+    return JsonResponse(context)
+
+
+def load_movements(request):
+    parameter_id = int(request.GET.get('parameter'))
+    movements_to = None
+    if parameter_id == 1:
+        movements_to = []
+        for m in JobTitle.objects.all():
+            movements_to.append(m.job_title)
+
+    context = {
+        'movements_to': movements_to,
         'parameter_id': parameter_id
     }
 
