@@ -6,7 +6,7 @@ billiard==3.6.0.0
 bootstrap4==0.1.0
 cairocffi==1.0.2
 CairoSVG==2.3.1
-celery==4.3.0
+celery>=4.0.0
 cffi==1.12.3
 colorama==0.4.1
 cssselect2==0.2.1
