@@ -8,7 +8,8 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
     EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
     ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation, \
-    ChangeGroupEmployeeListView, EmployeeMovementsListView, EmployeeMovementsCreate, ApprovedEmployeeMovementsListView
+    ChangeGroupEmployeeListView, EmployeeMovementsListView, EmployeeMovementsCreate, ApprovedEmployeeMovementsListView, \
+    EnumerationsMovementsCreate, EnumEmployeeMovementsListView
 
 app_name = 'users'
 urlpatterns = [
@@ -61,5 +62,10 @@ urlpatterns = [
     path('employee/movements/', EmployeeMovementsListView.as_view(), name='employee_movements_changelist'),
     path('employee/movements/add/<int:user_id>', EmployeeMovementsCreate.as_view(), name='employee_movements_add'),
     path('ajax/load_movements', views.load_movements, name='ajax_load_movements'),
-    path('ajax/load_current_param', views.load_current_param, name='ajax_load_current')
+    path('ajax/load_current_param', views.load_current_param, name='ajax_load_current'),
+    path('employee/earnings/movements/add/<int:user_id>', EnumerationsMovementsCreate.as_view(),
+         name='employee_movements_add_enums'),
+    path('employee/earning/movements/', EnumEmployeeMovementsListView.as_view(), name='employee_movements_enums'),
+    path('ajax/load_earnings/amount/', views.load_earnings_current_amount, name='ajax_load_current_earning'),
+    path('approve/movement/<int:movement_id>', views.approve_movement, name='approve_movement'),
 ]

@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
 from payroll.models import EarningDeductionType
+from support_data.models import MovementParameter
 from .constants import GENDER, EMP_APPROVE_OR_REJECT
 from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project, \
     EmployeeMovement
@@ -46,7 +47,6 @@ class ProfileCreationForm(forms.ModelForm):
         fields = '__all__'
 
     date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
-    kin_date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'], required=False, label='Date of Birth')
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=False)
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=False)
     appointment_date = forms.DateField(input_formats=['%Y-%m-%d'], initial=timezone.now(), required=False)
@@ -77,7 +77,6 @@ class ProfileUpdateForm(forms.ModelForm):
         self.fields['user_group'].widget.attrs['disabled'] = 'disabled'
 
     date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
-    kin_date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'], required=False, label='Date of Birth')
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
     user_group = forms.ModelChoiceField(queryset=Group.objects.all(), widget=forms.Select(), required=False)
     appointment_date = forms.DateField(input_formats=['%Y-%m-%d'], initial=timezone.now(), required=False)
@@ -170,6 +169,29 @@ class ProcessUpdateForm(forms.ModelForm):
 class EmployeeMovementForm(forms.ModelForm):
     class Meta:
         model = EmployeeMovement
-        fields = '__all__'
+        fields = ['employee_name', 'department', 'job_title', 'parameter', 'move_from', 'move_to', 'remarks']
 
     move_to = forms.CharField(widget=forms.Select())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['parameter'].queryset = MovementParameter.objects.filter(choice__exact=1).all()
+
+
+class EnumerationsMovementForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeMovement
+        fields = '__all__'
+
+    parameter = forms.ModelChoiceField(queryset=MovementParameter.objects.all(), widget=forms.Select(), required=False)
+    earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select(), required=False)
+    move_from = forms.DecimalField(required=False)
+    move_to = forms.DecimalField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['parameter'].queryset = MovementParameter.objects.filter(choice__exact=2).all()
+        self.fields['earnings'].queryset = EarningDeductionType.objects.filter(display_number__lt=7)\
+            .exclude(payrollcentereds__isnull=True).all()
+
+

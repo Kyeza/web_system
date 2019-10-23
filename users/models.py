@@ -321,7 +321,14 @@ class EmployeeMovement(models.Model):
     department = models.CharField(max_length=300, null=True, blank=True)
     job_title = models.CharField(max_length=300, null=True, blank=True)
     parameter = models.ForeignKey('support_data.MovementParameter', on_delete=models.PROTECT)
+    earnings = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.DO_NOTHING, null=True, blank=True)
     move_from = models.CharField(max_length=150, null=True, blank=True)
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
-    remarks = models.TextField(null=True, blank=True)
+    remarks = models.CharField(max_length=400, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('users:employee_movements_changelist')
+
+    def __str__(self):
+        return f'{self.employee_name} - {self.parameter}'

@@ -1,35 +1,28 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="content-section">
-        <h3 class="border-bottom mb-4">Employee Movements</h3>
+        <h3 class="border-bottom mb-4">Earnings Movements</h3>
         <div class="table-responsive-md">
             <table id="table_id" class="table table-sm table-striped table-bordered w-100">
                 <caption class="border-bottom mb-4">Employee Movements</caption>
                 <thead class="thead-dark">
                 <tr>
-                    <th>Employee</th>
-                    <th>Parameter</th>
-                    <th>Move From</th>
-                    <th>Move To</th>
-                    <th>Remarks</th>
-                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Job Title</th>
                     <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for movement in object_list %}
+                {% for employee in object_list %}
                     <tr>
-                        <td>{{ movement.employee.user }}</td>
-                        <td>{{ movement.parameter }}</td>
-                        <td>{{ movement.move_from }}</td>
-                        <td>{{ movement.move_to }}</td>
-                        <td>{{ movement.remarks}}</td>
-                        <td>{{ movement.date }}</td>
-                        <td class="d-flex justify-content-between">
-                            <a class="btn btn-success" href="{% url 'users:approve_movement' movement.id %}">Approve</a>
-                            <a class="btn btn-danger" href="#">Decline</a>
-                        </td>
+                        <td>{{ employee.user.get_full_name }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.job_title }}</td>
+                        <td><a href="{% url 'users:employee_movements_add_enums' user_id=employee.pk %}"
+                               class="btn btn-md btn-primary"> MAKE MOVEMENT</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

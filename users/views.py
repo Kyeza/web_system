@@ -23,12 +23,14 @@ from django.views.generic.list import ListView
 
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates, EarningDeductionType
 from reports.models import ExTraSummaryReportInfo
-from support_data.models import JobTitle, SudaneseTaxRates
+from support_data.models import JobTitle, SudaneseTaxRates, DutyStation, ContractType, Department, Grade
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
     TerminatedEmployees, EmployeeMovement
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
-    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm
+    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm, \
+    EnumerationsMovementForm
+from reports.helpers.mailer import Mailer
 
 logger = logging.getLogger('payroll')
 
@@ -62,6 +64,15 @@ def login_admin(request):
     return render(request, 'users/auth/login.html', {'form': form})
 
 
+def get_staff_emails_for_user_group(group_id):
+    group = Group.objects.get(pk=group_id)
+    staffs = group.user_set.all()
+    to_emails = []
+    for staff in staffs:
+        to_emails.append(staff.email)
+    return to_emails
+
+
 @never_cache
 @login_required
 @permission_required(('users.add_user', 'users.add_employee'), raise_exception=True)
@@ -79,8 +90,18 @@ def register_employee(request):
             user.save()
             user_profile = profile_creation_form.save(commit=False)
             user_profile.user = user
+            user_profile.user_group = Group.objects.get(pk=6)
             user_profile.save()
             user_profile.user_group.user_set.add(user)
+
+            emails = get_staff_emails_for_user_group(8)
+
+            if emails:
+                mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+                subject = 'PAYROLL EMPLOYEE REGISTRATION NOTIFICATION'
+                link = 'http://127.0.0.1:8000/users/new_employee_approval/'
+                body = f'Hello All, \n\nEmployee {user.get_full_name()} has been registered to the  system. \nYou can kindly approve him/her using the following the link below:\n {link}'
+                mailer.send_messages(subject, body, emails)
 
             logger.info(
                 f"Employee: {user.get_full_name()} has been successful" +
@@ -367,7 +388,7 @@ def approve_employee(request, pk=None):
         user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
         profile_update_form = EmployeeApprovalForm(request.POST, request.FILES, instance=employee)
         if user_update_form.is_valid() and profile_update_form.is_valid():
-            user_update_form.save()
+            user = user_update_form.save()
             employee_profile = profile_update_form.save(commit=False)
 
             # change employee status to approved before saving to db and adding them to payroll processors
@@ -378,6 +399,14 @@ def approve_employee(request, pk=None):
             add_user_to_payroll_processor(profile_user)
 
             # logger.info(f'{request.user} approved Employee {employee_profile.user}')
+
+            emails = get_staff_emails_for_user_group(8)
+
+            if emails:
+                mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+                subject = 'PAYROLL EMPLOYEE APPROVAL NOTIFICATION'
+                body = f'Hello All, \n\nEmployee {user.get_full_name()} has been approved.'
+                mailer.send_messages(subject, body, emails)
 
             messages.success(request, f'{employee} has been approved')
             return redirect('users:employee-approval')
@@ -609,8 +638,8 @@ def processor(payroll_period, process_with_rate=None, method='GET', user=None):
         employee_pit_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=61).first()
         if employee_pit_processor:
-            employee_pit_processor .amount = pit
-            employee_pit_processor .save(update_fields=['amount'])
+            employee_pit_processor.amount = pit
+            employee_pit_processor.save(update_fields=['amount'])
 
         # update Pension if exists in payroll center
         logger.info(f'Processing for user {employee}: updating Pension')
@@ -1051,6 +1080,18 @@ class ApprovedEmployeeMovementsListView(ListView):
                                                'district').filter(employment_status='Approved').iterator()
 
 
+class EnumEmployeeMovementsListView(ListView):
+    model = Employee
+    template_name = 'users/employees/employee_movements_listview_enum.html'
+
+    def get_queryset(self):
+        return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
+                                               'department', 'job_title', 'line_manager', 'contract_type',
+                                               'payroll_center',
+                                               'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
+                                               'district').filter(employment_status='Approved').iterator()
+
+
 class EmployeeMovementsListView(ListView):
     model = EmployeeMovement
 
@@ -1058,7 +1099,6 @@ class EmployeeMovementsListView(ListView):
 class EmployeeMovementsCreate(CreateView):
     model = EmployeeMovement
     form_class = EmployeeMovementForm
-    success_url = 'users:employee_movements_changelist'
 
     def get_initial(self):
         data = super().get_initial()
@@ -1074,6 +1114,22 @@ class EmployeeMovementsCreate(CreateView):
         context['user_id'] = self.kwargs.get('user_id')
         return context
 
+    def form_valid(self, form):
+        form_data = form.save(commit=False)
+        form_data.employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        form_data.save()
+
+        staff_emails = get_staff_emails_for_user_group(8)
+
+        if staff_emails:
+            mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+            subject = 'PAYROLL EMPLOYEE MOVEMENT NOTIFICATION'
+            link = 'http://127.0.0.1:8000/users/employee/movements/'
+            body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
+            # TODO: mailer.send_messages(subject, body, staff_emails)
+
+        return redirect('users:employee_movements_changelist', permanent=True)
+
 
 class EmployeeMovementsUpdate(UpdateView):
     model = EmployeeMovement
@@ -1087,6 +1143,18 @@ def load_current_param(request):
     movements_from = None
     if parameter_id == 1:
         movements_from = user.job_title.job_title
+    elif parameter_id == 2:
+        movements_from = user.duty_station.duty_station
+    elif parameter_id == 3:
+        movements_from = user.contract_expiry.strftime('%Y-%m-%d')
+    elif parameter_id == 4:
+        movements_from = user.contract_type.contract_type
+    elif parameter_id == 5:
+        movements_from = user.department.department
+    elif parameter_id == 6:
+        movements_from = user.grade.grade
+    elif parameter_id == 7:
+        movements_from = user.basic_salary
 
     context = {
         'movements_from': movements_from,
@@ -1098,11 +1166,22 @@ def load_current_param(request):
 
 def load_movements(request):
     parameter_id = int(request.GET.get('parameter'))
-    movements_to = None
+    movements_to = []
     if parameter_id == 1:
-        movements_to = []
-        for m in JobTitle.objects.all():
+        for m in JobTitle.objects.iterator():
             movements_to.append(m.job_title)
+    elif parameter_id == 2:
+        for m in DutyStation.objects.iterator():
+            movements_to.append(m.duty_station)
+    elif parameter_id == 4:
+        for m in ContractType.objects.iterator():
+            movements_to.append(m.contract_type)
+    elif parameter_id == 5:
+        for m in Department.objects.iterator():
+            movements_to.append(m.department)
+    elif parameter_id == 6:
+        for m in Grade.objects.iterator():
+            movements_to.append(m.grade)
 
     context = {
         'movements_to': movements_to,
@@ -1110,3 +1189,77 @@ def load_movements(request):
     }
 
     return render(request, 'users/movements_dropdown_list_options.html', context)
+
+
+def load_earnings_current_amount(request):
+    parameter_id = int(request.GET.get('parameter'))
+    user_id = int(request.GET.get('user_id'))
+
+    employee = Employee.objects.get(pk=user_id)
+
+    payroll_period = PayrollPeriod.objects.filter(status__exact='OPEN').all()
+
+    response = {}
+    if payroll_period:
+        for period in payroll_period:
+            period_processors = PayrollProcessors.objects.filter(payroll_period_id=period.id)
+            employee_period_processors = period_processors.filter(employee_id=employee.pk)
+            if employee_period_processors:
+                ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values('amount').first()
+                response = ed_type_amount
+                break
+    else:
+        print("No open payroll periods")
+
+    return JsonResponse(response)
+
+
+class EnumerationsMovementsCreate(CreateView):
+    model = EmployeeMovement
+    form_class = EnumerationsMovementForm
+    template_name = 'users/employeemovement_earnings_form_enums.html'
+
+    def get_initial(self):
+        data = super().get_initial()
+        employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        data['employee'] = employee
+        data['employee_name'] = employee.user.get_full_name()
+        data['department'] = employee.department.department
+        data['job_title'] = employee.job_title.job_title
+        return data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_id'] = self.kwargs.get('user_id')
+        return context
+
+    def form_valid(self, form):
+        form_data = form.save(commit=False)
+        form_data.employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        form_data.save()
+
+        staff_emails = get_staff_emails_for_user_group(8)
+
+        if staff_emails:
+            mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+            subject = 'PAYROLL EMPLOYEE MOVEMENT NOTIFICATION'
+            link = 'http://127.0.0.1:8000/users/employee/movements/'
+            body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
+            # TODO: mailer.send_messages(subject, body, staff_emails)
+
+        return redirect('users:employee_movements_changelist', permanent=True)
+
+
+def approve_movement(request, movement_id):
+    movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee').first()
+    movement_name = f'{movement}'
+
+    if movement.parameter.id == 1:
+        employee = movement.employee
+        new_job_title = JobTitle.objects.filter(job_title__exact=movement.move_to).first()
+        employee.job_title = new_job_title
+        employee.save(update_fields=['job_title'])
+        movement.delete()
+
+    messages.success(request, f'Movement {movement_name} successfully approved')
+    return redirect('users:employee_movements_changelist', permanent=True)

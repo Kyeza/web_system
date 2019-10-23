@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django.contrib.sites',
     'djcelery',
-    'djcelery_email'
+    'djcelery_email',
+    'background_task'
 ]
 
 SITE_ID = 1
@@ -119,7 +120,7 @@ else:
             },
             'NAME': 'payroll_schema',
             'USER': 'root',
-            'PASSWORD': '',
+            'PASSWORD': 'Kam12345',
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }

@@ -146,6 +146,7 @@ class TerminationReason(models.Model):
 
 class MovementParameter(models.Model):
     name = models.CharField(max_length=300)
+    choice = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
