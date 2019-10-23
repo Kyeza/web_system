@@ -187,6 +187,7 @@ class EnumerationsMovementForm(forms.ModelForm):
     earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select(), required=False)
     move_from = forms.DecimalField(required=False)
     move_to = forms.DecimalField(required=False)
+    extra_info = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

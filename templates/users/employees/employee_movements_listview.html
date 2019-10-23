@@ -21,7 +21,7 @@
                         <td>{{ employee.user.get_full_name }}</td>
                         <td>{{ employee.department }}</td>
                         <td>{{ employee.job_title }}</td>
-                        <td><a href="{% url 'users:employee_movements_add' user_id=employee.pk %}"
+                        <td><a href="{% url 'users:employee_movements_add' user_id=employee.pk requester_id=user.id %}"
                                class="btn btn-md btn-primary"> MAKE MOVEMENT</a></td>
                     </tr>
                 {% endfor %}

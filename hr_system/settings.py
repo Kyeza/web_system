@@ -99,7 +99,7 @@ if os.getenv('GAE_APPLICATION', None):
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '/cloudsql/payroll-236416:us-central1:payroll-instance',
             'USER': 'root',
-            'PASSWORD': 'Kam12345',
+            'PASSWORD': '',
             'NAME': 'payroll_schema',
         }
     }

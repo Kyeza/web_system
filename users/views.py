@@ -26,7 +26,7 @@ from reports.models import ExTraSummaryReportInfo
 from support_data.models import JobTitle, SudaneseTaxRates, DutyStation, ContractType, Department, Grade
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
-    TerminatedEmployees, EmployeeMovement
+    TerminatedEmployees, EmployeeMovement, User
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm, \
     EnumerationsMovementForm
@@ -1094,6 +1094,10 @@ class EnumEmployeeMovementsListView(ListView):
 
 class EmployeeMovementsListView(ListView):
     model = EmployeeMovement
+    
+    def get_queryset(self):
+        data = EmployeeMovement.objects.filter(status__exact='SHOW').prefetch_related('employee__user')
+        return data
 
 
 class EmployeeMovementsCreate(CreateView):
@@ -1117,6 +1121,7 @@ class EmployeeMovementsCreate(CreateView):
     def form_valid(self, form):
         form_data = form.save(commit=False)
         form_data.employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        form_data.movement_requester = User.objects.get(pk=self.kwargs.get('requester_id'))
         form_data.save()
 
         staff_emails = get_staff_emails_for_user_group(8)
@@ -1207,6 +1212,7 @@ def load_earnings_current_amount(request):
             if employee_period_processors:
                 ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values('amount').first()
                 response = ed_type_amount
+                response['payroll_period'] = period.payroll_key
                 break
     else:
         print("No open payroll periods")
@@ -1236,6 +1242,7 @@ class EnumerationsMovementsCreate(CreateView):
     def form_valid(self, form):
         form_data = form.save(commit=False)
         form_data.employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        form_data.movement_requester = User.objects.get(pk=self.kwargs.get('requester_id'))
         form_data.save()
 
         staff_emails = get_staff_emails_for_user_group(8)
@@ -1250,16 +1257,73 @@ class EnumerationsMovementsCreate(CreateView):
         return redirect('users:employee_movements_changelist', permanent=True)
 
 
-def approve_movement(request, movement_id):
-    movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee').first()
+def approve_employee_movement(request, movement_id):
+    movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee', 'earnings').first()
     movement_name = f'{movement}'
+    employee = movement.employee
 
     if movement.parameter.id == 1:
-        employee = movement.employee
         new_job_title = JobTitle.objects.filter(job_title__exact=movement.move_to).first()
         employee.job_title = new_job_title
         employee.save(update_fields=['job_title'])
-        movement.delete()
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 2:
+        new_duty_station = DutyStation.objects.filter(duty_station__exact=movement.move_to).first()
+        employee.duty_station = new_duty_station
+        employee.save(update_fields=['duty_station'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 3:
+        # TODO: work on contract extensions
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 4:
+        new_contract_type = ContractType.objects.filter(contract_type__exact=movement.move_to).first()
+        employee.contract_type = new_contract_type
+        employee.save(update_fields=['contract_type'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 5:
+        new_department = Department.objects.filter(department__exact=movement.move_to).first()
+        employee.department = new_department
+        employee.save(update_fields=['department'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 6:
+        new_grade = Grade.objects.filter(grade__exact=movement.move_to).first()
+        employee.grade = new_grade
+        employee.save(update_fields=['grade'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 7:
+        employee.basic_salary = Decimal(movement.move_to)
+        employee.save(update_fields=['basic_salary'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 8:
+        payroll_period = PayrollPeriod.objects.get(payroll_key=movement.extra_info)
+        payroll_key = f'P{payroll_period.id}S{employee.pk}K{movement.earnings.id}'
+        period_processor = PayrollProcessors.objects.get(payroll_key=payroll_key)
+        period_processor.amount = Decimal(movement.move_to)
+        period_processor.save(update_fields=['amount'])
+        employee.basic_salary = Decimal(movement.move_to)
+        employee.save(update_fields=['basic_salary'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
 
     messages.success(request, f'Movement {movement_name} successfully approved')
-    return redirect('users:employee_movements_changelist', permanent=True)
+    return render(request, 'users/employeemovement_list.html')
+
+
+def decline_employee_movement(request, movement_id):
+    movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee', 'earnings').first()
+    movement_name = f'{movement}'
+
+    movement.status = 'DECLINED'
+    movement.save(update_fields=['status'])
+
+    # TODO: send email notification to requester and effected users
+
+    messages.warning(request, f'Movement {movement_name} has been declined!')
+    return render(request, 'users/employeemovement_list.html')

@@ -326,6 +326,9 @@ class EmployeeMovement(models.Model):
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
     remarks = models.CharField(max_length=400, null=True, blank=True)
+    status = models.CharField(max_length=20, blank=True, editable=False, default='SHOW')
+    extra_info = models.CharField(max_length=20, blank=True, null=True)
+    movement_requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, editable=False)
 
     def get_absolute_url(self):
         return reverse('users:employee_movements_changelist')
