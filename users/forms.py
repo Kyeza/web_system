@@ -5,8 +5,8 @@ from django.contrib.auth.models import Group
 from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
-from payroll.models import EarningDeductionType
-from support_data.models import MovementParameter
+from payroll.models import EarningDeductionType, PayrollPeriod
+from support_data.models import MovementParameter, DutyStation
 from .constants import GENDER, EMP_APPROVE_OR_REJECT
 from .models import Employee, TerminatedEmployees, CostCentre, SOF, DEA, EmployeeProject, PayrollProcessors, Project, \
     EmployeeMovement
@@ -54,6 +54,9 @@ class ProfileCreationForm(forms.ModelForm):
     social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False,
                                         initial=YES_OR_NO_TYPES[1][0])
     transferable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
+    assigned_locations = forms.ModelMultipleChoiceField(queryset=DutyStation.objects.all(),
+                                                        widget=forms.CheckboxSelectMultiple(),
+                                                        required=False)
 
 
 class ProfileGroupForm(forms.ModelForm):
@@ -183,16 +186,17 @@ class EnumerationsMovementForm(forms.ModelForm):
         model = EmployeeMovement
         fields = '__all__'
 
-    parameter = forms.ModelChoiceField(queryset=MovementParameter.objects.all(), widget=forms.Select(), required=False)
-    earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select(), required=False)
+    parameter = forms.ModelChoiceField(queryset=MovementParameter.objects.all(), widget=forms.Select())
+    earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select())
+    payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select(), required=False)
     move_from = forms.DecimalField(required=False)
-    move_to = forms.DecimalField(required=False)
-    extra_info = forms.CharField(widget=forms.HiddenInput())
+    move_to = forms.DecimalField(required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['parameter'].queryset = MovementParameter.objects.filter(choice__exact=2).all()
-        self.fields['earnings'].queryset = EarningDeductionType.objects.filter(display_number__lt=7)\
+        self.fields['earnings'].queryset = EarningDeductionType.objects.filter(display_number__lt=7) \
             .exclude(payrollcentereds__isnull=True).all()
-
-
+        self.fields['move_to'].label = 'Change amount to'
+        self.fields['move_from'].label = 'Change amount from'
+        self.fields['payroll_period'].queryset = PayrollPeriod.objects.filter(status='OPEN').all()

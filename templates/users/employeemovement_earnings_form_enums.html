@@ -18,23 +18,52 @@
 
 {% block scripts %}
     <script>
+        let div_period_input = $("#div_id_payroll_period");
+        div_period_input.css("display", "none");
+
         $("#id_earnings").change(function () {
             let form = $("#movementsForm");
             let url = form.attr('data-movement-url');
             let user_id = form.attr('data-user');
             let earnings_id = $(this).val();
+            let amount_from = $("#id_move_from");
+            amount_from.val("");
 
-            $.ajax({
-                url: url,
-                data: {
-                    'parameter': earnings_id,
-                    'user_id': user_id
-                },
-                success: function (data) {
-                    $("#id_move_from").val(data['amount']);
-                    $("#id_extra_info").val(data['payroll_period']);
-                }
-            });
+            let id_val = parseInt(earnings_id);
+            console.log(id_val);
+
+            let data = {
+                'parameter': earnings_id,
+                'user_id': user_id
+            };
+
+            let period_input = $("#id_payroll_period");
+
+            if (id_val > 1) {
+                div_period_input.css("display", "block");
+                period_input.prop("required", "true");
+                period_input.change(function () {
+                    data['period'] = $(this).val();
+                    $.ajax({
+                        url: url,
+                        data: data,
+                        success: function (data) {
+                            amount_from.val(data['amount']);
+                        }
+                    });
+                });
+            } else {
+                $.ajax({
+                    url: url,
+                    data: data,
+                    success: function (data) {
+                        amount_from.val(data['amount']);
+                    }
+                });
+                div_period_input.css("display", "none");
+                period_input.prop("required", "false");
+            }
+
         })
     </script>
 {% endblock scripts %}

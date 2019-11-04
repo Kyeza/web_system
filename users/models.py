@@ -149,6 +149,7 @@ class Employee(models.Model):
     documents = models.FileField(upload_to=get_doc_filename, blank=True, null=True)
     payment_location = models.ForeignKey('support_data.DutyStation', on_delete=models.SET_NULL, null=True, blank=True,
                                          related_name='payment_location')
+    assigned_locations = models.ManyToManyField('support_data.DutyStation', related_name="assigned_locations")
 
     def clean(self):
         if self.payroll_center is None:
@@ -322,16 +323,16 @@ class EmployeeMovement(models.Model):
     job_title = models.CharField(max_length=300, null=True, blank=True)
     parameter = models.ForeignKey('support_data.MovementParameter', on_delete=models.PROTECT)
     earnings = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.DO_NOTHING, null=True, blank=True)
+    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.DO_NOTHING, null=True, blank=True)
     move_from = models.CharField(max_length=150, null=True, blank=True)
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
     remarks = models.CharField(max_length=400, null=True, blank=True)
     status = models.CharField(max_length=20, blank=True, editable=False, default='SHOW')
-    extra_info = models.CharField(max_length=20, blank=True, null=True)
     movement_requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, editable=False)
 
     def get_absolute_url(self):
         return reverse('users:employee_movements_changelist')
 
     def __str__(self):
-        return f'{self.employee_name} - {self.parameter}'
+        return f'{self.parameter.name.capitalize()} Movement for {self.employee_name}'

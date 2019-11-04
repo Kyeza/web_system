@@ -179,7 +179,7 @@ def user_update_profile(request, pk=None):
                 group = Group.objects.get(pk=request.POST.get('user_group'))
                 user_profile.user_group = group
             except Group.DoesNotExist:
-                logger.error(f'UserUpdateView: user {user.username} doesn\'t belong any Group.')
+                logger.error(f"UserUpdateView: user {user.username} doesn't belong any Group.")
 
             user_profile.save()
 
@@ -1201,21 +1201,19 @@ def load_earnings_current_amount(request):
     user_id = int(request.GET.get('user_id'))
 
     employee = Employee.objects.get(pk=user_id)
-
-    payroll_period = PayrollPeriod.objects.filter(status__exact='OPEN').all()
-
     response = {}
-    if payroll_period:
-        for period in payroll_period:
-            period_processors = PayrollProcessors.objects.filter(payroll_period_id=period.id)
-            employee_period_processors = period_processors.filter(employee_id=employee.pk)
-            if employee_period_processors:
-                ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values('amount').first()
-                response = ed_type_amount
-                response['payroll_period'] = period.payroll_key
-                break
+
+    if parameter_id > 1:
+        period_id = int(request.GET.get('period'))
+
+        payroll_period = PayrollPeriod.objects.get(pk=period_id)
+        period_processors = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id)
+        employee_period_processors = period_processors.filter(employee_id=employee.pk)
+        if employee_period_processors:
+            ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values('amount').first()
+            response = ed_type_amount
     else:
-        print("No open payroll periods")
+        response['amount'] = employee.basic_salary
 
     return JsonResponse(response)
 
@@ -1259,7 +1257,7 @@ class EnumerationsMovementsCreate(CreateView):
 
 def approve_employee_movement(request, movement_id):
     movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee', 'earnings').first()
-    movement_name = f'{movement}'
+    movement_name = f'{movement.earnings.ed_type.capitalize() + ", " if movement.earnings else ""}{movement}'
     employee = movement.employee
 
     if movement.parameter.id == 1:
@@ -1302,18 +1300,18 @@ def approve_employee_movement(request, movement_id):
         movement.status = 'APPROVED'
         movement.save(update_fields=['status'])
     elif movement.parameter.id == 8:
-        payroll_period = PayrollPeriod.objects.get(payroll_key=movement.extra_info)
-        payroll_key = f'P{payroll_period.id}S{employee.pk}K{movement.earnings.id}'
+        payroll_key = f'P{movement.payroll_period.id}S{employee.pk}K{movement.earnings.id}'
         period_processor = PayrollProcessors.objects.get(payroll_key=payroll_key)
         period_processor.amount = Decimal(movement.move_to)
         period_processor.save(update_fields=['amount'])
-        employee.basic_salary = Decimal(movement.move_to)
-        employee.save(update_fields=['basic_salary'])
+        if movement.earnings.id == 1:
+            employee.basic_salary = Decimal(movement.move_to)
+            employee.save(update_fields=['basic_salary'])
         movement.status = 'APPROVED'
         movement.save(update_fields=['status'])
 
-    messages.success(request, f'Movement {movement_name} successfully approved')
-    return render(request, 'users/employeemovement_list.html')
+    messages.success(request, f'{movement_name} successfully approved')
+    return redirect('users:employee_movements_changelist')
 
 
 def decline_employee_movement(request, movement_id):

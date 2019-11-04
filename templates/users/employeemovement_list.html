@@ -10,8 +10,9 @@
                 <tr>
                     <th>Employee</th>
                     <th>Parameter</th>
-                    <th>Move From</th>
-                    <th>Move To</th>
+                    <th>Earning</th>
+                    <th>Change From</th>
+                    <th>Change To</th>
                     <th>Remarks</th>
                     <th>Date</th>
                     <th>Action</th>
@@ -22,6 +23,11 @@
                     <tr>
                         <td>{{ movement.employee.user.get_full_name }}</td>
                         <td>{{ movement.parameter }}</td>
+                        {% if movement.earnings %}
+                            <td>{{ movement.earnings }}</td>
+                        {% else %}
+                            <td>N/A</td>
+                        {% endif %}
                         <td>{{ movement.move_from }}</td>
                         <td>{{ movement.move_to }}</td>
                         <td>{{ movement.remarks}}</td>
