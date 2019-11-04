@@ -1,5 +1,6 @@
 from django.urls import path
 
+from . import views
 from .views import OrganizationCreate, OrganizationListView, OrganizationUpdate, OrganizationDetailView, \
     OrganizationDelete, TaxBracketCreate, TaxBracketUpdate, TaxBracketListView, TaxBracketDetailView, \
     CountryOriginCreate, CountryOriginUpdate, CountryOriginDetailView, CountryOriginListView, \
@@ -8,7 +9,8 @@ from .views import OrganizationCreate, OrganizationListView, OrganizationUpdate,
     DepartmentCreate, DepartmentUpdate, DepartmentDetailView, DepartmentListView, \
     JobTitleCreate, JobTitleUpdate, JobTitleDetailView, JobTitleListView, \
     ContractTypeCreate, ContractTypeUpdate, ContractTypeDetailView, ContractTypeListView, \
-    GradeCreate, GradeUpdate, GradeDetailView, GradeListView
+    GradeCreate, GradeUpdate, GradeDetailView, GradeListView, TerminationReasonCreateView, TerminationReasonUpdateView, \
+    TerminationReasonListView, send_mail_to_approvers
 
 app_name = 'support_data'
 urlpatterns = [
@@ -49,4 +51,10 @@ urlpatterns = [
     path('grade<int:pk>/edit/', GradeUpdate.as_view(), name='grade-update'),
     path('grades/', GradeListView.as_view(), name='grade-list'),
     path('grade/<int:pk>/', GradeDetailView.as_view(), name='grade-detail'),
+    path('separation_reason/add/', TerminationReasonCreateView.as_view(), name='reason-create'),
+    path('separation_reason<int:pk>/edit/', TerminationReasonUpdateView.as_view(), name='reason-update'),
+    path('separation_reason/', TerminationReasonListView.as_view(), name='reason-list'),
+    path('send_approval_request/<int:period_id>/', views.send_mail_to_approvers, name='request-approval'),
+    path('approve_payroll/<int:period_id>/', views.sign_off_payroll_summary, name='approve_payroll'),
+    path('check_approval_status/<int:period_id>/', views.checkout_for_approval_status, name='approval_status')
 ]

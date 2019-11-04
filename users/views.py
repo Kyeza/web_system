@@ -1,13 +1,17 @@
 import logging
+import os
 import re
+import json
 from builtins import super
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
+from django.core import serializers
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -17,15 +21,25 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
+from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates, EarningDeductionType
 from reports.models import ExTraSummaryReportInfo
+from support_data.models import JobTitle, SudaneseTaxRates, DutyStation, ContractType, Department, Grade
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
-    TerminatedEmployees
+    TerminatedEmployees, EmployeeMovement, User
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
-    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm
+    EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm, \
+    EnumerationsMovementForm
+from reports.helpers.mailer import Mailer
 
 logger = logging.getLogger('payroll')
+
+path = settings.MEDIA_ROOT
+
+
+def get_user_folder_name(user):
+    folder_name = '/{0}_documents'.format(user.username.replace('.', '_').replace('@', ''))
+    return folder_name
 
 
 @never_cache
@@ -50,10 +64,18 @@ def login_admin(request):
     return render(request, 'users/auth/login.html', {'form': form})
 
 
+def get_staff_emails_for_user_group(group_id):
+    group = Group.objects.get(pk=group_id)
+    staffs = group.user_set.all()
+    to_emails = []
+    for staff in staffs:
+        to_emails.append(staff.email)
+    return to_emails
+
+
 @never_cache
 @login_required
 @permission_required(('users.add_user', 'users.add_employee'), raise_exception=True)
-@transaction.atomic
 def register_employee(request):
     if request.method == 'POST':
         user_creation_form = StaffCreationForm(request.POST)
@@ -68,8 +90,18 @@ def register_employee(request):
             user.save()
             user_profile = profile_creation_form.save(commit=False)
             user_profile.user = user
+            user_profile.user_group = Group.objects.get(pk=6)
             user_profile.save()
             user_profile.user_group.user_set.add(user)
+
+            emails = get_staff_emails_for_user_group(8)
+
+            if emails:
+                mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+                subject = 'PAYROLL EMPLOYEE REGISTRATION NOTIFICATION'
+                link = 'http://127.0.0.1:8000/users/new_employee_approval/'
+                body = f'Hello All, \n\nEmployee {user.get_full_name()} has been registered to the  system. \nYou can kindly approve him/her using the following the link below:\n {link}'
+                mailer.send_messages(subject, body, emails)
 
             logger.info(
                 f"Employee: {user.get_full_name()} has been successful" +
@@ -79,7 +111,7 @@ def register_employee(request):
             return redirect('users:new-employee')
     else:
         user_creation_form = StaffCreationForm()
-        profile_creation_form = ProfileCreationForm()
+        profile_creation_form = ProfileCreationForm(initial={'user_group': Group.objects.get(pk=6)})
 
     context = {
         'title': 'New Employee',
@@ -103,14 +135,6 @@ def profile(request):
         user_update_form = StaffUpdateForm(request.POST, instance=user)
         profile_update_form = ProfileUpdateForm(request.POST, request.FILES, instance=employee)
 
-        logger.debug(f'user_form.is_valid:{user_update_form.is_valid()}')
-        logger.debug(f'user_form.errors:{user_update_form.errors}')
-        logger.debug(f'user_form.non_field_errors:{user_update_form.non_field_errors}')
-
-        logger.debug(f'profile_form.is_valid:{profile_update_form.is_valid()}')
-        logger.debug(f'profile_form.errors:{profile_update_form.errors}')
-        logger.debug(f'profile_form.non_field_errors:{profile_update_form.non_field_errors}')
-
         if user_update_form.is_valid() and profile_update_form.is_valid():
             logger.info(f'Form updated')
             user_update_form.save()
@@ -121,10 +145,17 @@ def profile(request):
         user_update_form = StaffUpdateForm(instance=user)
         profile_update_form = ProfileUpdateForm(instance=employee)
 
+    try:
+        documents_list = os.listdir(path + get_user_folder_name(user))
+    except FileNotFoundError:
+        documents_list = None
+
     context = {
         'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
+        'documents_list': documents_list,
+        'folder_name': get_user_folder_name(user).replace('/', '').replace('/', ''),
     }
     return render(request, 'users/auth/profile.html', context)
 
@@ -148,7 +179,7 @@ def user_update_profile(request, pk=None):
                 group = Group.objects.get(pk=request.POST.get('user_group'))
                 user_profile.user_group = group
             except Group.DoesNotExist:
-                logger.error(f'UserUpdateView: user {user.username} doesn\'t belong any Group.')
+                logger.error(f"UserUpdateView: user {user.username} doesn't belong any Group.")
 
             user_profile.save()
 
@@ -171,10 +202,17 @@ def user_update_profile(request, pk=None):
         user_update_form = StaffUpdateForm(instance=user)
         profile_update_form = ProfileUpdateForm(instance=employee, initial={'user_group': employee.user_group})
 
+    try:
+        documents_list = os.listdir(path + get_user_folder_name(user))
+    except FileNotFoundError:
+        documents_list = None
+
     context = {
         'profile_user': user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
+        'documents_list': documents_list,
+        'folder_name': get_user_folder_name(user).replace('/', ''),
     }
     return render(request, 'users/auth/profile.html', context)
 
@@ -275,7 +313,7 @@ def add_users_for_period(payroll_period, instance):
                                                      earning_and_deductions_category=pc_ed_type
                                                      .ed_type.ed_category,
                                                      earning_and_deductions_type=pc_ed_type.ed_type,
-                                                     amount=instance.employee.gross_salary,
+                                                     amount=instance.employee.basic_salary,
                                                      payroll_period=payroll_period)
                     logger.info(
                         f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
@@ -350,7 +388,7 @@ def approve_employee(request, pk=None):
         user_update_form = StaffUpdateForm(request.POST, instance=profile_user)
         profile_update_form = EmployeeApprovalForm(request.POST, request.FILES, instance=employee)
         if user_update_form.is_valid() and profile_update_form.is_valid():
-            user_update_form.save()
+            user = user_update_form.save()
             employee_profile = profile_update_form.save(commit=False)
 
             # change employee status to approved before saving to db and adding them to payroll processors
@@ -362,16 +400,31 @@ def approve_employee(request, pk=None):
 
             # logger.info(f'{request.user} approved Employee {employee_profile.user}')
 
+            emails = get_staff_emails_for_user_group(8)
+
+            if emails:
+                mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+                subject = 'PAYROLL EMPLOYEE APPROVAL NOTIFICATION'
+                body = f'Hello All, \n\nEmployee {user.get_full_name()} has been approved.'
+                mailer.send_messages(subject, body, emails)
+
             messages.success(request, f'{employee} has been approved')
             return redirect('users:employee-approval')
     else:
         user_update_form = StaffUpdateForm(instance=profile_user)
         profile_update_form = EmployeeApprovalForm(instance=employee)
 
+    try:
+        documents_list = os.listdir(path + get_user_folder_name(profile_user))
+    except FileNotFoundError:
+        documents_list = None
+
     context = {
         'profile_user': profile_user,
         'user_update_form': user_update_form,
         'profile_update_form': profile_update_form,
+        'documents_list': documents_list,
+        'folder_name': get_user_folder_name(profile_user).replace('/', '').replace('/', ''),
     }
     return render(request, 'users/employees/_approve_employee.html', context)
 
@@ -393,7 +446,7 @@ class ApprovedEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, List
     def get_queryset(self):
         return Employee.objects \
             .select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country', 'department', 'job_title',
-                            'reports_to', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
+                            'line_manager', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
                             'currency', 'kin_relationship', 'district') \
             .filter(employment_status='Approved').iterator()
 
@@ -411,7 +464,7 @@ class ChangeGroupEmployeeListView(LoginRequiredMixin, PermissionRequiredMixin, L
     def get_queryset(self):
         return Employee.objects \
             .select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country', 'department', 'job_title',
-                            'reports_to', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
+                            'line_manager', 'contract_type', 'payroll_center', 'bank_1', 'bank_2', 'category',
                             'currency', 'kin_relationship', 'district') \
             .filter(employment_status='Approved').iterator()
 
@@ -452,10 +505,13 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
         return context
 
 
-def processor(payroll_period, process_lst='False', method='GET', user=None):
-    logger.debug(f'started processing')
+def processor(payroll_period, process_with_rate=None, method='GET', user=None):
+    logger.info(f'started payroll process processing')
     response = {}
     payroll_center = payroll_period.payroll_center
+    if process_with_rate:
+        payroll_period.processing_dollar_rate = process_with_rate
+        payroll_period.save()
     users = payroll_center.employee_set.all()
     employees_in_period = set()
     if users.exists() and user is None:
@@ -474,14 +530,14 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     else:
         logger.error(f'No Employees in the system')
         response['message'] = 'Something went wrong'
-        response['status'] = 'Failed'
+        response['status'] = 'Failed: No Employees in the system'
 
     if user:
         period_processes = PayrollProcessors.objects \
             .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                             'employee__nationality', 'employee__grade', 'employee__duty_station',
                             'employee__duty_country',
-                            'employee__department', 'employee__job_title', 'employee__reports_to',
+                            'employee__department', 'employee__job_title', 'employee__line_manager',
                             'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
                             'employee__bank_2',
                             'employee__category') \
@@ -494,7 +550,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             .select_related('employee', 'earning_and_deductions_type', 'earning_and_deductions_category',
                             'employee__nationality', 'employee__grade', 'employee__duty_station',
                             'employee__duty_country',
-                            'employee__department', 'employee__job_title', 'employee__reports_to',
+                            'employee__department', 'employee__job_title', 'employee__line_manager',
                             'employee__contract_type', 'employee__payroll_center', 'employee__bank_1',
                             'employee__bank_2',
                             'employee__category') \
@@ -512,18 +568,26 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         else:
             logger.error(f'Here - > There are currently no Employees for this Payroll Period')
             response['message'] = 'There are currently no Employees for this Payroll Period'
-            response['status'] = 'Failed'
+            response['status'] = 'Failed: There are currently no Employees for this Payroll Period'
     elif len(employees_in_period) == 0:
         logger.error(f'No Employees in the system')
 
-    # getting updated payroll processors in case any employees have been removed
-    # period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
-    paye_rates = PAYERates.objects.all()
-    lst_rates = LSTRates.objects.all()
-
+    logger.info(f'Calculating tax rates according to current dollar rate ({process_with_rate})')
+    current_tax_rates = SudaneseTaxRates.objects.all()
+    if current_tax_rates.exists():
+        for i, tax_bracket in enumerate(current_tax_rates):
+            if i < 2:
+                tax_bracket.actual_usd = round(tax_bracket.upper_ssp_bound / Decimal(process_with_rate))
+            if i == 1:
+                tax_bracket.actual_usd_taxable_amount = round(Decimal(tax_bracket.tax_rate) * tax_bracket.actual_usd)
+            tax_bracket.save()
+    nhif_ed_type = EarningDeductionType.objects.get(pk=32)
+    nhif_ed_type_17 = EarningDeductionType.objects.get(pk=31)
+    accrued_ap = EarningDeductionType.objects.get(pk=72)
+    accrued_gl = EarningDeductionType.objects.get(pk=73)
     for employee in employees_in_period:
         logger.info(f'Processing for user {employee}')
-        gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
+        gross_earnings, total_deductions, pit, net_pay, nhif_8, nhif_17 = 0, 0, 0, 0, 0, 0
         ge_data = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category_id=1).all()
 
@@ -532,70 +596,57 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         if ge_data.exists():
             for inst in ge_data.iterator():
                 if inst.earning_and_deductions_type.id == 1:
-                    inst.amount = employee.gross_salary
+                    inst.amount = employee.basic_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station and (employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
+                    if employee.duty_station and (
+                            employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
                         inst.amount = employee.duty_station.earning_amount
                         inst.save(update_fields=['amount'])
                 gross_earnings += inst.amount
 
-        # calculating PAYE
-        logger.info(f'Processing for user {employee}: calculating PAYE')
-        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
-        for tx_brac in paye_rates.iterator():
-            if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
-                tax_bracket = tx_brac.lower_boundary
-                tax_rate = tx_brac.rate / 100
-                fixed_tax = tx_brac.fixed_amount
-                break
-        paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
-        ge_minus_paye = gross_earnings - paye
+        # calculating NHIF
+        logger.info(f'Processing for user {employee}: calculating NHIF')
+        employee_nhif = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=32).first()
+        if employee_nhif:
+            employee_nhif.amount = round(employee.basic_salary * Decimal(nhif_ed_type.factor))
+            nhif_8 = employee_nhif.amount
+            employee_nhif.save(update_fields=['amount'])
 
-        # calculating LST
-        logger.info(f'Processing for user {employee}: calculating LST')
-        fixed_lst = 0
-        if process_lst == 'True':
-            if lst_rates.exists():
-                for lst_brac in lst_rates.iterator():
-                    if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
-                        fixed_lst = lst_brac.fixed_amount / 4
-                        break
-        lst = fixed_lst
+        # calculating Taxable gross earnings
+        taxable_gross_earnings = gross_earnings - employee_nhif.amount
 
-        # calculating NSSF 5% and 10%
-        logger.info(f'Processing for user {employee}: calculating NSSF')
-        if employee.social_security == 'YES':
-            nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
-            nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
+        # calculating PIT
+        logger.info(f'Processing for user {employee}: calculating PIT')
+
+        rates = []
+        for rate in current_tax_rates.iterator():
+            rates.append(rate)
+
+        if taxable_gross_earnings < rates[0].actual_usd:
+            pit = 0
         else:
-            nssf_5 = 0
-            nssf_10 = 0
+            tax = taxable_gross_earnings - rates[0].actual_usd
+            amount = tax - rates[1].actual_usd
+            if amount > rates[1].actual_usd:
+                amount = amount * Decimal(rates[2].tax_rate)
+            pit = amount + rates[1].actual_usd_taxable_amount
 
-        # update PAYE if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating PAYE')
-        employee_paye_processor = period_processes.filter(employee=employee) \
+        # update PIT if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating PIT')
+        employee_pit_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=61).first()
-        if employee_paye_processor:
-            employee_paye_processor.amount = paye
-            employee_paye_processor.save(update_fields=['amount'])
-
-        # update LST if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating LST')
-
-        employee_lst_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=65).first()
-        if employee_paye_processor:
-            employee_lst_processor.amount = lst
-            employee_lst_processor.save(update_fields=['amount'])
+        if employee_pit_processor:
+            employee_pit_processor.amount = pit
+            employee_pit_processor.save(update_fields=['amount'])
 
         # update Pension if exists in payroll center
         logger.info(f'Processing for user {employee}: updating Pension')
-
         employee_pension_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=75).first()
-        if employee_paye_processor and employee.category_id == 2:
-            employee_pension_processor.amount = employee.gross_salary * Decimal(5 / 100)
+        if employee_pension_processor:
+            employee_pension_processor.amount = employee.basic_salary * Decimal(5 / 100)
             employee_pension_processor.save(update_fields=['amount'])
 
         # update Employer Pension if exists in payroll center
@@ -604,30 +655,18 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             .filter(earning_and_deductions_type_id=76).first()
         arrears = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=11).first()
-
-        employer_pension_amt = 0
-        if employee.category_id == 2:
-            employer_pension_amt = (employee.gross_salary + arrears.amount) / Decimal(12)
-
         if employer_pension:
-            employer_pension.amount = employer_pension_amt
+            employer_pension.amount = (employee.basic_salary + arrears.amount) / Decimal(12)
             employer_pension.save(update_fields=['amount'])
 
-        # update NSSF 10% if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating NSSF 10')
-        employee_nssf_10_processor = period_processes.filter(employee=employee) \
+        # update NSSF 17% if exists in payroll center
+        logger.info(f'Processing for user {employee}: updating NHIF 17%')
+        employee_nhif_17_processor = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=31).first()
-        if employee_nssf_10_processor:
-            employee_nssf_10_processor.amount = nssf_10
-            employee_nssf_10_processor.save(update_fields=['amount'])
-
-        # update NSSF 5%_5 if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating NSSF 5')
-        employee_nssf_5_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=32).first()
-        if employee_nssf_5_processor:
-            employee_nssf_5_processor.amount = nssf_5
-            employee_nssf_5_processor.save(update_fields=['amount'])
+        if employee_nhif_17_processor:
+            employee_nhif_17_processor.amount = gross_earnings * Decimal(nhif_ed_type_17.factor)
+            nhif_17 = employee_nhif_17_processor.amount
+            employee_nhif_17_processor.save(update_fields=['amount'])
 
         tx_data_ded = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_category_id=2).all()
@@ -662,7 +701,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_accrued_salary_ap = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=72).first()
         if employee_accrued_salary_ap:
-            employee_accrued_salary_ap.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
+            employee_accrued_salary_ap.amount = (employee.basic_salary + arrears.amount) / Decimal(accrued_ap.factor)
             employee_accrued_salary_ap.save(update_fields=['amount'])
 
         # update accrued salary gl if exists in payroll center
@@ -670,16 +709,16 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         employee_accrued_salary_gl = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=73).first()
         if employee_accrued_salary_gl:
-            employee_accrued_salary_gl.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
+            employee_accrued_salary_gl.amount = (employee.basic_salary + arrears.amount) / Decimal(accrued_gl.factor)
             employee_accrued_salary_gl.save(update_fields=['amount'])
 
-        # updating NSSF export
-        logger.info(f'Processing for user {employee}: NSSF Export')
-        employee_nssf_export = period_processes.filter(employee=employee) \
+        # updating NHIF export
+        logger.info(f'Processing for user {employee}: NHIF Export')
+        employee_nhif_export = period_processes.filter(employee=employee) \
             .filter(earning_and_deductions_type_id=77).first()
-        if employee_nssf_export:
-            employee_nssf_export.amount = nssf_5 + nssf_10
-            employee_nssf_export.save(update_fields=['amount'])
+        if employee_nhif_export:
+            employee_nhif_export.amount = nhif_8 + nhif_17
+            employee_nhif_export.save(update_fields=['amount'])
 
         try:
             key = f'{payroll_period.payroll_key}S{employee.pk}'
@@ -689,7 +728,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             report.total_deductions = total_deductions
             report.save(update_fields=['net_pay', 'gross_earning', 'total_deductions'])
 
-            response['message'] = 'Successfully process Payroll Period'
+            response['message'] = f'Successfully process Payroll Period with dollar rate of {process_with_rate}'
             response['status'] = 'Success'
             logger.info(f'Successfully processed {employee} Payroll Period')
 
@@ -704,7 +743,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                                             total_deductions=total_deductions)
             report.save()
 
-            response['message'] = 'Successfully process Payroll Period'
+            response['message'] = f'Successfully process Payroll Period with dollar rate of {process_with_rate}'
             response['status'] = 'Success'
             logger.info(f'Successfully processed {employee} Payroll Period')
 
@@ -723,14 +762,14 @@ def process_payroll_period(request, pk, user=None):
     if request.method == 'POST' and request.is_ajax():
         logger.info(f'Starting whole processing process')
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        process_lst = request.POST.get('process_lst')
+        process_with_rate = float(request.POST.get('process_with_rate'))
         try:
-            response = processor(payroll_period, process_lst, 'POST')
+            response = processor(payroll_period, process_with_rate, 'POST')
         except Exception as e:
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
             logger.error(f'Something went wrong {e.args}')
-            response = {'status': 'Failed', 'message': ''}
+            response = {'status': f'Failed: line no: 738: {e.args}', 'message': ''}
             return JsonResponse(response)
         else:
             return JsonResponse(response)
@@ -738,7 +777,7 @@ def process_payroll_period(request, pk, user=None):
     elif request.method == 'GET':
         employee = Employee.objects.get(pk=user)
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        processor(payroll_period, user=employee)
+        processor(payroll_period, process_with_rate=payroll_period.processing_dollar_rate, user=employee)
         # return HttpResponseRedirect(reverse('reports:display-summary-report', args=(payroll_period.id,)))
         return redirect('reports:display-summary-report', payroll_period.id)
 
@@ -1027,3 +1066,262 @@ class CategoryListView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Categories'
         return context
+
+
+class ApprovedEmployeeMovementsListView(ListView):
+    model = Employee
+    template_name = 'users/employees/employee_movements_listview.html'
+
+    def get_queryset(self):
+        return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
+                                               'department', 'job_title', 'line_manager', 'contract_type',
+                                               'payroll_center',
+                                               'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
+                                               'district').filter(employment_status='Approved').iterator()
+
+
+class EnumEmployeeMovementsListView(ListView):
+    model = Employee
+    template_name = 'users/employees/employee_movements_listview_enum.html'
+
+    def get_queryset(self):
+        return Employee.objects.select_related('user', 'nationality', 'grade', 'duty_station', 'duty_country',
+                                               'department', 'job_title', 'line_manager', 'contract_type',
+                                               'payroll_center',
+                                               'bank_1', 'bank_2', 'category', 'currency', 'kin_relationship',
+                                               'district').filter(employment_status='Approved').iterator()
+
+
+class EmployeeMovementsListView(ListView):
+    model = EmployeeMovement
+    
+    def get_queryset(self):
+        data = EmployeeMovement.objects.filter(status__exact='SHOW').prefetch_related('employee__user')
+        return data
+
+
+class EmployeeMovementsCreate(CreateView):
+    model = EmployeeMovement
+    form_class = EmployeeMovementForm
+
+    def get_initial(self):
+        data = super().get_initial()
+        employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        data['employee'] = employee
+        data['employee_name'] = employee.user.get_full_name()
+        data['department'] = employee.department.department
+        data['job_title'] = employee.job_title.job_title
+        return data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_id'] = self.kwargs.get('user_id')
+        return context
+
+    def form_valid(self, form):
+        form_data = form.save(commit=False)
+        form_data.employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        form_data.movement_requester = User.objects.get(pk=self.kwargs.get('requester_id'))
+        form_data.save()
+
+        staff_emails = get_staff_emails_for_user_group(8)
+
+        if staff_emails:
+            mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+            subject = 'PAYROLL EMPLOYEE MOVEMENT NOTIFICATION'
+            link = 'http://127.0.0.1:8000/users/employee/movements/'
+            body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
+            # TODO: mailer.send_messages(subject, body, staff_emails)
+
+        return redirect('users:employee_movements_changelist', permanent=True)
+
+
+class EmployeeMovementsUpdate(UpdateView):
+    model = EmployeeMovement
+    form_class = EmployeeMovementForm
+
+
+def load_current_param(request):
+    parameter_id = int(request.GET.get('parameter'))
+    user_id = int(request.GET.get('user_id'))
+    user = Employee.objects.get(pk=user_id)
+    movements_from = None
+    if parameter_id == 1:
+        movements_from = user.job_title.job_title
+    elif parameter_id == 2:
+        movements_from = user.duty_station.duty_station
+    elif parameter_id == 3:
+        movements_from = user.contract_expiry.strftime('%Y-%m-%d')
+    elif parameter_id == 4:
+        movements_from = user.contract_type.contract_type
+    elif parameter_id == 5:
+        movements_from = user.department.department
+    elif parameter_id == 6:
+        movements_from = user.grade.grade
+    elif parameter_id == 7:
+        movements_from = user.basic_salary
+
+    context = {
+        'movements_from': movements_from,
+        'parameter_id': parameter_id
+    }
+
+    return JsonResponse(context)
+
+
+def load_movements(request):
+    parameter_id = int(request.GET.get('parameter'))
+    movements_to = []
+    if parameter_id == 1:
+        for m in JobTitle.objects.iterator():
+            movements_to.append(m.job_title)
+    elif parameter_id == 2:
+        for m in DutyStation.objects.iterator():
+            movements_to.append(m.duty_station)
+    elif parameter_id == 4:
+        for m in ContractType.objects.iterator():
+            movements_to.append(m.contract_type)
+    elif parameter_id == 5:
+        for m in Department.objects.iterator():
+            movements_to.append(m.department)
+    elif parameter_id == 6:
+        for m in Grade.objects.iterator():
+            movements_to.append(m.grade)
+
+    context = {
+        'movements_to': movements_to,
+        'parameter_id': parameter_id
+    }
+
+    return render(request, 'users/movements_dropdown_list_options.html', context)
+
+
+def load_earnings_current_amount(request):
+    parameter_id = int(request.GET.get('parameter'))
+    user_id = int(request.GET.get('user_id'))
+
+    employee = Employee.objects.get(pk=user_id)
+    response = {}
+
+    if parameter_id > 1:
+        period_id = int(request.GET.get('period'))
+
+        payroll_period = PayrollPeriod.objects.get(pk=period_id)
+        period_processors = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id)
+        employee_period_processors = period_processors.filter(employee_id=employee.pk)
+        if employee_period_processors:
+            ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values('amount').first()
+            response = ed_type_amount
+    else:
+        response['amount'] = employee.basic_salary
+
+    return JsonResponse(response)
+
+
+class EnumerationsMovementsCreate(CreateView):
+    model = EmployeeMovement
+    form_class = EnumerationsMovementForm
+    template_name = 'users/employeemovement_earnings_form_enums.html'
+
+    def get_initial(self):
+        data = super().get_initial()
+        employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        data['employee'] = employee
+        data['employee_name'] = employee.user.get_full_name()
+        data['department'] = employee.department.department
+        data['job_title'] = employee.job_title.job_title
+        return data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_id'] = self.kwargs.get('user_id')
+        return context
+
+    def form_valid(self, form):
+        form_data = form.save(commit=False)
+        form_data.employee = Employee.objects.get(pk=self.kwargs.get('user_id'))
+        form_data.movement_requester = User.objects.get(pk=self.kwargs.get('requester_id'))
+        form_data.save()
+
+        staff_emails = get_staff_emails_for_user_group(8)
+
+        if staff_emails:
+            mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
+            subject = 'PAYROLL EMPLOYEE MOVEMENT NOTIFICATION'
+            link = 'http://127.0.0.1:8000/users/employee/movements/'
+            body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
+            # TODO: mailer.send_messages(subject, body, staff_emails)
+
+        return redirect('users:employee_movements_changelist', permanent=True)
+
+
+def approve_employee_movement(request, movement_id):
+    movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee', 'earnings').first()
+    movement_name = f'{movement.earnings.ed_type.capitalize() + ", " if movement.earnings else ""}{movement}'
+    employee = movement.employee
+
+    if movement.parameter.id == 1:
+        new_job_title = JobTitle.objects.filter(job_title__exact=movement.move_to).first()
+        employee.job_title = new_job_title
+        employee.save(update_fields=['job_title'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 2:
+        new_duty_station = DutyStation.objects.filter(duty_station__exact=movement.move_to).first()
+        employee.duty_station = new_duty_station
+        employee.save(update_fields=['duty_station'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 3:
+        # TODO: work on contract extensions
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 4:
+        new_contract_type = ContractType.objects.filter(contract_type__exact=movement.move_to).first()
+        employee.contract_type = new_contract_type
+        employee.save(update_fields=['contract_type'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 5:
+        new_department = Department.objects.filter(department__exact=movement.move_to).first()
+        employee.department = new_department
+        employee.save(update_fields=['department'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 6:
+        new_grade = Grade.objects.filter(grade__exact=movement.move_to).first()
+        employee.grade = new_grade
+        employee.save(update_fields=['grade'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 7:
+        employee.basic_salary = Decimal(movement.move_to)
+        employee.save(update_fields=['basic_salary'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+    elif movement.parameter.id == 8:
+        payroll_key = f'P{movement.payroll_period.id}S{employee.pk}K{movement.earnings.id}'
+        period_processor = PayrollProcessors.objects.get(payroll_key=payroll_key)
+        period_processor.amount = Decimal(movement.move_to)
+        period_processor.save(update_fields=['amount'])
+        if movement.earnings.id == 1:
+            employee.basic_salary = Decimal(movement.move_to)
+            employee.save(update_fields=['basic_salary'])
+        movement.status = 'APPROVED'
+        movement.save(update_fields=['status'])
+
+    messages.success(request, f'{movement_name} successfully approved')
+    return redirect('users:employee_movements_changelist')
+
+
+def decline_employee_movement(request, movement_id):
+    movement = EmployeeMovement.objects.filter(pk=movement_id).prefetch_related('employee', 'earnings').first()
+    movement_name = f'{movement}'
+
+    movement.status = 'DECLINED'
+    movement.save(update_fields=['status'])
+
+    # TODO: send email notification to requester and effected users
+
+    messages.warning(request, f'Movement {movement_name} has been declined!')
+    return render(request, 'users/employeemovement_list.html')

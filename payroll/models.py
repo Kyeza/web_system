@@ -3,6 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from hr_system import settings
 from hr_system.constants import YES_OR_NO_TYPES
@@ -18,19 +19,22 @@ class EarningDeductionCategory(models.Model):
 
 class EarningDeductionType(models.Model):
     AGGRESSO_TYPES = (
-        ('STAFF ADVANCES', 'STAFF ADVANCES'),
-        ('ACCRUED PAYROLL', 'ACCRUED PAYROLL'),
-        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
         ('STAFF EXPENSES', 'STAFF EXPENSES'),
-        ('SALARY ADVANCES', 'SALARY ADVANCES'),
-        ('PAYE', 'PAYE'),
-        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
-        ('SALARIES', 'SALARIES'),
-        ('OVERTIME', 'OVERTIME'),
-        ('ADDITIONAL SALARY COSTS', 'ADDITIONAL SALARY COSTS'),
-        ('BENEFIT - LIVING ACCOMMODATION', 'BENEFIT - LIVING ACCOMMODATION'),
         ('SEVERANCE PAYMENTS', 'SEVERANCE PAYMENTS'),
+        ('SALARY COSTS', 'SALARY COSTS'),
+        ('SALARIES', 'SALARIES'),
         ('PENSION COSTS', 'PENSION COSTS'),
+        ('STAFF ADVANCES', 'STAFF ADVANCES'),
+        ('EMPLOYEE PENSION', 'EMPLOYEE PENSION'),
+        ('EMPLOYER PENSION', 'EMPLOYER PENSION'),
+        ('HARDSHIP', 'HARDSHIP'),
+        ('ACCRUED PAYROLL', 'ACCRUED PAYROLL'),
+        ('SOCIAL SECURITY', 'SOCIAL SECURITY'),
+        ('SALARY COSTS', 'SALARY COSTS'),
+        ('OVERTIME', 'OVERTIME'),
+        ('PAYE', 'PAYE'),
+        ('LOAN', 'LOAN'),
+        ('PAYROLL DEDUCTIONS', 'PAYROLL DEDUCTIONS')
     )
     ed_type = models.CharField(max_length=100, null=True)
     description = models.CharField(max_length=150, null=True, blank=True)
@@ -148,6 +152,7 @@ class PayrollPeriod(models.Model):
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year, db_index=True)
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
     status = models.CharField(max_length=6, default='OPEN')
+    processing_dollar_rate = models.FloatField(null=True, blank=True, verbose_name='Dollar rate')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def to_dict(self):
@@ -181,3 +186,10 @@ class PayrollPeriod(models.Model):
             ("close_payrollperiod", "Can close payroll period"),
             ("process_payrollperiod", "Can process payroll period"),
         ]
+
+
+class PayrollSummaryApprovals(models.Model):
+    approver_names = models.CharField(max_length=300)
+    payroll_summary = models.CharField(max_length=300)
+    signature = models.CharField(max_length=50, primary_key=True)
+    date_of_approval = models.DateField(default=timezone.now)
