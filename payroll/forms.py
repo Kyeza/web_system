@@ -9,4 +9,4 @@ class PayrollPeriodCreationForm(forms.ModelForm):
 
     class Meta:
         model = PayrollPeriod
-        fields = ['payroll_center', 'month', 'year', 'status']
+        fields = ['payroll_center', 'month', 'year', 'status', 'processing_dollar_rate']

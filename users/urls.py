@@ -8,7 +8,8 @@ from .views import RecruitedEmployeeListView, ApprovedEmployeeListView, \
     SOFListView, DEACreate, DEAUpdate, DEADetailView, DEAListView, EmployeeProjectsListView, \
     EmployeeProjectsDetailView, CategoryCreateView, CategoryDetailView, CategoryUpdateView, CategoryListView, \
     ProjectCreate, ProjectUpdate, ProjectDetailView, ProjectListView, EmployeeProjectCreation, \
-    ChangeGroupEmployeeListView
+    ChangeGroupEmployeeListView, EmployeeMovementsListView, EmployeeMovementsCreate, ApprovedEmployeeMovementsListView, \
+    EnumerationsMovementsCreate, EnumEmployeeMovementsListView
 
 app_name = 'users'
 urlpatterns = [
@@ -16,9 +17,11 @@ urlpatterns = [
     path('profile/', views.profile, name='user-profile'),
     path('<int:pk>/edit_employee/', views.user_update_profile, name='user-detail'),
     path('new_employee_approval/', RecruitedEmployeeListView.as_view(), name='employee-approval'),
-    path('edit_employee/', ApprovedEmployeeListView.as_view(template_name='users/employees/_approved_employee_list.html'),
+    path('edit_employee/',
+         ApprovedEmployeeListView.as_view(template_name='users/employees/_approved_employee_list.html'),
          name='edit-employee'),
-    path('terminate_employee/', ApprovedEmployeeListView.as_view(template_name='users/employees/_terminate_employee_list.html'),
+    path('terminate_employee/',
+         ApprovedEmployeeListView.as_view(template_name='users/employees/_terminate_employee_list.html'),
          name='terminate-employee-list'),
     path('separated_employees/', SeparatedEmployeesListView.as_view(), name='separated-employee'),
     path('rejected_employees/', RejectedEmployeeListView.as_view(), name='rejected-employee-list'),
@@ -55,4 +58,15 @@ urlpatterns = [
     path('change_user_group/<int:pk>', views.user_change_group, name='user_change_group'),
     path('change/group/', ChangeGroupEmployeeListView.as_view(), name='change_employee_user_group'),
     path('employee/reactivate/<int:pk>', views.reactivate_employee, name='reactivate_employee'),
+    path('employee/', ApprovedEmployeeMovementsListView.as_view(), name='employee_movements'),
+    path('employee/movements/', EmployeeMovementsListView.as_view(), name='employee_movements_changelist'),
+    path('employee/movements/add/<int:user_id>/<int:requester_id>/', EmployeeMovementsCreate.as_view(), name='employee_movements_add'),
+    path('ajax/load_movements/', views.load_movements, name='ajax_load_movements'),
+    path('ajax/load_current_param/', views.load_current_param, name='ajax_load_current'),
+    path('employee/earnings/movements/add/<int:user_id>/<int:requester_id>/', EnumerationsMovementsCreate.as_view(),
+         name='employee_movements_add_enums'),
+    path('employee/earning/movements/', EnumEmployeeMovementsListView.as_view(), name='employee_movements_enums'),
+    path('ajax/load_earnings/amount/', views.load_earnings_current_amount, name='ajax_load_current_earning'),
+    path('approve/movement/<int:movement_id>/', views.approve_employee_movement, name='approve_employee_movement'),
+    path('decline/movement/<int:movement_id>/', views.decline_employee_movement, name='decline_employee_movement'),
 ]

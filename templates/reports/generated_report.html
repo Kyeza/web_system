@@ -17,6 +17,8 @@
                 {% include 'reports/generated_payslip_report.html' %}
             {% elif report == 'BANK' %}
                 {% include 'reports/generated_bank_report.html' %}
+            {% elif report == 'CASH' %}
+                {% include 'reports/generated_cash_report.html' %}
             {% endif %}
         </div>
     </div>
@@ -38,6 +40,102 @@
                     'print'
                 ]
             } );
+
+            $('#bank_table_id thead tr').clone(true).appendTo('#bank_table_id thead');
+            $('#bank_table_id thead tr:eq(1) th').each(function (i) {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+
+                $('input', this).on('keyup change', function () {
+                    if (bankTable.column(i).search() !== this.value) {
+                        bankTable
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+
+            let bankTable = $('#bank_table_id').DataTable({
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                orderCellsTop: true,
+                fixedHeader: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                    },
+                    'print'
+                ]
+            });
+
+            $('#cash_table_id thead tr').clone(true).appendTo('#cash_table_id thead');
+            $('#cash_table_id thead tr:eq(1) th').each(function (i) {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+
+                $('input', this).on('keyup change', function () {
+                    if (cashTable.column(i).search() !== this.value) {
+                        cashTable
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+
+            let cashTable = $('#cash_table_id').DataTable({
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                orderCellsTop: true,
+                fixedHeader: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                    },
+                    'print'
+                ]
+            });
+
+            $('#paye_table_id thead tr').clone(true).appendTo('#paye_table_id thead');
+            $('#paye_table_id thead tr:eq(1) th').each(function (i) {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+
+                $('input', this).on('keyup change', function () {
+                    if (payeTable.column(i).search() !== this.value) {
+                        payeTable
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+
+            let payeTable = $('#paye_table_id').DataTable({
+                dom: 'lBfrtip',
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: true,
+                paging: true,
+                orderCellsTop: true,
+                fixedHeader: true,
+                buttons: [
+                    'copy', 'csv', 'excel',
+                    {
+                        extend: 'pdfHtml5',
+                    },
+                    'print'
+                ]
+            });
 
             $('#leger_id').DataTable( {
                 dom: 'lBfrtip',
@@ -321,6 +419,31 @@
                     }
                 });
             } );
+
+            let myTimerId = 0;
+
+            const alertFunction = () => {
+                let status_check_url = '/support_data/check_approval_status/' + $('.payroll_period').attr('id') + '/';
+                if (document.getElementById("approval_status").innerHTML === "YES") {
+                    console.log('I have finished');
+                    clearInterval(myTimerId);
+                    document.getElementById("approval_button").hidden = true;
+                } else {
+                    document.getElementById("approval_button").hidden = false;
+                    $.get(status_check_url, function (data) {
+                        console.log('I am still checking');
+                        console.log('the data has come: ' + data['status']);
+                        document.getElementById("approval_status").innerHTML = data['status'];
+                    });
+                }
+            };
+
+            if ( document.getElementById("approval_status").innerHTML === " " ||
+                document.getElementById("approval_status").innerHTML === "NO" ) {
+                myTimerId = setInterval( alertFunction, 3000 );
+            }
+
+
         } );
     </script>
 {% endblock scripts %}

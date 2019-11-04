@@ -12,11 +12,8 @@ import sys
 
 from django.core.wsgi import get_wsgi_application
 
-from django.conf import settings
-
-if not settings.DEBUG:
-    sys.path.append('C:/Users/administrator.SCIUGKLA/Bitnami Django Stack projects/hr_system')
-    os.environ.setdefault("PYTHON_EGG_CACHE", "C:/Users/administrator.SCIUGKLA/Bitnami Django Stack projects/hr_system/egg_cache")
+sys.path.append('C:/Users/Administrator.SCI/Bitnami Django Stack projects/hr_system')
+os.environ.setdefault("PYTHON_EGG_CACHE", "C:/Users/Administrator.SCI/Bitnami Django Stack projects/hr_system/egg_cache")
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hr_system.settings')
 

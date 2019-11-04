@@ -1,4 +1,5 @@
 from django import template
+from django.http import HttpRequest
 
 register = template.Library()
 
@@ -15,7 +16,7 @@ def category_display(processors, category_id):
         data = processors.filter(earning_and_deductions_type__display_number__lt=7).all()
     else:
         data = processors.filter(earning_and_deductions_type__display_number__gt=6)\
-            .filter(earning_and_deductions_type__display_number__lt=20).all()
+            .filter(earning_and_deductions_type__display_number__lt=21).all()
 
     return data
 

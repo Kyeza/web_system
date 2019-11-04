@@ -17,7 +17,6 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{% url 'users:new-employee' %}">Add New Employee</a>
                     <a class="dropdown-item" href="{% url 'users:edit-employee' %}">Edit Employee</a>
-                    <a class="dropdown-item" href="{% url 'users:employee-approval' %}">New Employee Approval</a>
                     <a class="dropdown-item" href="{% url 'users:rejected-employee-list' %}">Rejected New Employee</a>
                     <a class="dropdown-item" href="{% url 'users:separated-employee' %}">Separated Employees</a>
                     <a class="dropdown-item" href="{% url 'users:terminate-employee-list' %}">Terminate Employee</a>
@@ -25,6 +24,18 @@
                     <a class="dropdown-item" href="{% url 'users:employee-project-list' %}">Employee Projects</a>
                     <a class="dropdown-item" href="{% url 'users:employee-birthday-list' %}">Employee Birthdays</a>
                     <a class="dropdown-item" href="{% url 'users:change_employee_user_group' %}">Change User Group</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown action">
+                <a class="nav-link dropdown-header" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Movements
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'users:employee-approval' %}">Staff Bio Data Approval</a>
+                    <a class="dropdown-item" href="{% url 'users:employee_movements' %}">Staff Bio Data Movements</a>
+                    <a class="dropdown-item" href="{% url 'users:employee_movements_enums' %}">Salary/Earnings Movements</a>
+                    <a class="dropdown-item" href="{% url 'users:employee_movements_changelist' %}">Staff Movements Approval</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -105,7 +116,12 @@
                             <a class="dropdown-item" href="{% url 'payroll:bank-list' %}">Bank</a>
                             <a class="dropdown-item" href="{% url 'payroll:currency-list' %}">Currencies</a>
                             <a class="dropdown-item" href="{% url 'support_data:grade-list' %}">Grade</a>
-                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-staff-list' %}">Payroll Center Staff</a>
+                            <a class="dropdown-item" href="{% url 'payroll:payroll-center-staff-list' %}">
+                                Payroll Center Staff</a>
+
+                            <a class="dropdown-item" href="{% url 'support_data:reason-list' %}">
+                                Separation Reason
+                            </a>
                         </div>
                         <div>
                             {#                            TAX SETTINGS #}
