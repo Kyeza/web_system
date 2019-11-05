@@ -10,7 +10,6 @@ class Mailer:
     """
 
     def __init__(self, from_email=None):
-        # TODO setup the default from email
         self.connection = mail.get_connection()
         self.from_email = from_email
 

@@ -78,6 +78,7 @@ class ProfileUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['user_group'].widget.attrs['disabled'] = 'disabled'
+        self.fields['assigned_locations'].widget.attrs['disabled'] = 'disabled'
 
     date_of_birth = forms.DateField(input_formats=['%Y-%m-%d'])
     sex = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect(), required=True)
@@ -87,6 +88,9 @@ class ProfileUpdateForm(forms.ModelForm):
     social_security = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False,
                                         initial=YES_OR_NO_TYPES[1][0])
     transferable = forms.ChoiceField(choices=YES_OR_NO_TYPES, widget=forms.RadioSelect(), required=False)
+    assigned_locations = forms.ModelMultipleChoiceField(queryset=DutyStation.objects.all(),
+                                                        widget=forms.CheckboxSelectMultiple(),
+                                                        required=False, disabled=True)
 
 
 class EmployeeApprovalForm(ProfileCreationForm):

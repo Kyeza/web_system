@@ -92,6 +92,7 @@ def register_employee(request):
             user_profile.user = user
             user_profile.user_group = Group.objects.get(pk=6)
             user_profile.save()
+            profile_creation_form.save_m2m()
             user_profile.user_group.user_set.add(user)
 
             emails = get_staff_emails_for_user_group(8)
@@ -101,7 +102,7 @@ def register_employee(request):
                 subject = 'PAYROLL EMPLOYEE REGISTRATION NOTIFICATION'
                 link = 'http://127.0.0.1:8000/users/new_employee_approval/'
                 body = f'Hello All, \n\nEmployee {user.get_full_name()} has been registered to the  system. \nYou can kindly approve him/her using the following the link below:\n {link}'
-                mailer.send_messages(subject, body, emails)
+                #TODO: mailer.send_messages(subject, body, emails)
 
             logger.info(
                 f"Employee: {user.get_full_name()} has been successful" +
@@ -182,6 +183,7 @@ def user_update_profile(request, pk=None):
                 logger.error(f"UserUpdateView: user {user.username} doesn't belong any Group.")
 
             user_profile.save()
+            profile_update_form.save_m2m()
 
             if user.groups.first():
                 if user_profile.user_group:
@@ -394,6 +396,7 @@ def approve_employee(request, pk=None):
             # change employee status to approved before saving to db and adding them to payroll processors
             employee_profile.employment_status = 'APPROVED'
             employee_profile.save()
+            profile_update_form.save_m2m()
 
             # add user to PayrollProcessor
             add_user_to_payroll_processor(profile_user)
@@ -406,7 +409,7 @@ def approve_employee(request, pk=None):
                 mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
                 subject = 'PAYROLL EMPLOYEE APPROVAL NOTIFICATION'
                 body = f'Hello All, \n\nEmployee {user.get_full_name()} has been approved.'
-                mailer.send_messages(subject, body, emails)
+                #TODO: mailer.send_messages(subject, body, emails)
 
             messages.success(request, f'{employee} has been approved')
             return redirect('users:employee-approval')
