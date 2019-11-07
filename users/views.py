@@ -1,7 +1,6 @@
 import logging
 import os
 import re
-import json
 from builtins import super
 from decimal import Decimal
 
@@ -11,7 +10,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
-from django.core import serializers
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -21,7 +19,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates, EarningDeductionType
+from payroll.models import PayrollPeriod, PayrollCenterEds, EarningDeductionType
+from reports.helpers.mailer import Mailer
 from reports.models import ExTraSummaryReportInfo
 from support_data.models import JobTitle, SudaneseTaxRates, DutyStation, ContractType, Department, Grade
 from users.mixins import NeverCacheMixin
@@ -30,7 +29,6 @@ from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, Empl
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm, \
     EnumerationsMovementForm
-from reports.helpers.mailer import Mailer
 
 logger = logging.getLogger('payroll')
 

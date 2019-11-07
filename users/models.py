@@ -86,7 +86,7 @@ class Employee(models.Model):
     appointment_date = models.DateField(default=timezone.now, null=True, blank=True)
     social_security = models.CharField('Security Security', max_length=3, choices=YES_OR_NO_TYPES, null=True,
                                        blank=True, default=YES_OR_NO_TYPES[1][0])
-    payroll_center = models.OneToOneField('payroll.PayrollCenter', on_delete=models.SET_NULL, null=True)
+    payroll_center = models.ForeignKey('payroll.PayrollCenter', on_delete=models.SET_NULL, null=True)
     bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True,
                                blank=True, verbose_name='Bank 1')
     bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True,
