@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -506,13 +507,18 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
         return context
 
 
-def processor(payroll_period, process_with_rate=None, method='GET', user=None):
+def processor(request_user, payroll_period, process_with_rate=None, method='GET', user=None):
     logger.info(f'started payroll process processing')
     response = {}
     payroll_center = payroll_period.payroll_center
     if process_with_rate:
         payroll_period.processing_dollar_rate = process_with_rate
-        payroll_period.save()
+        try:
+            payroll_period.save()
+        except ValidationError:
+            payroll_period.created_by = request_user
+            payroll_period.save()
+
     users = payroll_center.employee_set.all()
     employees_in_period = set()
     if users.exists() and user is None:
@@ -724,10 +730,14 @@ def processor(payroll_period, process_with_rate=None, method='GET', user=None):
         try:
             key = f'{payroll_period.payroll_key}S{employee.pk}'
             report = ExTraSummaryReportInfo.objects.get(pk=key)
+            report.employee_name = employee.user.get_full_name()
+            report.analysis = employee.agresso_number
+            report.job_title = employee.job_title
+            report.employee_id = employee.pk
             report.net_pay = net_pay
             report.gross_earning = gross_earnings
             report.total_deductions = total_deductions
-            report.save(update_fields=['net_pay', 'gross_earning', 'total_deductions'])
+            report.save()
 
             response['message'] = f'Successfully process Payroll Period with dollar rate of {process_with_rate}'
             response['status'] = 'Success'
@@ -765,7 +775,7 @@ def process_payroll_period(request, pk, user=None):
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
         process_with_rate = float(request.POST.get('process_with_rate'))
         try:
-            response = processor(payroll_period, process_with_rate, 'POST')
+            response = processor(request.user, payroll_period, process_with_rate, 'POST')
         except Exception as e:
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
@@ -778,7 +788,7 @@ def process_payroll_period(request, pk, user=None):
     elif request.method == 'GET':
         employee = Employee.objects.get(pk=user)
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        processor(payroll_period, process_with_rate=payroll_period.processing_dollar_rate, user=employee)
+        processor(request.user, payroll_period, process_with_rate=payroll_period.processing_dollar_rate, user=employee)
         # return HttpResponseRedirect(reverse('reports:display-summary-report', args=(payroll_period.id,)))
         return redirect('reports:display-summary-report', payroll_period.id)
 
