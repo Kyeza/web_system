@@ -1,18 +1,41 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% load users_extras %}
 {% load humanize %}
 
 {% block content %}
     <div class="content-section">
+        <div class="modal fade" id="approvalModel" tabindex="-1" role="dialog" aria-labelledby="approvalModelLabel"
+             aria-hidden="true">
+            <form method="POST" action="{% url "support_data:decline_payroll" %}">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" style="color: red; font-size: 14px"
+                                id="approvalModelLabel">Please enter reason for declining Payroll.</h5>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <input id="message" type="text">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                            <button type="submit" class="btn btn-primary" href="">SUBMIT</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
         <h5 id="summary_title" class="border-bottom mb-4">
             PAYROLL FOR THE MONTH OF {{ payroll_period.month }} - {{ payroll_period.year }}
         </h5>
         {% if perms.users.can_approve_payroll_summary %}
             <div class="d-flex flex-row-reverse">
                 <div class="p-2">
-                    <a class="btn btn-danger btn-md" href="#">
+                    <button type="button" class="btn btn-danger btn-md" data-toggle="modal" data-target="#approvalModel">
                         DECLINE
-                    </a>
+                    </button>
                 </div>
                 <div class="p-2">
                     <a class="btn btn-success btn-md"
@@ -103,6 +126,8 @@
 {% block scripts %}
     <script>
         $(document).ready(function () {
+
+
             var title = document.getElementById("summary_title").innerHTML;
             var table = $('#table_id').DataTable({
                 columnDefs: [{

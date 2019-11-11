@@ -192,9 +192,9 @@ class EnumerationsMovementForm(forms.ModelForm):
 
     parameter = forms.ModelChoiceField(queryset=MovementParameter.objects.all(), widget=forms.Select())
     earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select())
-    payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select(), required=False)
+    payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select(), required=True)
     move_from = forms.DecimalField(required=False)
-    move_to = forms.DecimalField(required=True)
+    move_to = forms.DecimalField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

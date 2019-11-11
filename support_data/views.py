@@ -10,8 +10,8 @@ from django.views.generic.list import ListView
 
 from payroll.models import EarningDeductionType, PayrollPeriod, PayrollSummaryApprovals
 from reports.helpers.mailer import Mailer
-from users.models import Employee
-from .forms import DutyStationCreationForm
+from users.models import Employee, User
+from .forms import DutyStationCreationForm, DeclinePayrollMessageForm
 from .models import Organization, Tax, Country, Nationality, DutyStation, Department, JobTitle, ContractType, Grade, \
     TerminationReason, PayrollApprover
 
@@ -344,7 +344,7 @@ def sign_off_payroll_summary(request, period_id):
     approver = None
     try:
         approver = request.user.employee.id_number
-    except Exception as e:
+    except Exception:
         pass
 
     payroll_period = PayrollPeriod.objects.get(pk=period_id)
@@ -356,6 +356,11 @@ def sign_off_payroll_summary(request, period_id):
                                                signature=signature)
     messages.success(request, f'Approved Payroll for {payroll_period.month} successfully.')
     return redirect('payroll:payroll-period-update', pk=payroll_period.id)
+
+
+def decline_payroll_summary(request):
+    if request.method == "POST":
+        print(request.POST)
 
 
 def checkout_for_approval_status(request, period_id):
@@ -372,7 +377,7 @@ def checkout_for_approval_status(request, period_id):
     for approval in approvals.iterator():
         current_approvals_signatures.append(approval[0])
 
-    if current_approvals_signatures == confirmatory_signatures:
+    if current_approvals_signatures == confirmatory_signatures and len(confirmatory_signatures) != 0:
         return JsonResponse({'status': 'YES'})
     else:
         return JsonResponse({'status': 'NO'})

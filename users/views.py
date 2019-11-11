@@ -26,7 +26,7 @@ from reports.models import ExTraSummaryReportInfo
 from support_data.models import JobTitle, SudaneseTaxRates, DutyStation, ContractType, Department, Grade
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
-    TerminatedEmployees, EmployeeMovement, User
+    TerminatedEmployees, EmployeeMovement, User, PayrollProcessorManager
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm, \
     EnumerationsMovementForm
@@ -101,7 +101,7 @@ def register_employee(request):
                 subject = 'PAYROLL EMPLOYEE REGISTRATION NOTIFICATION'
                 link = 'http://127.0.0.1:8000/users/new_employee_approval/'
                 body = f'Hello All, \n\nEmployee {user.get_full_name()} has been registered to the  system. \nYou can kindly approve him/her using the following the link below:\n {link}'
-                #TODO: mailer.send_messages(subject, body, emails)
+                # TODO: mailer.send_messages(subject, body, emails)
 
             logger.info(
                 f"Employee: {user.get_full_name()} has been successful" +
@@ -408,7 +408,7 @@ def approve_employee(request, pk=None):
                 mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
                 subject = 'PAYROLL EMPLOYEE APPROVAL NOTIFICATION'
                 body = f'Hello All, \n\nEmployee {user.get_full_name()} has been approved.'
-                #TODO: mailer.send_messages(subject, body, emails)
+                # TODO: mailer.send_messages(subject, body, emails)
 
             messages.success(request, f'{employee} has been approved')
             return redirect('users:employee-approval')
@@ -727,6 +727,15 @@ def processor(request_user, payroll_period, process_with_rate=None, method='GET'
             employee_nhif_export.amount = nhif_8 + nhif_17
             employee_nhif_export.save(update_fields=['amount'])
 
+        # updating number of working hours
+        logger.info(f'Processing for user {employee}: Number of Working days')
+        working_days = period_processes.filter(employee=employee) \
+            .filter(earning_and_deductions_type_id=78).first()
+
+        if working_days.amount == 0:
+            working_days.amount = 22
+            working_days.save()
+
         try:
             key = f'{payroll_period.payroll_key}S{employee.pk}'
             report = ExTraSummaryReportInfo.objects.get(pk=key)
@@ -758,6 +767,10 @@ def processor(request_user, payroll_period, process_with_rate=None, method='GET'
             response['status'] = 'Success'
             logger.info(f'Successfully processed {employee} Payroll Period')
 
+    if user is None:
+        payroll_period.payrollprocessormanager.processed_status = 'YES'
+        payroll_period.payrollprocessormanager.save()
+
     logger.info(f'Finished processing {response}')
 
     if method == 'POST':
@@ -780,7 +793,7 @@ def process_payroll_period(request, pk, user=None):
             # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
             # html = render_to_string('partials/messages.html', {'msgs': msgs})
             logger.error(f'Something went wrong {e.args}')
-            response = {'status': f'Failed: line no: 738: {e.args}', 'message': ''}
+            response = {'status': f'Failed: {e.args}', 'message': ''}
             return JsonResponse(response)
         else:
             return JsonResponse(response)
@@ -1105,7 +1118,7 @@ class EnumEmployeeMovementsListView(ListView):
 
 class EmployeeMovementsListView(ListView):
     model = EmployeeMovement
-    
+
     def get_queryset(self):
         data = EmployeeMovement.objects.filter(status__exact='SHOW').prefetch_related('employee__user')
         return data
@@ -1212,19 +1225,21 @@ def load_earnings_current_amount(request):
     user_id = int(request.GET.get('user_id'))
 
     employee = Employee.objects.get(pk=user_id)
+    period_id = int(request.GET.get('period'))
     response = {}
 
-    if parameter_id > 1:
-        period_id = int(request.GET.get('period'))
+    payroll_period = PayrollPeriod.objects.get(pk=period_id)
+    period_processors = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id)
+    employee_period_processors = period_processors.filter(employee_id=employee.pk)
+    if employee_period_processors:
+        ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values(
+            'amount').first()
+        response = ed_type_amount
 
-        payroll_period = PayrollPeriod.objects.get(pk=period_id)
-        period_processors = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id)
-        employee_period_processors = period_processors.filter(employee_id=employee.pk)
-        if employee_period_processors:
-            ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values('amount').first()
-            response = ed_type_amount
-    else:
-        response['amount'] = employee.basic_salary
+    if parameter_id == 1:
+        working_days = employee_period_processors.filter(earning_and_deductions_type_id=78).values(
+            'amount').first()
+        response['working_days'] = working_days['amount']
 
     return JsonResponse(response)
 
@@ -1313,11 +1328,35 @@ def approve_employee_movement(request, movement_id):
     elif movement.parameter.id == 8:
         payroll_key = f'P{movement.payroll_period.id}S{employee.pk}K{movement.earnings.id}'
         period_processor = PayrollProcessors.objects.get(payroll_key=payroll_key)
-        period_processor.amount = Decimal(movement.move_to)
-        period_processor.save(update_fields=['amount'])
-        if movement.earnings.id == 1:
+        working_days_processor = PayrollProcessors.objects. \
+            get(payroll_key=f'P{movement.payroll_period.id}S{employee.pk}K78')
+
+        if movement.earnings.id == 1 and movement.move_to and movement.hours == working_days_processor.amount:
             employee.basic_salary = Decimal(movement.move_to)
             employee.save(update_fields=['basic_salary'])
+            period_processor.amount = Decimal(movement.move_to)
+            period_processor.save(update_fields=['amount'])
+        elif movement.earnings.id == 1 and movement.move_to and movement.hours != working_days_processor.amount:
+            if movement.move_to != employee.basic_salary:
+                employee.basic_salary = movement.move_to
+                employee.save()
+            new_amount = Decimal(movement.hours / 22.00) * employee.basic_salary
+            working_days_processor.amount = movement.hours
+            working_days_processor.save()
+            period_processor.amount = new_amount
+            period_processor.save(update_fields=['amount'])
+        elif movement.earnings.id == 1 and movement.move_to is None and movement.hours != working_days_processor.amount:
+            working_days_processor = PayrollProcessors.objects. \
+                get(payroll_key=f'P{movement.payroll_period.id}S{employee.pk}K78')
+            working_days_processor.amount = movement.hours
+            working_days_processor.save()
+            new_amount = Decimal(movement.hours / 22.00) * employee.basic_salary
+            period_processor.amount = new_amount
+            period_processor.save(update_fields=['amount'])
+        elif movement.earnings.id != 1:
+            period_processor.amount = Decimal(movement.move_to)
+            period_processor.save(update_fields=['amount'])
+
         movement.status = 'APPROVED'
         movement.save(update_fields=['status'])
 

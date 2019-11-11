@@ -10,7 +10,7 @@ from .views import OrganizationCreate, OrganizationListView, OrganizationUpdate,
     JobTitleCreate, JobTitleUpdate, JobTitleDetailView, JobTitleListView, \
     ContractTypeCreate, ContractTypeUpdate, ContractTypeDetailView, ContractTypeListView, \
     GradeCreate, GradeUpdate, GradeDetailView, GradeListView, TerminationReasonCreateView, TerminationReasonUpdateView, \
-    TerminationReasonListView, send_mail_to_approvers
+    TerminationReasonListView
 
 app_name = 'support_data'
 urlpatterns = [
@@ -56,5 +56,6 @@ urlpatterns = [
     path('separation_reason/', TerminationReasonListView.as_view(), name='reason-list'),
     path('send_approval_request/<int:period_id>/', views.send_mail_to_approvers, name='request-approval'),
     path('approve_payroll/<int:period_id>/', views.sign_off_payroll_summary, name='approve_payroll'),
+    path('decline_payroll/', views.decline_payroll_summary, name='decline_payroll'),
     path('check_approval_status/<int:period_id>/', views.checkout_for_approval_status, name='approval_status')
 ]

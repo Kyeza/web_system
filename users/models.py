@@ -159,12 +159,12 @@ class Employee(models.Model):
     documents = models.FileField(upload_to=get_doc_filename, blank=True, null=True)
     payment_location = models.ForeignKey('support_data.DutyStation', on_delete=models.SET_NULL, null=True, blank=True,
                                          related_name='payment_location')
-    assigned_locations = models.ManyToManyField('support_data.DutyStation', related_name="assigned_locations", blank=True)
+    assigned_locations = models.ManyToManyField('support_data.DutyStation', related_name="assigned_locations",
+                                                blank=True)
 
     def clean(self):
         if self.payroll_center is None:
             raise ValidationError("Payroll Canter required.")
-
 
         if self.basic_salary is None:
             raise ValidationError("Basic salary required.")
@@ -335,6 +335,7 @@ class EmployeeMovement(models.Model):
     parameter = models.ForeignKey('support_data.MovementParameter', on_delete=models.PROTECT)
     earnings = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.DO_NOTHING, null=True, blank=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.DO_NOTHING, null=True, blank=True)
+    hours = models.IntegerField(null=True, blank=True)
     move_from = models.CharField(max_length=150, null=True, blank=True)
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
@@ -347,3 +348,9 @@ class EmployeeMovement(models.Model):
 
     def __str__(self):
         return f'{self.parameter.name.capitalize()} Movement for {self.employee_name}'
+
+
+class PayrollProcessorManager(models.Model):
+    payroll_period = models.OneToOneField('payroll.PayrollPeriod', on_delete=models.CASCADE, primary_key=True)
+    processed_status = models.CharField(max_length=3, default='NO')
+    number_of_approvers = models.IntegerField(default=0)

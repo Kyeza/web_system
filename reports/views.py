@@ -15,6 +15,7 @@ from django.urls import reverse
 
 from payroll.models import PayrollPeriod
 from reports.helpers.mailer import Mailer
+from support_data.forms import DeclinePayrollMessageForm
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
@@ -28,6 +29,9 @@ logger = logging.getLogger('payroll')
 def display_summary_report(request, pk):
     payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
     context = generate_summary_data(payroll_period)
+    approval_message_form = DeclinePayrollMessageForm()
+
+    context['approval_message_form'] = approval_message_form
 
     return render(request, 'reports/summary_report.html', context)
 

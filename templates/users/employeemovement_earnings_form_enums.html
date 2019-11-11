@@ -18,15 +18,18 @@
 
 {% block scripts %}
     <script>
-        let div_period_input = $("#div_id_payroll_period");
-        div_period_input.css("display", "none");
+        let div_working_days = $("#div_id_hours");
+        div_working_days.css("display", "none");
+
+        let amount_from = $("#id_move_from");
 
         $("#id_earnings").change(function () {
             let form = $("#movementsForm");
             let url = form.attr('data-movement-url');
             let user_id = form.attr('data-user');
             let earnings_id = $(this).val();
-            let amount_from = $("#id_move_from");
+            amount_from.prop("readonly", true);
+            let amount_to = $("#id_move_to");
             amount_from.val("");
 
             let id_val = parseInt(earnings_id);
@@ -38,10 +41,10 @@
             };
 
             let period_input = $("#id_payroll_period");
+            let hour_input = $("#id_hours");
 
             if (id_val > 1) {
-                div_period_input.css("display", "block");
-                period_input.prop("required", "true");
+                div_working_days.css("display", "none");
                 period_input.change(function () {
                     data['period'] = $(this).val();
                     $.ajax({
@@ -53,15 +56,22 @@
                     });
                 });
             } else {
-                $.ajax({
-                    url: url,
-                    data: data,
-                    success: function (data) {
-                        amount_from.val(data['amount']);
-                    }
+                period_input.change(function () {
+                    data['period'] = $(this).val();
+                    $.ajax({
+                        url: url,
+                        data: data,
+                        success: function (data) {
+                            amount_from.val(data['amount']);
+                            let newAmt = (parseFloat(data['working_days'])/22.0) * parseFloat(data['amount']);
+                            hour_input.val(data['working_days']);
+                            amount_to.val(newAmt);
+                        }
+                    });
+
                 });
-                div_period_input.css("display", "none");
-                period_input.prop("required", "false");
+                $("label[for='id_hours']").text("Working days");
+                div_working_days.css("display", "block");
             }
 
         })
