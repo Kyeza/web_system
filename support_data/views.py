@@ -326,6 +326,9 @@ def send_mail_to_approvers(request, period_id):
     approvers = PayrollApprover.objects.all()
     payroll_period = PayrollPeriod.objects.get(pk=period_id)
 
+    payroll_period.payrollprocessormanager.processed_status = 'YES'
+    payroll_period.payrollprocessormanager.save()
+
     approvers_mails = []
     if approvers.exists():
         for approver in approvers:

@@ -26,7 +26,7 @@ from reports.models import ExTraSummaryReportInfo
 from support_data.models import JobTitle, SudaneseTaxRates, DutyStation, ContractType, Department, Grade
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
-    TerminatedEmployees, EmployeeMovement, User, PayrollProcessorManager
+    TerminatedEmployees, EmployeeMovement, User
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm, EmployeeMovementForm, \
     EnumerationsMovementForm
@@ -775,10 +775,6 @@ def processor(request_user, payroll_period, process_with_rate=None, method='GET'
             response['message'] = f'Successfully process Payroll Period with dollar rate of {process_with_rate}'
             response['status'] = 'Success'
             logger.info(f'Successfully processed {employee} Payroll Period')
-
-    if user is None:
-        payroll_period.payrollprocessormanager.processed_status = 'YES'
-        payroll_period.payrollprocessormanager.save()
 
     logger.info(f'Finished processing {response}')
 
