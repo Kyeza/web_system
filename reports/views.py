@@ -16,7 +16,7 @@ from django.urls import reverse
 from payroll.models import PayrollPeriod
 from reports.helpers.mailer import Mailer
 from support_data.forms import DeclinePayrollMessageForm
-from users.forms import ProcessUpdateForm
+from users.forms import EarningsProcessUpdateForm, DeductionsProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
 from .models import ExTraSummaryReportInfo
@@ -79,9 +79,9 @@ def update_summary_report(request, pp, user):
     s_data = [processor.to_dict() for processor in cat_s.iterator()]
 
     # creating initial display formsets
-    e_FormSet = formset_factory(ProcessUpdateForm, max_num=len(e_data), extra=0)
-    d_FormSet = formset_factory(ProcessUpdateForm, max_num=len(d_data), extra=0)
-    s_FormSet = formset_factory(ProcessUpdateForm, max_num=len(s_data), extra=0)
+    e_FormSet = formset_factory(EarningsProcessUpdateForm, max_num=len(e_data), extra=0)
+    d_FormSet = formset_factory(DeductionsProcessUpdateForm, max_num=len(d_data), extra=0)
+    s_FormSet = formset_factory(DeductionsProcessUpdateForm, max_num=len(s_data), extra=0)
 
     if request.method == 'POST':
         e_formset = e_FormSet(request.POST, initial=e_data, prefix='earnings')

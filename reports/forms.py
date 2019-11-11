@@ -42,7 +42,8 @@ class ReportGeneratorForm(forms.Form):
         ('LEGER_EXPORT', 'Leger export')
     )
     _month = datetime.now().month
-    payroll_center = forms.ModelChoiceField(queryset=PayrollCenter.objects.prefetch_related('payrollperiod_set').all(), widget=forms.Select())
+    payroll_center = forms.ModelChoiceField(queryset=PayrollCenter.objects.prefetch_related('payrollperiod_set').all(),
+                                            widget=forms.Select())
     report_type = forms.ChoiceField(choices=REPORTS, widget=forms.Select())
     year = forms.ChoiceField(choices=PAYROLL_YEARS, widget=forms.Select())
     month = forms.ChoiceField(choices=MONTHS, widget=forms.Select(), initial=MONTHS[_month - 1][1])

@@ -148,7 +148,33 @@ class DEAForm(forms.ModelForm):
         fields = '__all__'
 
 
-class ProcessUpdateForm(forms.ModelForm):
+class EarningsProcessUpdateForm(forms.ModelForm):
+    earning_and_deductions_type = forms.ModelChoiceField(
+        queryset=EarningDeductionType.objects.all(),
+        widget=forms.Select(
+            attrs={
+                'style':
+                    'border: none; outline: none; text-align: left; margin: 0;' +
+                    '-webkit-appearance: none; -moz-appearance: none;' +
+                    'text-indent: 1px; text-overflow: \' \'; background-color: transparent;',
+            }
+        ),
+        required=False
+    )
+    amount = forms.DecimalField(
+        required=False,
+        widget=forms.NumberInput(
+            attrs={'style': 'border: none; outline: none; text-align: right; margin: 0;'}
+        ),
+        disabled=True
+    )
+
+    class Meta:
+        model = PayrollProcessors
+        exclude = ['employee', 'payroll_period', 'earning_and_deductions_category']
+
+
+class DeductionsProcessUpdateForm(forms.ModelForm):
     earning_and_deductions_type = forms.ModelChoiceField(
         queryset=EarningDeductionType.objects.all(),
         widget=forms.Select(
