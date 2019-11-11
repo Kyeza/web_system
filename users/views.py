@@ -309,7 +309,7 @@ def add_users_for_period(payroll_period, instance):
                 basic_salary_reg = re.compile(r'basic salary', re.IGNORECASE, )
                 hardship_allowance_reg = re.compile(r'hardship allowance', re.IGNORECASE, )
                 user_process = None
-                if basic_salary_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                if pc_ed_type.ed_type.id == 1:
                     user_process = PayrollProcessors(employee=instance.employee,
                                                      earning_and_deductions_category=pc_ed_type
                                                      .ed_type.ed_category,
@@ -318,7 +318,7 @@ def add_users_for_period(payroll_period, instance):
                                                      payroll_period=payroll_period)
                     logger.info(
                         f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
-                elif hardship_allowance_reg.fullmatch(pc_ed_type.ed_type.ed_type):
+                elif pc_ed_type.ed_type.id == 2:
                     if instance.employee.duty_station:
                         user_process = PayrollProcessors(employee=instance.employee,
                                                          earning_and_deductions_category=pc_ed_type
@@ -329,6 +329,15 @@ def add_users_for_period(payroll_period, instance):
                                                          payroll_period=payroll_period)
                         logger.info(
                             f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
+                elif pc_ed_type.ed_type.id == 78:
+                    user_process = PayrollProcessors(employee=instance.employee,
+                                                     earning_and_deductions_category=pc_ed_type
+                                                     .ed_type.ed_category,
+                                                     earning_and_deductions_type=pc_ed_type.ed_type,
+                                                     amount=22,
+                                                     payroll_period=payroll_period)
+                    logger.info(
+                        f'Added {instance} {pc_ed_type.ed_type.ed_type} earning to period processes')
                 else:
                     user_process = PayrollProcessors(employee=instance.employee,
                                                      earning_and_deductions_category=pc_ed_type
