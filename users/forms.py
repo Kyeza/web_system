@@ -216,9 +216,15 @@ class EnumerationsMovementForm(forms.ModelForm):
         model = EmployeeMovement
         fields = '__all__'
 
+    OVERTIME = (
+        ("NORMAL", "Normal"),
+        ("WEEKEND", "Weekend"),
+    )
+
     parameter = forms.ModelChoiceField(queryset=MovementParameter.objects.all(), widget=forms.Select())
     earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select())
     payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select(), required=True)
+    over_time_category = forms.ChoiceField(choices=OVERTIME, widget=forms.RadioSelect(), required=False)
     move_from = forms.DecimalField(required=False)
     move_to = forms.DecimalField(required=False)
 

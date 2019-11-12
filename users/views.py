@@ -611,7 +611,7 @@ def processor(request_user, payroll_period, process_with_rate=None, method='GET'
         logger.info(f'Processing for user {employee}: calculating gross earnings')
         if ge_data.exists():
             for inst in ge_data.iterator():
-                if inst.earning_and_deductions_type.id == 1:
+                if inst.earning_and_deductions_type.id == 1 and inst.amount == 0:
                     inst.amount = employee.basic_salary
                     inst.save(update_fields=['amount'])
                 elif inst.earning_and_deductions_type.id == 2 and user is None:

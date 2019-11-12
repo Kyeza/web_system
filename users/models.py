@@ -328,6 +328,11 @@ class EmployeeProject(models.Model):
 
 
 class EmployeeMovement(models.Model):
+    OVERTIME = (
+        ("NORMAL", "Normal"),
+        ("WEEKEND", "Weekend"),
+    )
+
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, editable=False)
     employee_name = models.CharField(max_length=300, null=True, blank=True)
     department = models.CharField(max_length=300, null=True, blank=True)
@@ -336,6 +341,7 @@ class EmployeeMovement(models.Model):
     earnings = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.DO_NOTHING, null=True, blank=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.DO_NOTHING, null=True, blank=True)
     hours = models.IntegerField(null=True, blank=True)
+    over_time_category = models.CharField(max_length=10, choices=OVERTIME, null=True, blank=True)
     move_from = models.CharField(max_length=150, null=True, blank=True)
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)

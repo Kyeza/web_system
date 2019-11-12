@@ -5,6 +5,7 @@
 __pycache__
 db.sqlite3
 media
+celery_service.py
 
 # Backup files #
 *.bak

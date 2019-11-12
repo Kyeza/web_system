@@ -19,7 +19,9 @@
 {% block scripts %}
     <script>
         let div_working_days = $("#div_id_hours");
+        let div_overtime = $("#div_id_over_time_category");
         div_working_days.css("display", "none");
+        div_overtime.css("display", "none");
 
         let amount_from = $("#id_move_from");
 
@@ -45,6 +47,19 @@
 
             if (id_val > 1) {
                 div_working_days.css("display", "none");
+                div_overtime.css("display", "none");
+                period_input.change(function () {
+                    data['period'] = $(this).val();
+                    $.ajax({
+                        url: url,
+                        data: data,
+                        success: function (data) {
+                            amount_from.val(data['amount']);
+                        }
+                    });
+                });
+            } else if (id_val === 8) {
+                div_overtime.css("display", "block");
                 period_input.change(function () {
                     data['period'] = $(this).val();
                     $.ajax({
@@ -56,6 +71,7 @@
                     });
                 });
             } else {
+                div_overtime.css("display", "none");
                 period_input.change(function () {
                     data['period'] = $(this).val();
                     $.ajax({
