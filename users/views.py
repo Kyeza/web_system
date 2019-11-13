@@ -1231,20 +1231,32 @@ def load_earnings_current_amount(request):
 
     employee = Employee.objects.get(pk=user_id)
     period_id = int(request.GET.get('period'))
+    overtime_type = request.GET.get('overtime')
     response = {}
 
     payroll_period = PayrollPeriod.objects.get(pk=period_id)
     period_processors = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id)
     employee_period_processors = period_processors.filter(employee_id=employee.pk)
     if employee_period_processors:
-        ed_type_amount = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values(
-            'amount').first()
-        response = ed_type_amount
-
-    if parameter_id == 1:
-        working_days = employee_period_processors.filter(earning_and_deductions_type_id=78).values(
-            'amount').first()
-        response['working_days'] = working_days['amount']
+        if parameter_id == 78:
+            response = employee_period_processors.filter(earning_and_deductions_type_id=1).values(
+                'amount').first()
+            working_days = employee_period_processors.filter(earning_and_deductions_type_id=78).values(
+                'amount').first()
+            response['working_days'] = working_days['amount']
+        elif parameter_id == 8:
+            overtime = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values(
+                'amount').first()
+            response['basic_salary'] = employee_period_processors.filter(earning_and_deductions_type_id=1).values(
+                'amount').first()['amount']
+            response['amount'] = overtime['amount']
+            if overtime_type == "NORMAL":
+                response['factor'] = EarningDeductionType.objects.get(pk=8).factor
+            elif overtime_type == "WEEKEND":
+                response['factor'] = EarningDeductionType.objects.get(pk=19).factor
+        else:
+            response = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values(
+                'amount').first()
 
     return JsonResponse(response)
 

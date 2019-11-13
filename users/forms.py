@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
+from django.db.models import Q
 from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
@@ -224,14 +225,14 @@ class EnumerationsMovementForm(forms.ModelForm):
     parameter = forms.ModelChoiceField(queryset=MovementParameter.objects.all(), widget=forms.Select())
     earnings = forms.ModelChoiceField(queryset=EarningDeductionType.objects.all(), widget=forms.Select())
     payroll_period = forms.ModelChoiceField(queryset=PayrollPeriod.objects.all(), widget=forms.Select(), required=True)
-    over_time_category = forms.ChoiceField(choices=OVERTIME, widget=forms.RadioSelect(), required=False)
+    over_time_category = forms.ChoiceField(choices=OVERTIME, widget=forms.RadioSelect(), required=False, initial=OVERTIME[0][0])
     move_from = forms.DecimalField(required=False)
     move_to = forms.DecimalField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['parameter'].queryset = MovementParameter.objects.filter(choice__exact=2).all()
-        self.fields['earnings'].queryset = EarningDeductionType.objects.filter(display_number__lt=7) \
+        self.fields['earnings'].queryset = EarningDeductionType.objects.filter(Q(display_number__lt=7) | Q(pk=78)) \
             .exclude(payrollcentereds__isnull=True).all()
         self.fields['move_to'].label = 'Change amount to'
         self.fields['move_from'].label = 'Change amount from'

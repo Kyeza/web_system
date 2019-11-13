@@ -18,76 +18,143 @@
 
 {% block scripts %}
     <script>
-        let div_working_days = $("#div_id_hours");
-        let div_overtime = $("#div_id_over_time_category");
+        const div_working_days = $("#div_id_hours");
+        const div_overtime = $("#div_id_over_time_category");
+        const div_move_from = $("#div_id_move_from");
+        const div_move_to = $("#div_id_move_to");
         div_working_days.css("display", "none");
         div_overtime.css("display", "none");
 
-        let amount_from = $("#id_move_from");
+        const form = $("#movementsForm");
+        const url = form.attr('data-movement-url');
+
+        const amount_from = $("#id_move_from");
+        amount_from.prop("readonly", true);
+
 
         $("#id_earnings").change(function () {
-            let form = $("#movementsForm");
-            let url = form.attr('data-movement-url');
-            let user_id = form.attr('data-user');
-            let earnings_id = $(this).val();
-            amount_from.prop("readonly", true);
-            let amount_to = $("#id_move_to");
+            const amount_to = $("#id_move_to");
+            const user_id = form.attr('data-user');
+            const earnings_id = $(this).val();
+
+            const hour_input = $("#id_hours");
+
+            const periodInput = $("#id_payroll_period");
+            const radio_overtime_input = $(':radio[name="over_time_category"]');
+
+            periodInput.prop("selectedIndex", -1);
             amount_from.val("");
+            amount_to.val("");
 
-            let id_val = parseInt(earnings_id);
-            console.log(id_val);
-
-            let data = {
-                'parameter': earnings_id,
-                'user_id': user_id
-            };
-
-            let period_input = $("#id_payroll_period");
-            let hour_input = $("#id_hours");
-
-            if (id_val > 1) {
+            if (parseInt(earnings_id) === 1) {
+                console.log("earning 1");
+                div_move_from.css("display", "block");
+                div_move_to.css("display", "block");
+                amount_to.prop("readonly", false);
+                div_overtime.css("display", "none");
                 div_working_days.css("display", "none");
-                div_overtime.css("display", "none");
-                period_input.change(function () {
-                    data['period'] = $(this).val();
-                    $.ajax({
-                        url: url,
-                        data: data,
-                        success: function (data) {
-                            amount_from.val(data['amount']);
-                        }
-                    });
-                });
-            } else if (id_val === 8) {
-                div_overtime.css("display", "block");
-                period_input.change(function () {
-                    data['period'] = $(this).val();
-                    $.ajax({
-                        url: url,
-                        data: data,
-                        success: function (data) {
-                            amount_from.val(data['amount']);
-                        }
-                    });
-                });
-            } else {
-                div_overtime.css("display", "none");
-                period_input.change(function () {
-                    data['period'] = $(this).val();
-                    $.ajax({
-                        url: url,
-                        data: data,
-                        success: function (data) {
-                            amount_from.val(data['amount']);
-                            let newAmt = (parseFloat(data['working_days'])/22.0) * parseFloat(data['amount']);
-                            hour_input.val(data['working_days']);
-                            amount_to.val(newAmt);
-                        }
-                    });
+                periodInput.change(function () {
+                    let period_id = $(this).val();
+                    let data = {};
+                    data['period'] = period_id;
+                    data['parameter'] = earnings_id;
+                    data['user_id'] = user_id;
+                    console.log("data: ");
+                    console.log(data);
+                    if (period_id > 0 && period_id != null) {
+                        $.ajax({
+                            url: url,
+                            data: data,
+                            success: function (response) {
+                                console.log("response: ");
+                                console.log(response);
+                                setUp(response)
+                            }
+                        });
+                    }
 
+                    function setUp(response) {
+                        amount_from.val(response['amount']);
+                    }
                 });
+            } else if (parseInt(earnings_id) === 78) {
+                console.log("earning 78");
+                div_move_from.css("display", "block");
+                div_move_to.css("display", "block");
                 $("label[for='id_hours']").text("Working days");
                 div_working_days.css("display", "block");
+                div_overtime.css("display", "none");
+                amount_to.prop("readonly", true);
+                hour_input.prop("required", true);
+                periodInput.change(function () {
+                    let period_id = $(this).val();
+                    let data = {};
+                    data['period'] = period_id;
+                    data['parameter'] = earnings_id;
+                    data['user_id'] = user_id;
+                    console.log("data: ");
+                    console.log(data);
+                    if (period_id > 0 && period_id != null) {
+                        $.ajax({
+                            url: url,
+                            data: data,
+                            success: function (response) {
+                                console.log("response: ");
+                                console.log(response);
+                                setUp(response)
+                            }
+                        });
+                    }
+
+                    function setUp(response) {
+                        amount_from.val(response['amount']);
+                        let newAmt = (parseFloat(response['working_days']) / 22.0) * parseFloat(response['amount']);
+                        hour_input.val(response['working_days']);
+                        amount_to.val(newAmt);
+                    }
+                });
+                hour_input.on("keyup", function () {
+                    let currentValue = $(this).val();
+                    let newAmt = (currentValue / 22.0) * amount_from.val();
+                    amount_to.val(newAmt);
+                });
+                div_working_days.css("display", "block");
+            } else if (parseInt(earnings_id) === 8) {
+                console.log("earning 8");
+                div_move_from.css("display", "none");
+                div_move_to.css("display", "none");
+                div_overtime.css("display", "block");
+                div_working_days.css("display", "block");
+            } else {
+                console.log("earning other");
+                div_move_from.css("display", "block");
+                div_move_to.css("display", "block");
+                amount_to.prop("readonly", false);
+                div_working_days.css("display", "none");
+                div_overtime.css("display", "none");
+                periodInput.change(function () {
+                    let period_id = $(this).val();
+                    let data = {};
+                    data['period'] = period_id;
+                    data['parameter'] = earnings_id;
+                    data['user_id'] = user_id;
+                    console.log("data: ");
+                    console.log(data);
+                    if (period_id > 0 && period_id != null) {
+                        $.ajax({
+                            url: url,
+                            data: data,
+                            success: function (response) {
+                                console.log(response);
+                                setUp(response)
+                            }
+                        });
+                    }
+
+                    function setUp(response) {
+                        amount_from.val(response['amount']);
+                    }
+                });
             }
 
         })
