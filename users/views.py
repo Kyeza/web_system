@@ -1244,16 +1244,6 @@ def load_earnings_current_amount(request):
             working_days = employee_period_processors.filter(earning_and_deductions_type_id=78).values(
                 'amount').first()
             response['working_days'] = working_days['amount']
-        elif parameter_id == 8:
-            overtime = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values(
-                'amount').first()
-            response['basic_salary'] = employee_period_processors.filter(earning_and_deductions_type_id=1).values(
-                'amount').first()['amount']
-            response['amount'] = overtime['amount']
-            if overtime_type == "NORMAL":
-                response['factor'] = EarningDeductionType.objects.get(pk=8).factor
-            elif overtime_type == "WEEKEND":
-                response['factor'] = EarningDeductionType.objects.get(pk=19).factor
         else:
             response = employee_period_processors.filter(earning_and_deductions_type_id=parameter_id).values(
                 'amount').first()
@@ -1371,16 +1361,7 @@ def approve_employee_movement(request, movement_id):
             period_processor.amount = new_amount
             period_processor.save(update_fields=['amount'])
         elif movement.earnings.id == 8:
-            basic_pay_key = f'P{movement.payroll_period.id}S{employee.pk}K1'
-            basic_pay_processor = PayrollProcessors.objects.get(payroll_key=basic_pay_key)
-            factor = None
-            if movement.over_time_category == "NORMAL":
-                factor = EarningDeductionType.objects.get(pk=8).factor
-            elif movement.over_time_category == "WEEKEND":
-                factor = EarningDeductionType.objects.get(pk=19).factor
-
-            new_overtime = (basic_pay_processor.amount / Decimal(176)) * Decimal(factor) * Decimal(movement.hours)
-            period_processor.amount += new_overtime
+            period_processor.amount += Decimal(movement.move_to)
             period_processor.save(update_fields=['amount'])
         else:
             period_processor.amount = Decimal(movement.move_to)
@@ -1404,3 +1385,31 @@ def decline_employee_movement(request, movement_id):
 
     messages.warning(request, f'Movement {movement_name} has been declined!')
     return render(request, 'users/employeemovement_list.html')
+
+
+def load_overtime_factor(request):
+    overtime_type = request.GET.get("overtime_type")
+    period_id = int(request.GET.get("period_id"))
+    user_id = int(request.GET.get("user_id"))
+    hours = float(request.GET.get("hours"))
+    employee = Employee.objects.get(pk=user_id)
+    payroll_period = PayrollPeriod.objects.get(pk=period_id)
+    period_processors = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id)\
+        .filter(employee_id=employee.pk)
+
+    factor = None
+    if overtime_type == "NORMAL":
+        factor = EarningDeductionType.objects.get(pk=8).factor
+    elif overtime_type == "WEEKEND":
+        factor = EarningDeductionType.objects.get(pk=19).factor
+
+    basic_salary = period_processors.filter(earning_and_deductions_type_id=1).first().amount
+    current_overtime = period_processors.filter(earning_and_deductions_type_id=8).first().amount
+
+    overtime_amount = (basic_salary / Decimal(176)) * Decimal(factor) * Decimal(hours)
+
+    overtime_amount += current_overtime
+
+    response = {"overtime_amount": str(round(overtime_amount, 2))}
+
+    return JsonResponse(response)

@@ -69,4 +69,5 @@ urlpatterns = [
     path('ajax/load_earnings/amount/', views.load_earnings_current_amount, name='ajax_load_current_earning'),
     path('approve/movement/<int:movement_id>/', views.approve_employee_movement, name='approve_employee_movement'),
     path('decline/movement/<int:movement_id>/', views.decline_employee_movement, name='decline_employee_movement'),
+    path('ajax/load_overtime_factor/factor/', views.load_overtime_factor, name='ajax_load_factor'),
 ]
