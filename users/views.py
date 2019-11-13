@@ -101,7 +101,7 @@ def register_employee(request):
                 subject = 'PAYROLL EMPLOYEE REGISTRATION NOTIFICATION'
                 link = 'http://127.0.0.1:8000/users/new_employee_approval/'
                 body = f'Hello All, \n\nEmployee {user.get_full_name()} has been registered to the  system. \nYou can kindly approve him/her using the following the link below:\n {link}'
-                # TODO: mailer.send_messages(subject, body, emails)
+                mailer.send_messages(subject, body, emails)
 
             logger.info(
                 f"Employee: {user.get_full_name()} has been successful" +
@@ -417,7 +417,7 @@ def approve_employee(request, pk=None):
                 mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
                 subject = 'PAYROLL EMPLOYEE APPROVAL NOTIFICATION'
                 body = f'Hello All, \n\nEmployee {user.get_full_name()} has been approved.'
-                # TODO: mailer.send_messages(subject, body, emails)
+                mailer.send_messages(subject, body, emails)
 
             messages.success(request, f'{employee} has been approved')
             return redirect('users:employee-approval')
@@ -1160,9 +1160,9 @@ class EmployeeMovementsCreate(CreateView):
             subject = 'PAYROLL EMPLOYEE MOVEMENT NOTIFICATION'
             link = 'http://127.0.0.1:8000/users/employee/movements/'
             body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
-            # TODO: mailer.send_messages(subject, body, staff_emails)
+            mailer.send_messages(subject, body, staff_emails)
 
-        return redirect('users:employee_movements_changelist', permanent=True)
+        return redirect('users:employee_movements', permanent=True)
 
 
 class EmployeeMovementsUpdate(UpdateView):
@@ -1293,9 +1293,9 @@ class EnumerationsMovementsCreate(CreateView):
             subject = 'PAYROLL EMPLOYEE MOVEMENT NOTIFICATION'
             link = 'http://127.0.0.1:8000/users/employee/movements/'
             body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
-            # TODO: mailer.send_messages(subject, body, staff_emails)
+            mailer.send_messages(subject, body, staff_emails)
 
-        return redirect('users:employee_movements_changelist', permanent=True)
+        return redirect('users:employee_movements', permanent=True)
 
 
 def approve_employee_movement(request, movement_id):
@@ -1370,7 +1370,19 @@ def approve_employee_movement(request, movement_id):
             new_amount = Decimal(movement.hours / 22.00) * employee.basic_salary
             period_processor.amount = new_amount
             period_processor.save(update_fields=['amount'])
-        elif movement.earnings.id != 1:
+        elif movement.earnings.id == 8:
+            basic_pay_key = f'P{movement.payroll_period.id}S{employee.pk}K1'
+            basic_pay_processor = PayrollProcessors.objects.get(payroll_key=basic_pay_key)
+            factor = None
+            if movement.over_time_category == "NORMAL":
+                factor = EarningDeductionType.objects.get(pk=8).factor
+            elif movement.over_time_category == "WEEKEND":
+                factor = EarningDeductionType.objects.get(pk=19).factor
+
+            new_overtime = (basic_pay_processor.amount / Decimal(176)) * Decimal(factor) * Decimal(movement.hours)
+            period_processor.amount += new_overtime
+            period_processor.save(update_fields=['amount'])
+        else:
             period_processor.amount = Decimal(movement.move_to)
             period_processor.save(update_fields=['amount'])
 

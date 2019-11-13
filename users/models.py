@@ -351,7 +351,7 @@ class EmployeeMovement(models.Model):
     movement_requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, editable=False)
 
     def get_absolute_url(self):
-        return reverse('users:employee_movements_changelist')
+        return reverse('users:employee_movements')
 
     def __str__(self):
         return f'{self.parameter.name.capitalize()} Movement for {self.employee_name}'
