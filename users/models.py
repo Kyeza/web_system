@@ -341,7 +341,7 @@ class EmployeeMovement(models.Model):
     parameter = models.ForeignKey('support_data.MovementParameter', on_delete=models.PROTECT)
     earnings = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.DO_NOTHING, null=True, blank=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.DO_NOTHING, null=True, blank=True)
-    hours = models.IntegerField(null=True, blank=True)
+    hours = models.FloatField(null=True, blank=True)
     over_time_category = models.CharField(max_length=10, choices=OVERTIME, null=True, blank=True)
     move_from = models.CharField(max_length=150, null=True, blank=True)
     move_to = models.CharField(max_length=150, null=True, blank=True)
