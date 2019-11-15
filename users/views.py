@@ -1338,30 +1338,29 @@ def approve_employee_movement(request, movement_id):
         working_days_processor = PayrollProcessors.objects. \
             get(payroll_key=f'P{movement.payroll_period.id}S{employee.pk}K78')
 
-        if movement.earnings.id == 1 and movement.move_to and movement.hours == working_days_processor.amount:
+        if movement.earnings.id == 1:
             employee.basic_salary = Decimal(movement.move_to)
             employee.save(update_fields=['basic_salary'])
             period_processor.amount = Decimal(movement.move_to)
             period_processor.save(update_fields=['amount'])
-        elif movement.earnings.id == 1 and movement.move_to and movement.hours != working_days_processor.amount:
-            if movement.move_to != employee.basic_salary:
-                employee.basic_salary = movement.move_to
-                employee.save()
+        elif movement.earnings.id == 78:
+            payroll_key = f'P{movement.payroll_period.id}S{employee.pk}K1'
+            period_processor = PayrollProcessors.objects.get(payroll_key=payroll_key)
             new_amount = Decimal(movement.hours / 22.00) * employee.basic_salary
-            working_days_processor.amount = movement.hours
+            working_days_processor.amount = Decimal(movement.hours)
             working_days_processor.save()
-            period_processor.amount = new_amount
+            period_processor.amount = round(new_amount)
             period_processor.save(update_fields=['amount'])
-        elif movement.earnings.id == 1 and movement.move_to is None and movement.hours != working_days_processor.amount:
+        elif movement.earnings.id == 1 and movement.move_to is None and Decimal(movement.hours) != working_days_processor.amount:
             working_days_processor = PayrollProcessors.objects. \
                 get(payroll_key=f'P{movement.payroll_period.id}S{employee.pk}K78')
-            working_days_processor.amount = movement.hours
+            working_days_processor.amount = Decimal(movement.hours)
             working_days_processor.save()
             new_amount = Decimal(movement.hours / 22.00) * employee.basic_salary
             period_processor.amount = new_amount
             period_processor.save(update_fields=['amount'])
         elif movement.earnings.id == 8:
-            period_processor.amount += Decimal(movement.move_to)
+            period_processor.amount += Decimal(str(round(float(movement.move_to))))
             period_processor.save(update_fields=['amount'])
         else:
             period_processor.amount = Decimal(movement.move_to)
