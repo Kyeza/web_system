@@ -24,6 +24,15 @@ class ExTraSummaryReportInfo(models.Model):
             else:
                 self.key = key
 
+        if self.total_deductions is not None:
+            self.total_deductions = round(self.total_deductions)
+
+        if self.net_pay is not None:
+            self.net_pay = round(self.net_pay)
+
+        if self.gross_earning is not None:
+            self.gross_earning = round(self.gross_earning)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.full_clean()

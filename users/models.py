@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
@@ -192,6 +194,12 @@ class Employee(models.Model):
         return f'{self.user}'
 
 
+def round_decimal(value):
+    if value is not None:
+        return round(value)
+    return value
+
+
 class PayrollProcessors(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
     earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.PROTECT,
@@ -216,6 +224,8 @@ class PayrollProcessors(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.payroll_key is None:
             self.payroll_key = f'P{self.payroll_period_id}S{self.employee_id}K{self.earning_and_deductions_type_id}'
+
+        self.amount = round_decimal(self.amount)
 
         super().save(force_insert, force_update, using, update_fields)
 
