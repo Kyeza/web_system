@@ -360,9 +360,6 @@ class EmployeeMovement(models.Model):
     status = models.CharField(max_length=20, blank=True, editable=False, default='SHOW')
     movement_requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, editable=False)
 
-    def get_absolute_url(self):
-        return reverse('users:employee_movements')
-
     def __str__(self):
         return f'{self.parameter.name.capitalize()} Movement for {self.employee_name}'
 

@@ -1285,7 +1285,7 @@ class EnumerationsMovementsCreate(CreateView):
             body = f'There are movements on the system the kindly require your approval.\n Please follow the link below: {link}'
             mailer.send_messages(subject, body, staff_emails)
 
-        return redirect('users:employee_movements', permanent=True)
+        return redirect('users:employee_movements_enums', permanent=True)
 
 
 def approve_employee_movement(request, movement_id):
