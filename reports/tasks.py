@@ -2,9 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 
-from background_task import background
-from background_task.models import Task
-from celery import shared_task
+from celery import shared_task, task
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.mail import get_connection
@@ -32,7 +30,7 @@ def sample_task(a, b):
     return f'result of addition is {a + b}'
 
 
-@background(schedule=60)
+@task()
 def notify_user_on_contract_expiry():
     group = Group.objects.get(pk=8)
     hr_staff = group.user_set.all()
@@ -62,4 +60,6 @@ def notify_user_on_contract_expiry():
                 staff_emails.remove(user.user.email)
 
 
-notify_user_on_contract_expiry(repeat=Task.Task.EVERY_4_WEEKS, repeat_until=None)
+@task()
+def task_number_one():
+    print("I love Kyeza Arnold")

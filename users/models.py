@@ -1,7 +1,10 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -13,6 +16,16 @@ from .utils import get_image_filename, get_doc_filename
 
 class User(AbstractUser):
     middle_name = models.CharField(max_length=100, blank=True, null=True)
+
+    def get_full_name(self):
+        full_name = ''
+        if self.first_name:
+            full_name += self.first_name + " "
+        if self.middle_name:
+            full_name += self.middle_name + " "
+        if self.last_name:
+            full_name += self.last_name + " "
+        return full_name.strip()
 
     class Meta:
         permissions = [
@@ -149,7 +162,8 @@ class Employee(models.Model):
     documents = models.FileField(upload_to=get_doc_filename, blank=True, null=True)
     payment_location = models.ForeignKey('support_data.DutyStation', on_delete=models.SET_NULL, null=True, blank=True,
                                          related_name='payment_location')
-    assigned_locations = models.ManyToManyField('support_data.DutyStation', related_name="assigned_locations")
+    assigned_locations = models.ManyToManyField('support_data.DutyStation', related_name="assigned_locations",
+                                                blank=True)
 
     def clean(self):
         if self.payroll_center is None:
@@ -180,6 +194,12 @@ class Employee(models.Model):
         return f'{self.user}'
 
 
+def round_decimal(value):
+    if value is not None:
+        return round(value)
+    return value
+
+
 class PayrollProcessors(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
     earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.PROTECT,
@@ -204,6 +224,8 @@ class PayrollProcessors(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.payroll_key is None:
             self.payroll_key = f'P{self.payroll_period_id}S{self.employee_id}K{self.earning_and_deductions_type_id}'
+
+        self.amount = round_decimal(self.amount)
 
         super().save(force_insert, force_update, using, update_fields)
 
@@ -317,6 +339,11 @@ class EmployeeProject(models.Model):
 
 
 class EmployeeMovement(models.Model):
+    OVERTIME = (
+        ("NORMAL", "Normal"),
+        ("WEEKEND", "Weekend"),
+    )
+
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, editable=False)
     employee_name = models.CharField(max_length=300, null=True, blank=True)
     department = models.CharField(max_length=300, null=True, blank=True)
@@ -324,6 +351,8 @@ class EmployeeMovement(models.Model):
     parameter = models.ForeignKey('support_data.MovementParameter', on_delete=models.PROTECT)
     earnings = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.DO_NOTHING, null=True, blank=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.DO_NOTHING, null=True, blank=True)
+    hours = models.FloatField(null=True, blank=True)
+    over_time_category = models.CharField(max_length=10, choices=OVERTIME, null=True, blank=True)
     move_from = models.CharField(max_length=150, null=True, blank=True)
     move_to = models.CharField(max_length=150, null=True, blank=True)
     date = models.DateField(auto_now=True)
@@ -331,8 +360,11 @@ class EmployeeMovement(models.Model):
     status = models.CharField(max_length=20, blank=True, editable=False, default='SHOW')
     movement_requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, editable=False)
 
-    def get_absolute_url(self):
-        return reverse('users:employee_movements_changelist')
-
     def __str__(self):
         return f'{self.parameter.name.capitalize()} Movement for {self.employee_name}'
+
+
+class PayrollProcessorManager(models.Model):
+    payroll_period = models.OneToOneField('payroll.PayrollPeriod', on_delete=models.CASCADE, primary_key=True)
+    processed_status = models.CharField(max_length=3, default='NO')
+    number_of_approvers = models.IntegerField(default=0)

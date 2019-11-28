@@ -25,26 +25,36 @@
                 {% for payroll_period in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'reports:display-summary-report' payroll_period.pk %}">{{ payroll_period.payroll_key }}</a>
+                            {% if payroll_period.payrollprocessormanager.processed_status == 'YES' and payroll_period.payrollprocessormanager.number_of_approvers == 0 %}
+                                {{ payroll_period.payroll_key }}
+                            {% else %}
+                                <a href="{% url 'reports:display-summary-report' payroll_period.pk %}">
+                                    {{ payroll_period.payroll_key }}
+                                </a>
+                            {% endif %}
                         </td>
                         <td>{{ payroll_period.payroll_center }}</td>
                         <td>{{ payroll_period.month }}</td>
                         <td>{{ payroll_period.year }}</td>
                         <td>
-{#                            <label class="switch">#}
-{#                                <input id="process_lst_{{ payroll_period.id }}" type="checkbox">#}
-{#                                <span class="slider round"></span>#}
-{#                            </label>#}
                             <label>
-                                <input value="{{ payroll_period.processing_dollar_rate }}" class="p-1 rounded dollar-rate" id="{{ payroll_period.id }}" type="number">
+                                <input value="{{ payroll_period.processing_dollar_rate }}"
+                                       class="p-1 rounded dollar-rate"
+                                       id="{{ payroll_period.id }}" type="number">
                             </label>
                         </td>
                         <td>
-                            <button id="{{ payroll_period.id }}" style="color: white"
-                                    class="btn btn-sm btn-primary border-0 process_{{ payroll_period.id }}"
-                                    disabled>
-                                Process
-                            </button>
+                            {% if payroll_period.payrollprocessormanager.processed_status == 'YES' and payroll_period.payrollprocessormanager.number_of_approvers == 0 %}
+                                <button class="btn btn-sm btn-primary border-0" disabled>
+                                    Process
+                                </button>
+                            {% else %}
+                                <button id="{{ payroll_period.id }}" style="color: white"
+                                        class="btn btn-sm btn-primary border-0 process_{{ payroll_period.id }}"
+                                        disabled>
+                                    Process
+                                </button>
+                            {% endif %}
                             <div id="loader{{ payroll_period.id }}"></div>
                         </td>
                         <td>{{ payroll_period.status }}</td>
