@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'bootstrap4',
     'debug_toolbar',
     'django.contrib.sites',
-    'djcelery',
+    'django_celery_results',
+    'django_celery_beat',
     'djcelery_email',
 ]
 
@@ -229,7 +230,7 @@ CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
 CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 # Other Celery settings
