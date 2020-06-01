@@ -1,3 +1,5 @@
+from typing import Type
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
@@ -8,11 +10,11 @@ from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
 from .constants import MARITAL_STATUS, GENDER, EMP_STATUS
+from .tasks import remove_employee_from_last_payroll_period
 from .utils import get_image_filename
 
 
 class User(AbstractUser):
-
     class Meta:
         permissions = [
             ("approve_employee", "Can approve Employee"),
@@ -54,6 +56,7 @@ class District(models.Model):
 
 
 class Employee(models.Model):
+
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, primary_key=True, editable=False)
     user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS, null=True)
@@ -81,8 +84,10 @@ class Employee(models.Model):
     appointment_date = models.DateField(default=timezone.now, null=True, blank=True)
     social_security = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
     payroll_center = models.ForeignKey('payroll.PayrollCenter', on_delete=models.SET_NULL, null=True)
-    bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True, blank=True)
-    bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True, blank=True)
+    bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True,
+                               blank=True)
+    bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True,
+                               blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, )
     first_account_number = models.CharField(max_length=200, null=True, blank=True)
     second_account_number = models.CharField(max_length=200, null=True, blank=True)
@@ -99,8 +104,31 @@ class Employee(models.Model):
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
+    current_payroll_category_id = models.PositiveIntegerField(null=True, editable=False)
 
     def clean(self):
+        if self.current_payroll_category_id is None:
+            self.current_payroll_category_id = self.category_id
+
+        if self.category and (self.category_id != self.current_payroll_category_id):
+            prev_payroll_category = self.current_payroll_category_id
+            self.current_payroll_category_id = self.category_id
+            from payroll.models import PayrollCenter
+            try:
+                payroll_center_id = PayrollCenter.objects.filter(staff_category_id=prev_payroll_category) \
+                    .values_list('id').first()[0]
+            except TypeError:
+                pass
+            else:
+                try:
+                    new_pc_id = PayrollCenter.objects.filter(staff_category_id=self.current_payroll_category_id)\
+                        .values_list('id').first()[0]
+                except TypeError:
+                    pass
+                else:
+                    self.payroll_center_id = new_pc_id
+                remove_employee_from_last_payroll_period(payroll_center_id, self.pk)
+
         if self.payroll_center is None:
             raise ValidationError("Payroll Canter required.")
 
