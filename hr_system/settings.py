@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'djcelery',
     'djcelery_email',
     'channels',
+    'django_celery_results',
 ]
 
 SITE_ID = 1
@@ -207,8 +208,6 @@ LOGGING = {
     }
 }
 
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -229,3 +228,6 @@ CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
 CELERY_BROKER_URL = 'amqp://localhost'
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'

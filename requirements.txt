@@ -21,6 +21,7 @@ Django==3.0.6
 django-appconf==1.0.4
 django-celery==3.3.1
 django-celery-email==3.0.0
+django-celery-results==1.2.1
 django-crispy-forms==1.9.1
 django-debug-toolbar==2.2
 django-memcached==0.1.2
