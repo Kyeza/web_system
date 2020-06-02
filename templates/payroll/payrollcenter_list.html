@@ -15,6 +15,7 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>Payroll Center</th>
+                    <th>Staff Category</th>
                     <th>Country</th>
                     <th>Actions</th>
                 </tr>
@@ -23,6 +24,7 @@
                 {% for payroll_center in object_list %}
                     <tr>
                         <td>{{ payroll_center.name }}</td>
+                        <td>{{ payroll_center.staff_category }}</td>
                         <td>{{ payroll_center.country }}</td>
                         <td>
                             <a class="btn btn-primary btn-sm"

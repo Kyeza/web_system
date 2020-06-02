@@ -19,7 +19,7 @@ def index(request):
 class PayrollCenterCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'payroll.add_payrollcenter'
     model = PayrollCenter
-    fields = ['name', 'country', 'organization', 'description']
+    fields = ['name', 'country', 'organization', 'staff_category', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -30,7 +30,7 @@ class PayrollCenterCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 class PayrollCenterUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = 'payroll.change_payrollcenter'
     model = PayrollCenter
-    fields = ['name', 'country', 'organization', 'description']
+    fields = ['name', 'country', 'organization', 'staff_category', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,7 +41,7 @@ class PayrollCenterUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 class PayrollCenterDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     permission_required = 'payroll.view_payrollcenter'
     model = PayrollCenter
-    fields = ['name', 'country', 'organization', 'description']
+    fields = ['name', 'country', 'organization', 'staff_category', 'description']
 
 
 class PayrollCenterListView(LoginRequiredMixin, ListView):
@@ -66,7 +66,7 @@ class PayrollPeriodCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         messages.success(self.request, f'Payroll Period for {form.instance.payroll_center} month of'
-        f' {form.instance.month} has been opened')
+        f'{form.instance.month} has been opened')
         return super().form_valid(form)
 
 

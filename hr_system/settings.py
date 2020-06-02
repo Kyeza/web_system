@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django.contrib.sites',
     'djcelery',
-    'djcelery_email'
+    'djcelery_email',
+    'channels',
+    'django_celery_results',
 ]
 
 SITE_ID = 1
@@ -85,6 +87,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'hr_system.wsgi.application'
+ASGI_APPLICATION = "hr_system.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -185,6 +188,11 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
+
+        'console': {
+            'format': '{levelname} {pathname} {funcName} {lineno} {message}',
+            'style': '{',
+        },
         'simple': {
             'format': '{levelname} {message}',
             'style': '{',
@@ -194,7 +202,7 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'console'
         },
     },
     'loggers': {
@@ -205,8 +213,6 @@ LOGGING = {
     }
 }
 
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -227,3 +233,6 @@ CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
 CELERY_BROKER_URL = 'amqp://localhost'
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
