@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django.contrib.sites',
     'djcelery',
-    'djcelery_email'
+    'djcelery_email',
+    'channels',
 ]
 
 SITE_ID = 1
@@ -85,6 +86,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'hr_system.wsgi.application'
+ASGI_APPLICATION = "hr_system.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
