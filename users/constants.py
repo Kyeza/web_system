@@ -33,3 +33,8 @@ MARITAL_STATUS = (
 )
 
 YEARS = [year for year in range(1980, timezone.now().year)]
+
+ERROR = 'error'
+DEBUG = 'debug'
+INFO = 'info'
+

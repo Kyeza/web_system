@@ -1,5 +1,7 @@
 import logging
+import os
 import re
+import sys
 from builtins import super
 from decimal import Decimal
 
@@ -19,6 +21,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
+from hr_system.helpers import ProcessingDataError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
 from users.mixins import NeverCacheMixin
@@ -525,164 +528,169 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     lst_rates = LSTRates.objects.all()
 
     for employee in employees_in_period:
-        logger.info(f'Processing for user {employee}')
-        gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
-        ge_data = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_category_id=1).all()
+        try:
+            logger.info(f'Processing for user {employee}')
+            gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
+            ge_data = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_category_id=1).all()
 
-        # calculating gross earnings
-        logger.info(f'Processing for user {employee}: calculating gross earnings')
-        if ge_data.exists():
-            for inst in ge_data.iterator():
-                if inst.earning_and_deductions_type.id == 1:
-                    inst.amount = employee.gross_salary
-                    inst.save(update_fields=['amount'])
-                elif inst.earning_and_deductions_type.id == 2 and user is None:
-                    if employee.duty_station and (employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
-                        inst.amount = employee.duty_station.earning_amount
+            # calculating gross earnings
+            logger.info(f'Processing for user {employee}: calculating gross earnings')
+            if ge_data.exists():
+                for inst in ge_data.iterator():
+                    if inst.earning_and_deductions_type.id == 1:
+                        inst.amount = employee.gross_salary
                         inst.save(update_fields=['amount'])
-                gross_earnings += inst.amount
+                    elif inst.earning_and_deductions_type.id == 2 and user is None:
+                        if employee.duty_station and (
+                                employee.duty_station.earning_amount is not None) and inst.amount != employee.duty_station.earning_amount:
+                            inst.amount = employee.duty_station.earning_amount
+                            inst.save(update_fields=['amount'])
+                    gross_earnings += inst.amount
 
-        # calculating PAYE
-        logger.info(f'Processing for user {employee}: calculating PAYE')
-        tax_bracket, tax_rate, fixed_tax = 0, 0, 0
-        for tx_brac in paye_rates.iterator():
-            if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
-                tax_bracket = tx_brac.lower_boundary
-                tax_rate = tx_brac.rate / 100
-                fixed_tax = tx_brac.fixed_amount
-                break
-        paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
-        ge_minus_paye = gross_earnings - paye
+            # calculating PAYE
+            logger.info(f'Processing for user {employee}: calculating PAYE')
+            tax_bracket, tax_rate, fixed_tax = 0, 0, 0
+            for tx_brac in paye_rates.iterator():
+                if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
+                    tax_bracket = tx_brac.lower_boundary
+                    tax_rate = tx_brac.rate / 100
+                    fixed_tax = tx_brac.fixed_amount
+                    break
+            paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
+            ge_minus_paye = gross_earnings - paye
 
-        # calculating LST
-        logger.info(f'Processing for user {employee}: calculating LST')
-        fixed_lst = 0
-        if process_lst == 'True':
-            if lst_rates.exists():
-                for lst_brac in lst_rates.iterator():
-                    if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
-                        fixed_lst = lst_brac.fixed_amount / 4
-                        break
-        lst = fixed_lst
+            # calculating LST
+            logger.info(f'Processing for user {employee}: calculating LST')
+            fixed_lst = 0
+            if process_lst == 'True':
+                if lst_rates.exists():
+                    for lst_brac in lst_rates.iterator():
+                        if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
+                            fixed_lst = lst_brac.fixed_amount / 4
+                            break
+            lst = fixed_lst
 
-        # calculating NSSF 5% and 10%
-        logger.info(f'Processing for user {employee}: calculating NSSF')
-        if employee.social_security == 'YES':
-            nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
-            nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
-        else:
-            nssf_5 = 0
-            nssf_10 = 0
+            # calculating NSSF 5% and 10%
+            logger.info(f'Processing for user {employee}: calculating NSSF')
+            if employee.social_security == 'YES':
+                nssf_5 = Decimal(int(gross_earnings) * (5 / 100))
+                nssf_10 = Decimal(int(gross_earnings) * (10 / 100))
+            else:
+                nssf_5 = 0
+                nssf_10 = 0
 
-        # update PAYE if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating PAYE')
-        employee_paye_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=61).first()
-        if employee_paye_processor:
-            employee_paye_processor.amount = paye
-            employee_paye_processor.save(update_fields=['amount'])
+            # update PAYE if exists in payroll center
+            logger.info(f'Processing for user {employee}: updating PAYE')
+            employee_paye_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=61).first()
+            if employee_paye_processor:
+                employee_paye_processor.amount = paye
+                employee_paye_processor.save(update_fields=['amount'])
 
-        # update LST if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating LST')
+            # update LST if exists in payroll center
+            logger.info(f'Processing for user {employee}: updating LST')
 
-        employee_lst_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=65).first()
-        if employee_paye_processor:
-            employee_lst_processor.amount = lst
-            employee_lst_processor.save(update_fields=['amount'])
+            employee_lst_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=65).first()
+            if employee_paye_processor:
+                employee_lst_processor.amount = lst
+                employee_lst_processor.save(update_fields=['amount'])
 
-        # update Pension if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating Pension')
+            # update Pension if exists in payroll center
+            logger.info(f'Processing for user {employee}: updating Pension')
 
-        employee_pension_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=75).first()
-        if employee_paye_processor and employee.category_id == 2:
-            employee_pension_processor.amount = employee.gross_salary * Decimal(5 / 100)
-            employee_pension_processor.save(update_fields=['amount'])
+            employee_pension_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=75).first()
+            if employee_paye_processor and employee.category_id == 2:
+                employee_pension_processor.amount = employee.gross_salary * Decimal(5 / 100)
+                employee_pension_processor.save(update_fields=['amount'])
 
-        # update Employer Pension if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating Employer Pension')
-        employer_pension = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=76).first()
-        arrears = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=11).first()
+            # update Employer Pension if exists in payroll center
+            logger.info(f'Processing for user {employee}: updating Employer Pension')
+            employer_pension = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=76).first()
+            arrears = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=11).first()
 
-        employer_pension_amt = 0
-        if employee.category_id == 2:
-            employer_pension_amt = (employee.gross_salary + arrears.amount) / Decimal(12)
+            employer_pension_amt = 0
+            if employee.category_id == 2:
+                employer_pension_amt = (employee.gross_salary + arrears.amount) / Decimal(12)
 
-        if employer_pension:
-            employer_pension.amount = employer_pension_amt
-            employer_pension.save(update_fields=['amount'])
+            if employer_pension:
+                employer_pension.amount = employer_pension_amt
+                employer_pension.save(update_fields=['amount'])
 
-        # update NSSF 10% if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating NSSF 10')
-        employee_nssf_10_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=31).first()
-        if employee_nssf_10_processor:
-            employee_nssf_10_processor.amount = nssf_10
-            employee_nssf_10_processor.save(update_fields=['amount'])
+            # update NSSF 10% if exists in payroll center
+            logger.info(f'Processing for user {employee}: updating NSSF 10')
+            employee_nssf_10_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=31).first()
+            if employee_nssf_10_processor:
+                employee_nssf_10_processor.amount = nssf_10
+                employee_nssf_10_processor.save(update_fields=['amount'])
 
-        # update NSSF 5%_5 if exists in payroll center
-        logger.info(f'Processing for user {employee}: updating NSSF 5')
-        employee_nssf_5_processor = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=32).first()
-        if employee_nssf_5_processor:
-            employee_nssf_5_processor.amount = nssf_5
-            employee_nssf_5_processor.save(update_fields=['amount'])
+            # update NSSF 5%_5 if exists in payroll center
+            logger.info(f'Processing for user {employee}: updating NSSF 5')
+            employee_nssf_5_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=32).first()
+            if employee_nssf_5_processor:
+                employee_nssf_5_processor.amount = nssf_5
+                employee_nssf_5_processor.save(update_fields=['amount'])
 
-        tx_data_ded = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_category_id=2).all()
-        tx_data_stat = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_category_id=3).all()
+            tx_data_ded = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_category_id=2).all()
+            tx_data_stat = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_category_id=3).all()
 
-        # calculating total deductions from deductions
-        logger.info(f'Processing for user {employee}: calculating total deductions from deductions')
-        if tx_data_ded.exists():
-            for inst in tx_data_ded.iterator():
-                total_deductions += inst.amount
+            # calculating total deductions from deductions
+            logger.info(f'Processing for user {employee}: calculating total deductions from deductions')
+            if tx_data_ded.exists():
+                for inst in tx_data_ded.iterator():
+                    total_deductions += inst.amount
 
-        # calculating total deductions from statutory deductions
-        logger.info(f'Processing for user {employee}: calculating total deductions from statutory deductions')
-        if tx_data_stat.exists():
-            for inst in tx_data_stat.iterator():
-                total_deductions += inst.amount
+            # calculating total deductions from statutory deductions
+            logger.info(f'Processing for user {employee}: calculating total deductions from statutory deductions')
+            if tx_data_stat.exists():
+                for inst in tx_data_stat.iterator():
+                    total_deductions += inst.amount
 
-        logger.info(f'Processing for user {employee}: calculating NET PAY')
-        net_pay = gross_earnings - total_deductions
+            logger.info(f'Processing for user {employee}: calculating NET PAY')
+            net_pay = gross_earnings - total_deductions
 
-        # update net_pay if exists in payroll center
-        logger.info(f'Processing for user {employee}: Net pay')
-        employee_net_pay = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=60).first()
-        if employee_net_pay:
-            employee_net_pay.amount = net_pay
-            employee_net_pay.save(update_fields=['amount'])
+            # update net_pay if exists in payroll center
+            logger.info(f'Processing for user {employee}: Net pay')
+            employee_net_pay = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=60).first()
+            if employee_net_pay:
+                employee_net_pay.amount = net_pay
+                employee_net_pay.save(update_fields=['amount'])
 
-        # update accrued salary ap if exists in payroll center
-        logger.info(f'Processing for user {employee}: Accrued Salary AP')
-        employee_accrued_salary_ap = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=72).first()
-        if employee_accrued_salary_ap:
-            employee_accrued_salary_ap.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
-            employee_accrued_salary_ap.save(update_fields=['amount'])
+            # update accrued salary ap if exists in payroll center
+            logger.info(f'Processing for user {employee}: Accrued Salary AP')
+            employee_accrued_salary_ap = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=72).first()
+            if employee_accrued_salary_ap:
+                employee_accrued_salary_ap.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
+                employee_accrued_salary_ap.save(update_fields=['amount'])
 
-        # update accrued salary gl if exists in payroll center
-        logger.info(f'Processing for user {employee}: Accrued Salary AL')
-        employee_accrued_salary_gl = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=73).first()
-        if employee_accrued_salary_gl:
-            employee_accrued_salary_gl.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
-            employee_accrued_salary_gl.save(update_fields=['amount'])
+            # update accrued salary gl if exists in payroll center
+            logger.info(f'Processing for user {employee}: Accrued Salary AL')
+            employee_accrued_salary_gl = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=73).first()
+            if employee_accrued_salary_gl:
+                employee_accrued_salary_gl.amount = (employee.gross_salary + arrears.amount) / Decimal(12)
+                employee_accrued_salary_gl.save(update_fields=['amount'])
 
-        # updating NSSF export
-        logger.info(f'Processing for user {employee}: NSSF Export')
-        employee_nssf_export = period_processes.filter(employee=employee) \
-            .filter(earning_and_deductions_type_id=77).first()
-        if employee_nssf_export:
-            employee_nssf_export.amount = nssf_5 + nssf_10
-            employee_nssf_export.save(update_fields=['amount'])
+            # updating NSSF export
+            logger.info(f'Processing for user {employee}: NSSF Export')
+            employee_nssf_export = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=77).first()
+            if employee_nssf_export:
+                employee_nssf_export.amount = nssf_5 + nssf_10
+                employee_nssf_export.save(update_fields=['amount'])
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            raise ProcessingDataError(str(employee), exc_type, exc_tb.tb_lineno)
 
         try:
             key = f'{payroll_period.payroll_key}S{employee.pk}'
@@ -729,11 +737,18 @@ def process_payroll_period(request, pk, user=None):
         process_lst = request.POST.get('process_lst')
         try:
             response = processor(payroll_period, process_lst, 'POST')
-        except Exception as e:
-            error_message = messages.info(request, f'Something went wrong {e.args}')
+        except ProcessingDataError as e:
+            error_message = messages.error(request, f'Something went wrong while processing data for {e.args[0]}, Inform IT Administrator')
             message = render_to_string('partials/messages.html', {'error_message': error_message})
-            logger.error(f'Something went wrong {e.args}')
-            response = {'status': 'Failed', 'message': message}
+            logger.error(e.args)
+            response = {'status': 'error', 'message': message}
+            return render_to_json(request, response)
+        except Exception as e:
+            error_message = messages.error(request,
+                                           f'Something went wrong while processing payroll!, Inform IT Administrator')
+            message = render_to_string('partials/messages.html', {'error_message': error_message})
+            logger.error(e.args)
+            response = {'status': 'error', 'message': message}
             return render_to_json(request, response)
         else:
             return JsonResponse(response)

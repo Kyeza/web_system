@@ -188,6 +188,11 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
+
+        'console': {
+            'format': '{levelname} {pathname} {funcName} {lineno} {message}',
+            'style': '{',
+        },
         'simple': {
             'format': '{levelname} {message}',
             'style': '{',
@@ -197,7 +202,7 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'console'
         },
     },
     'loggers': {

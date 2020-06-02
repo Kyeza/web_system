@@ -135,7 +135,7 @@
                     $(btnId).show();
                     console.log('Am back with');
                     console.log(response);
-                    if(response.status === 'Failed') {
+                    if(response.status === 'error') {
                         console.log(response.message);
                         showPopupMessage(response.message)
                         window.location.reload(true);
