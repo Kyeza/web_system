@@ -56,17 +56,26 @@ class EarningDeductionType(models.Model):
 
 
 class Bank(models.Model):
-    """docstring for Bank"""
+    """Bank Model
+        attrs: bank_name, branch, branch_code, sort_code, bank_code
+    """
+
     bank = models.CharField(max_length=150)
     branch = models.CharField(max_length=200, null=True, blank=True)
+    branch_code = models.PositiveIntegerField(null=True, blank=True)
     sort_code = models.CharField(max_length=100, null=True, blank=True)
     bank_code = models.CharField(max_length=3, null=True, blank=True)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('payroll:bank-detail', kwargs={'pk': self.pk})
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.bank
+
+    class Meta:
+        ordering = ['bank']
+        verbose_name = 'Bank'
+        verbose_name_plural = 'Banks'
 
 
 class Currency(models.Model):

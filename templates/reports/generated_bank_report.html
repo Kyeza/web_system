@@ -20,7 +20,8 @@
             <tr>
                 <th>Name</th>
                 <th>Bank</th>
-                <th>Branch</th>
+                <th>Branch name</th>
+                <th>Branch code</th>
                 <th>Sort code</th>
                 <th>Account No.</th>
                 <th>Net Pay</th>
@@ -33,6 +34,7 @@
                         <td>{{ staff.user.get_full_name }}</td>
                         <td>{{ staff.bank_1 }}</td>
                         <td>{{ staff.bank_1.branch }}</td>
+                        <td>{{ staff.bank_1.branch_code }}</td>
                         <td>{{ staff.bank_1.sort_code }}</td>
                         <td>{{ staff.first_account_number }}</td>
                         {% with staff|report:period as report %}
@@ -44,6 +46,7 @@
                             <td>{{ staff.user.get_full_name }}</td>
                             <td>{{ staff.bank_2 }}</td>
                             <td>{{ staff.bank_2.branch }}</td>
+                            <td>{{ staff.bank_2.branch_code }}</td>
                             <td>{{ staff.bank_2.sort_code }}</td>
                             <td>{{ staff.second_account_number }}</td>
                             {% with staff|report:period as report %}
