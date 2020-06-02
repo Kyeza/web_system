@@ -11,6 +11,8 @@ from django.contrib.auth.models import Group
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import never_cache
 from django.views.generic.detail import DetailView
@@ -24,6 +26,7 @@ from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, Empl
     TerminatedEmployees
 from .forms import StaffCreationForm, ProfileCreationForm, StaffUpdateForm, ProfileUpdateForm, \
     EmployeeApprovalForm, TerminationForm, EmployeeProjectForm, LoginForm, ProfileGroupForm
+from .utils import render_to_json
 
 logger = logging.getLogger('payroll')
 
@@ -727,11 +730,11 @@ def process_payroll_period(request, pk, user=None):
         try:
             response = processor(payroll_period, process_lst, 'POST')
         except Exception as e:
-            # msgs = messages.info(request, 'There are no PayrollCenter Earning and Deductions in the System')
-            # html = render_to_string('partials/messages.html', {'msgs': msgs})
+            error_message = messages.info(request, f'Something went wrong {e.args}')
+            message = render_to_string('partials/messages.html', {'error_message': error_message})
             logger.error(f'Something went wrong {e.args}')
-            response = {'status': 'Failed', 'message': ''}
-            return JsonResponse(response)
+            response = {'status': 'Failed', 'message': message}
+            return render_to_json(request, response)
         else:
             return JsonResponse(response)
 

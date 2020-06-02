@@ -69,6 +69,7 @@
                 ]
             } );
         } );
+
         $(function () {
             function getCookie(name) {
                 let cookieValue = null;
@@ -101,6 +102,13 @@
                 }
             });
 
+            function showPopupMessage(content) {
+                let elMessages = $('#messages');
+                if (content) {
+                    elMessages.html(content);
+                }
+            }
+
             $('.process-payroll').on('click', function () {
                 let id = $(this).attr('id');
                 let loaderId = '#loader'+id;
@@ -129,6 +137,8 @@
                     console.log(response);
                     if(response.status === 'Failed') {
                         console.log(response.message);
+                        showPopupMessage(response.message)
+                        window.location.reload(true);
                     }else {
                         console.log(response.status);
                         window.location.href = '/reports/summary_report/' + id;
