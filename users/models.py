@@ -127,7 +127,7 @@ class Employee(models.Model):
                     pass
                 else:
                     self.payroll_center_id = new_pc_id
-                remove_employee_from_last_payroll_period(payroll_center_id, self.pk)
+                remove_employee_from_last_payroll_period.delay(payroll_center_id, self.pk)
 
         if self.payroll_center is None:
             raise ValidationError("Payroll Canter required.")
