@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import sys
+from datetime import timedelta
+
+from celery.schedules import crontab
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -48,6 +53,8 @@ INSTALLED_APPS = [
     'djcelery_email',
     'channels',
     'django_celery_results',
+    'django_celery_beat',
+    'channels_redis',
 ]
 
 SITE_ID = 1
@@ -122,10 +129,16 @@ else:
             },
             'NAME': 'payroll_schema',
             'USER': 'root',
-            'PASSWORD': 'Kam12345',
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
+    }
+
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'test_payroll_schema'
     }
 # [END db_setup]
 
@@ -214,12 +227,12 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'kyezaarnold63@gmail.com'
-EMAIL_HOST_PASSWORD = 'KAM12345'
-DEFAULT_FROM_EMAIL = 'kyezaarnold63@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
 CACHES = {
     'default': {
@@ -232,7 +245,27 @@ CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
-CELERY_BROKER_URL = 'amqp://localhost'
-
+CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# Periodic tasks configuration
+CELERY_BEAT_SCHEDULE = {
+    'contract_expiry_reminder': {
+        'task': 'reports.tasks.contract_expiry_reminder',
+        'schedule': crontab(hour=7, minute=30, day_of_week=1)
+    }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}

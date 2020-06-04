@@ -1,6 +1,10 @@
+import logging
+
 from celery import shared_task
 
 from payroll.models import PayrollPeriod
+
+logger = logging.getLogger('payroll')
 
 
 @shared_task
