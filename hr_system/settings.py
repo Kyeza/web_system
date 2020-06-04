@@ -138,7 +138,7 @@ else:
 if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test_payroll_schema'
+        'NAME': 'test_payroll_schema',
     }
 # [END db_setup]
 

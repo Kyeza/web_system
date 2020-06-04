@@ -15,6 +15,18 @@ from .utils import get_image_filename
 
 
 class User(AbstractUser):
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
+
+    def get_full_name(self):
+        full_name = ''
+        if self.first_name:
+            full_name += self.first_name + " "
+        if self.middle_name:
+            full_name += self.middle_name + " "
+        if self.last_name:
+            full_name += self.last_name + " "
+        return full_name.strip()
+
     class Meta:
         permissions = [
             ("approve_employee", "Can approve Employee"),
