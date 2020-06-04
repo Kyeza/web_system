@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 import sys
 from builtins import super
@@ -13,7 +12,6 @@ from django.contrib.auth.models import Group
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import never_cache
@@ -24,7 +22,6 @@ from django.views.generic.list import ListView
 from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
-from reports.models import ExTraSummaryReportInfo
 from reports.tasks import update_or_create_user_summary_report
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
@@ -706,7 +703,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 employee_nssf_export.amount = nssf_5 + nssf_10
                 employee_nssf_export.save(update_fields=['amount'])
         except (
-        EmptyPAYERatesTableError, EmptyLSTRatesTableError, NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError):
+                EmptyPAYERatesTableError, EmptyLSTRatesTableError, NoEmployeeInPayrollPeriodError,
+                NoEmployeeInSystemError):
             raise
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -723,7 +721,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         }
 
         period_info = {
-            'period_id': payroll_period.id
+            'period_id': payroll_period.id,
+            'period': payroll_period.created_on
         }
 
         # create or update user summary report

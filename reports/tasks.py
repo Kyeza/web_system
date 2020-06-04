@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group
 
 from reports.helpers.mailer import Mailer
 from reports.models import ExTraSummaryReportInfo
-from users.models import Employee
+from users.models import Employee, PayrollProcessors
 
 logger = logging.getLogger('payroll')
 
@@ -77,13 +77,14 @@ def contract_expiry_reminder():
 def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Optional[Any]], net_pay: float,
                                          total_deductions: float, gross_earning: float,
                                          period_info: Dict[str, Optional[Any]]) -> None:
-    report, created = ExTraSummaryReportInfo.objects.get_or_create(key=report_id)
+    report, created = ExTraSummaryReportInfo.objects.get_or_create(report_id=report_id)
 
     try:
         logger.info(f"processing summary report for {user_info['staff_full_name']}")
         report.payroll_period_id = period_info['period_id']
         report.employee_id = user_info['employee_id']
         report.analysis = user_info['analysis']
+        report.period = period_info['period']
         report.staff_full_name = user_info['staff_full_name']
         report.job_title = user_info['job_title']
         report.basic_salary = user_info['basic_salary']
@@ -92,11 +93,18 @@ def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Op
         report.net_pay = net_pay
         report.payment_method = user_info['payment_method']
         report.save()
+
     except Exception as e:
         logger.error(f"an error occurred while processing summary report for {user_info['staff_full_name']}")
         logger.error(e.args)
 
     if created:
         logger.info(f"created summary report for {user_info['staff_full_name']}")
+        processors_to_report = PayrollProcessors.objects.filter(payroll_period_id=period_info['period_id'],
+                                                                employee_id=user_info['employee_id']).all()
+        if processors_to_report.exists():
+            for item in processors_to_report.iterator():
+                item.summary_report_id = report_id
+                item.save()
     else:
         logger.info(f"updated summary report for {user_info['staff_full_name']}")

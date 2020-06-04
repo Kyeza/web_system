@@ -1,17 +1,23 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load reports_extras %}
 {% load users_extras %}
 {% load humanize %}
 
 {% block content %}
     <div class="content-section">
-        <h5 id="summary_title" class="border-bottom mb-4">
-            PAYROLL FOR THE MONTH OF {{ payroll_period.month }} - {{ payroll_period.year }}
+        <h4 style="color: #2196F3" class="border-top pt-4 mb-2 text-center">
+            {{ payroll_centre }}
+        </h4>
+        <h5 class="border-bottom mb-5 text-center"><span id="report_title" style="color: #2196F3">{{ title }}</span>
         </h5>
-        <div class="table-responsive" style="font-size: 9px; font-family: TimesNewRoman,'Times New Roman',serif;">
-            <table id="table_id" class="table table-sm table-striped table-bordered w-100">
+        <div class="table-responsive table-container"
+             style="font-size: 9px; font-family: TimesNewRoman,'Times New Roman',serif;">
+            <table id="summary_id" class="table table-sm table-striped table-bordered w-100">
                 <thead class="thead-dark">
                 <tr>
                     <th></th>
+                    <th>Period</th>
                     <th>Analysis</th>
                     <th>Employee Names</th>
                     <th>Job title</th>
@@ -33,15 +39,17 @@
                     <th>Vehicle Benefit Ded.</th>
                     <th>Total Deductions</th>
                     <th>Net Pay</th>
+                    <th>Payment method</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for report in period_processes %}
+                {% for report in object_list %}
                     <tr>
                         <td></td>
+                        <td>{{ report.period|date:'M, Y' }}</td>
                         <td>{{ report.analysis }}</td>
                         <td>
-                            <a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=report.employee_id %}">
+                            <a href="{% url 'reports:generate-payslip' pp=report.payroll_period_id user=report.employee_id %}">
                                 {{ report.staff_full_name }}
                             </a>
                         </td>
@@ -60,13 +68,14 @@
                         {% endwith %}
                         <td>{{ report.total_deductions|intcomma }}</td>
                         <td>{{ report.net_pay|intcomma }}</td>
+                        <td>{{ report.payment_method }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot>
                 <tr>
+                    <th colspan="5" class="font-weight-light text-info text-center">Total:</th>
                     <th></th>
-                    <th colspan="3" class="font-weight-light text-info text-center">Total:</th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -94,20 +103,23 @@
 {% block scripts %}
     <script>
         $(document).ready(function () {
-            var title = document.getElementById("summary_title").innerHTML;
-            var table = $('#table_id').DataTable({
-                columnDefs: [{
+            let title_footer = document.getElementById("report_title").innerHTML;
+
+            let summaryReportTable = $('#summary_id').DataTable( {
+                columnDefs: [ {
                     searchable: false,
                     orderable: false,
                     targets: 0
-                }],
-                order: [[1, 'asc']],
+                } ],
+                order: [[ 1, 'asc' ]],
                 dom: 'lBfrtip',
                 scrollX: true,
                 scrollCollapse: true,
                 autoWidth: true,
                 paging: true,
                 buttons: [
+                    'selectAll',
+                    'selectNone',
                     {
                         extend: 'copyHtml5',
                         footer: true,
@@ -133,39 +145,25 @@
                         extend: 'pdfHtml5',
                         customize: function (doc) {
                             var objLayout = {};
-                            objLayout['hLineWidth'] = function (i, node) {
-                                return (i === 0 || i === node.table.body.length) ? 2 : 1;
-                            };
-                            objLayout['vLineWidth'] = function (i, node) {
-                                return (i === 0 || i === node.table.widths.length) ? 2 : 1;
-                            };
-                            objLayout['hLineColor'] = function (i, node) {
-                                return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
-                            };
-                            objLayout['fillColor'] = function (rowIndex, node, columnIndex) {
-                                return (rowIndex % 2 === 0) ? '#ffffff' : '#ffffff';
-                            };
-                            objLayout['vLineColor'] = function (i, node) {
-                                return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
-                            };
-                            objLayout['paddingLeft'] = function (i) {
-                                return 8;
-                            };
-                            objLayout['paddingRight'] = function (i) {
-                                return 8;
-                            };
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#aaa'; };
+                            objLayout['vLineColor'] = function(i) { return '#aaa'; };
+                            objLayout['paddingLeft'] = function(i) { return 8; };
+                            objLayout['paddingRight'] = function(i) { return 8; };
                             doc.content[1].layout = objLayout;
                         },
+                        orientation: 'landscape',
+                        pageSize: 'A1',
                         exportOptions: {
                             columns: ':visible',
                             search: 'applied',
                             order: 'applied'
                         },
-                        orientation: 'landscape',
-                        pageSize: 'A1',
                         footer: true,
                         filename: 'summary_report',
-                        title: 'SAVE THE CHILDREN\n' + title,
+                        title: 'SAVE THE CHILDREN\n' +
+                            title_footer,
                         messageBottom: '\n\n\n\n\nPrepared By..................................................................' +
                             '\tChecked By........................................................' +
                             '\tApproved By..................................................'
@@ -180,15 +178,15 @@
                         }
                     },
                 ],
-                "footerCallback": function (row, data, start, end, display) {
+                "footerCallback": function ( row, data, start, end, display ) {
                     var api = this.api(), data;
 
                     let colCount = api.columns().header().length;
 
                     // Remove the formatting to get integer data for summation
-                    let intVal = function (i) {
+                    let intVal = function ( i ) {
                         return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '') * 1 :
+                            i.replace(/[\$,]/g, '')*1 :
                             typeof i === 'number' ?
                                 i : 0;
                     };
@@ -197,7 +195,7 @@
                     let i;
                     let total = [];
                     for (i = 0; i < colCount; i++) {
-                        if (i > 3) {
+                        if (i > 5 && i < colCount-1) {
                             total[i] = api
                                 .column(i)
                                 .data()
@@ -209,21 +207,79 @@
 
                     for (i = 0; i < colCount; i++) {
                         // Update footer
-                        if (i > 3) {
-                            $(api.column(i).footer()).html(
+                        if (i > 5 && i < colCount-1) {
+                            $( api.column( i ).footer() ).html(
                                 total[i].toLocaleString()
                             );
                         }
                     }
-                },
+                }
+            } );
+
+            summaryReportTable.on( 'order.dt search.dt', function () {
+                summaryReportTable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                    cell.innerHTML = i+1;
+                    summaryReportTable.cell(cell).invalidate('dom');
+                } );
+            } ).draw();
+
+            $('#summary_id tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected');
+            } );
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    let cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            let csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
             });
 
-            table.on('order.dt search.dt', function () {
-                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
-                    cell.innerHTML = i + 1;
-                    table.cell(cell).invalidate('dom');
+            $('#send_mail').click( function () {
+                console.log( summaryReportTable.rows('.selected').data().length +' Employee(s) selected for Payslip mailing' );
+                let payroll_period = $('.payroll_period').attr('id');
+                let length = summaryReportTable.rows('.selected').data().length;
+                alert(length + ' Staff will be emailed there payslips. Would you like to continue?');
+                let users = [];
+                let i;
+                for (i = 0; i < length; i++) {
+                    users.push(summaryReportTable.rows('.selected').data()[i][1])
+                }
+
+                let emailUrl = '/reports/email/payslips/';
+                let users_data = {
+                    'users': users,
+                    'payroll_period': payroll_period
+                };
+                $.post(emailUrl, users_data, function (response) {
+                    if (response.status === 'success') {
+                        alert('Emails have been successfully sent')
+                    }
                 });
-            }).draw();
+            } );
         });
     </script>
 {% endblock scripts %}
