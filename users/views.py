@@ -21,7 +21,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from hr_system.helpers import ProcessingDataError
+from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
+    NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
 from users.mixins import NeverCacheMixin
@@ -478,9 +479,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     elif user:
         employees_in_period.add(user)
     else:
-        logger.error(f'No Employees in the system')
-        response['message'] = 'Something went wrong'
-        response['status'] = 'Failed'
+        raise NoEmployeeInSystemError
 
     if user:
         period_processes = PayrollProcessors.objects \
@@ -516,11 +515,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 else:
                     employees_in_period.add(process.employee)
         else:
-            logger.error(f'Here - > There are currently no Employees for this Payroll Period')
-            response['message'] = 'There are currently no Employees for this Payroll Period'
-            response['status'] = 'Failed'
-    elif len(employees_in_period) == 0:
-        logger.error(f'No Employees in the system')
+            raise NoEmployeeInPayrollPeriodError
 
     # getting updated payroll processors in case any employees have been removed
     # period_processes = PayrollProcessors.objects.filter(payroll_period=payroll_period)
@@ -550,26 +545,46 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
             # calculating PAYE
             logger.info(f'Processing for user {employee}: calculating PAYE')
-            tax_bracket, tax_rate, fixed_tax = 0, 0, 0
-            for tx_brac in paye_rates.iterator():
-                if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
-                    tax_bracket = tx_brac.lower_boundary
-                    tax_rate = tx_brac.rate / 100
-                    fixed_tax = tx_brac.fixed_amount
-                    break
-            paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
-            ge_minus_paye = gross_earnings - paye
+            try:
+                if paye_rates.count() != 0:
+                    tax_bracket, tax_rate, fixed_tax = 0, 0, 0
+                    for tx_brac in paye_rates.iterator():
+                        if int(gross_earnings) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
+                            tax_bracket = tx_brac.lower_boundary
+                            tax_rate = tx_brac.rate / 100
+                            fixed_tax = tx_brac.fixed_amount
+                            break
+                    paye = (gross_earnings - tax_bracket) * tax_rate + fixed_tax
+                    ge_minus_paye = gross_earnings - paye
+                else:
+                    raise EmptyPAYERatesTableError
+            except EmptyPAYERatesTableError as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                logger.error(f"Payroll Processing Error: {exc_type} on line:{exc_tb.tb_lineno}")
+                raise EmptyPAYERatesTableError(
+                    'There are currently no PAYE rates in the system to process the Payroll, Contact IT Administrator.',
+                    line_number=exc_tb.tb_lineno)
 
             # calculating LST
             logger.info(f'Processing for user {employee}: calculating LST')
-            fixed_lst = 0
-            if process_lst == 'True':
-                if lst_rates.exists():
-                    for lst_brac in lst_rates.iterator():
-                        if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
-                            fixed_lst = lst_brac.fixed_amount / 4
-                            break
-            lst = fixed_lst
+            try:
+                if lst_rates.count() != 0:
+                    fixed_lst = 0
+                    if process_lst == 'True':
+                        if lst_rates.exists():
+                            for lst_brac in lst_rates.iterator():
+                                if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
+                                    fixed_lst = lst_brac.fixed_amount / 4
+                                    break
+                    lst = fixed_lst
+                else:
+                    raise EmptyLSTRatesTableError
+            except EmptyLSTRatesTableError as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                logger.error(f"Payroll Processing Error: {exc_type} on line:{exc_tb.tb_lineno}")
+                raise EmptyLSTRatesTableError(
+                    'There are currently no LST rates in the system to process the Payroll, Contact IT Administrator.',
+                    line_number=exc_tb.tb_lineno)
 
             # calculating NSSF 5% and 10%
             logger.info(f'Processing for user {employee}: calculating NSSF')
@@ -688,7 +703,9 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             if employee_nssf_export:
                 employee_nssf_export.amount = nssf_5 + nssf_10
                 employee_nssf_export.save(update_fields=['amount'])
-        except Exception as e:
+        except (EmptyPAYERatesTableError, EmptyLSTRatesTableError, NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError):
+            raise
+        except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             raise ProcessingDataError(str(employee), exc_type, exc_tb.tb_lineno)
 
@@ -743,6 +760,12 @@ def process_payroll_period(request, pk, user=None):
             logger.error(e.args)
             response = {'status': 'error', 'message': message}
             return render_to_json(request, response)
+        except (EmptyPAYERatesTableError, EmptyLSTRatesTableError) as e:
+            error_message = messages.error(request, e.args[0])
+            message = render_to_string('partials/messages.html', {'error_message': error_message})
+            response = {'status': 'error', 'message': message}
+            return render_to_json(request, response)
+
         except Exception as e:
             error_message = messages.error(request,
                                            f'Something went wrong while processing payroll!, Inform IT Administrator')
