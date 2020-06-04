@@ -129,7 +129,7 @@ else:
             },
             'NAME': 'payroll_schema',
             'USER': 'root',
-            'PASSWORD': 'Kam12345',
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
@@ -227,12 +227,12 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'kyezaarnold63@gmail.com'
-EMAIL_HOST_PASSWORD = 'K@m_19950'
-DEFAULT_FROM_EMAIL = 'kyezaarnold63@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
 CACHES = {
     'default': {
