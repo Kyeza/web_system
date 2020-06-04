@@ -18,11 +18,13 @@ def send_mail(user, expiry, emails, code):
 
     days = 'day' if 0 < expiry.days < 2 else 'days'
     if code == 1:
-        body = f'Hello,\n This email is a reminder that the contract for {user[0]} {user[1]} expired {expiry.days} {days} ago.'
+        body = f'Hello,\n\nThis email is a kind reminder that the contract for {user[0]} {user[1]} expired {expiry.days} {days} ago.'
     elif code == 2:
-        body = f'Hello,\n This email is a reminder that the contract for {user[0]} {user[1]} will expires in {expiry.days} {days}'
+        body = f'Hello,\n\nThis email is a kind reminder that the contract for {user[0]} {user[1]} will expires in {expiry.days} {days}'
     elif code == 3:
-        body = f'Hello,\n This email is a reminder that the contract for {user[0]} {user[1]} expires today.'
+        body = f'Hello,\n\nThis email is a kind reminder that the contract for {user[0]} {user[1]} expires today.'
+
+    body += "\n\n Kindly don't reply to this email as responses to it are not monitored.\n\nRegards"
 
     mailer.send_messages(subject=subject, body=body, template=None, to_emails=emails)
 
