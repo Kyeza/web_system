@@ -117,6 +117,11 @@ class Employee(models.Model):
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     current_payroll_category_id = models.PositiveIntegerField(null=True, editable=False)
+    PAYMENT_OPTIONS = (
+        ('BANK', 'BANK'),
+        ('CASH', 'CASH')
+    )
+    payment_method = models.CharField(choices=PAYMENT_OPTIONS, max_length=4, null=True, blank=True)
 
     def clean(self):
         if self.current_payroll_category_id is None:

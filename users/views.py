@@ -25,6 +25,7 @@ from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, E
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
 from reports.models import ExTraSummaryReportInfo
+from reports.tasks import update_or_create_user_summary_report
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
     TerminatedEmployees
@@ -573,7 +574,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     if process_lst == 'True':
                         if lst_rates.exists():
                             for lst_brac in lst_rates.iterator():
-                                if int(ge_minus_paye) in range(int(lst_brac.lower_boundary), int(lst_brac.upper_boundary) + 1):
+                                if int(ge_minus_paye) in range(int(lst_brac.lower_boundary),
+                                                               int(lst_brac.upper_boundary) + 1):
                                     fixed_lst = lst_brac.fixed_amount / 4
                                     break
                     lst = fixed_lst
@@ -703,38 +705,30 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             if employee_nssf_export:
                 employee_nssf_export.amount = nssf_5 + nssf_10
                 employee_nssf_export.save(update_fields=['amount'])
-        except (EmptyPAYERatesTableError, EmptyLSTRatesTableError, NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError):
+        except (
+        EmptyPAYERatesTableError, EmptyLSTRatesTableError, NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError):
             raise
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             raise ProcessingDataError(str(employee), exc_type, exc_tb.tb_lineno)
 
-        try:
-            key = f'{payroll_period.payroll_key}S{employee.pk}'
-            report = ExTraSummaryReportInfo.objects.get(pk=key)
-            report.net_pay = net_pay
-            report.gross_earning = gross_earnings
-            report.total_deductions = total_deductions
-            report.save(update_fields=['net_pay', 'gross_earning', 'total_deductions'])
+        report_id = f'{payroll_period.payroll_key}S{employee.pk}'
+        user_info = {
+            'employee_id': employee.pk,
+            'analysis': employee.agresso_number,
+            'staff_full_name': employee.user.get_full_name(),
+            'job_title': employee.job_title.job_title,
+            'basic_salary': employee.gross_salary,
+            'payment_method': employee.payment_method
+        }
 
-            response['message'] = 'Successfully process Payroll Period'
-            response['status'] = 'Success'
-            logger.info(f'Successfully processed {employee} Payroll Period')
+        period_info = {
+            'period_id': payroll_period.id
+        }
 
-        except ExTraSummaryReportInfo.DoesNotExist:
-            report = ExTraSummaryReportInfo(analysis=employee.agresso_number,
-                                            employee_id=employee.pk,
-                                            employee_name=employee.user.get_full_name(),
-                                            job_title=employee.job_title,
-                                            payroll_period=payroll_period,
-                                            net_pay=net_pay,
-                                            gross_earning=gross_earnings,
-                                            total_deductions=total_deductions)
-            report.save()
-
-            response['message'] = 'Successfully process Payroll Period'
-            response['status'] = 'Success'
-            logger.info(f'Successfully processed {employee} Payroll Period')
+        # create or update user summary report
+        update_or_create_user_summary_report.delay(report_id, user_info, net_pay, total_deductions, gross_earnings,
+                                                   period_info)
 
     logger.info(f'Finished processing {response}')
 
@@ -755,7 +749,8 @@ def process_payroll_period(request, pk, user=None):
         try:
             response = processor(payroll_period, process_lst, 'POST')
         except ProcessingDataError as e:
-            error_message = messages.error(request, f'Something went wrong while processing data for {e.args[0]}, Inform IT Administrator')
+            error_message = messages.error(request,
+                                           f'Something went wrong while processing data for {e.args[0]}, Inform IT Administrator')
             message = render_to_string('partials/messages.html', {'error_message': error_message})
             logger.error(e.args)
             response = {'status': 'error', 'message': message}

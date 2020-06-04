@@ -1,11 +1,14 @@
 import datetime
 import logging
+from typing import Dict, Optional, Any
 
-from celery import shared_task, task
+from celery import shared_task
+from celery.task import task
 from django.conf import settings
 from django.contrib.auth.models import Group
 
 from reports.helpers.mailer import Mailer
+from reports.models import ExTraSummaryReportInfo
 from users.models import Employee
 
 logger = logging.getLogger('payroll')
@@ -29,11 +32,12 @@ def send_mail(user, expiry, emails, code):
     mailer.send_messages(subject=subject, body=body, template=None, to_emails=emails)
 
 
-@task()
+@task
 def contract_expiry_reminder():
     """Task to check user contracts nearing expiry and emails the users and hr group users"""
 
-    logger.info(f'Starting contract expiry reminder service on {datetime.datetime.today().strftime("%d %B, %Y, %H:%M")}')
+    logger.info(
+        f'Starting contract expiry reminder service on {datetime.datetime.today().strftime("%d %B, %Y, %H:%M")}')
 
     staff_emails = []
     try:
@@ -43,7 +47,7 @@ def contract_expiry_reminder():
     else:
         staff_emails.extend(list(group.user_set.all().values_list('email')))
 
-    all_users = Employee.objects.filter(employment_status='APPROVED').all()\
+    all_users = Employee.objects.filter(employment_status='APPROVED').all() \
         .values_list('user__first_name', 'user__last_name', 'contract_expiry', 'user__email')
 
     if all_users:
@@ -67,3 +71,32 @@ def contract_expiry_reminder():
                 staff_emails.append(user[3])
                 send_mail(user, expiry, staff_emails, 3)
                 staff_emails.remove(user[3])
+
+
+@shared_task
+def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Optional[Any]], net_pay: float,
+                                         total_deductions: float, gross_earning: float,
+                                         period_info: Dict[str, Optional[Any]]) -> None:
+    report, created = ExTraSummaryReportInfo.objects.get_or_create(key=report_id)
+
+    try:
+        logger.info(f"processing summary report for {user_info['staff_full_name']}")
+        report.payroll_period_id = period_info['period_id']
+        report.employee_id = user_info['employee_id']
+        report.analysis = user_info['analysis']
+        report.staff_full_name = user_info['staff_full_name']
+        report.job_title = user_info['job_title']
+        report.basic_salary = user_info['basic_salary']
+        report.gross_earning = gross_earning
+        report.total_deductions = total_deductions
+        report.net_pay = net_pay
+        report.payment_method = user_info['payment_method']
+        report.save()
+    except Exception as e:
+        logger.error(f"an error occurred while processing summary report for {user_info['staff_full_name']}")
+        logger.error(e.args)
+
+    if created:
+        logger.info(f"created summary report for {user_info['staff_full_name']}")
+    else:
+        logger.info(f"updated summary report for {user_info['staff_full_name']}")

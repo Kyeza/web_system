@@ -156,7 +156,6 @@ class PayrollPeriod(models.Model):
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
     status = models.CharField(max_length=6, default='OPEN')
     created_on = models.DateField(editable=False, null=True, blank=True)
-
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def to_dict(self):
