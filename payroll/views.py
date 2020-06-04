@@ -19,7 +19,7 @@ def index(request):
 class PayrollCenterCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'payroll.add_payrollcenter'
     model = PayrollCenter
-    fields = ['name', 'country', 'organization', 'description']
+    fields = ['name', 'country', 'organization', 'staff_category', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -30,7 +30,7 @@ class PayrollCenterCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 class PayrollCenterUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = 'payroll.change_payrollcenter'
     model = PayrollCenter
-    fields = ['name', 'country', 'organization', 'description']
+    fields = ['name', 'country', 'organization', 'staff_category', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,7 +41,6 @@ class PayrollCenterUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 class PayrollCenterDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     permission_required = 'payroll.view_payrollcenter'
     model = PayrollCenter
-    fields = ['name', 'country', 'organization', 'description']
 
 
 class PayrollCenterListView(LoginRequiredMixin, ListView):
@@ -66,7 +65,7 @@ class PayrollPeriodCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         messages.success(self.request, f'Payroll Period for {form.instance.payroll_center} month of'
-        f' {form.instance.month} has been opened')
+        f'{form.instance.month} has been opened')
         return super().form_valid(form)
 
 
@@ -84,7 +83,6 @@ class PayrollPeriodUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 class PayrollPeriodDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     permission_required = 'payroll.view_payrollperiod'
     model = PayrollPeriod
-    fields = ['payroll_center', 'month', 'year', 'status']
 
 
 class PayrollPeriodListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -202,7 +200,6 @@ class PayrollCenterEdsUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView
 
 class PayrollCenterEdsDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = PayrollCenterEds
-    fields = ['payroll_center', 'ed_type']
 
     def test_func(self):
         if self.request.user.is_superuser or self.request.user.employee.user_group.natural_key() == ('Site Admin',):
@@ -227,7 +224,7 @@ class LSTListView(LoginRequiredMixin, ListView):
 
 class BankCreate(LoginRequiredMixin, CreateView):
     model = Bank
-    fields = ['bank', 'branch', 'sort_code',  'description']
+    fields = ['bank', 'branch', 'branch_code', 'sort_code',  'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -237,7 +234,7 @@ class BankCreate(LoginRequiredMixin, CreateView):
 
 class BankUpdate(LoginRequiredMixin, UpdateView):
     model = Bank
-    fields = ['bank', 'branch', 'sort_code', 'description']
+    fields = ['bank', 'branch', 'branch_code', 'sort_code',  'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -247,7 +244,6 @@ class BankUpdate(LoginRequiredMixin, UpdateView):
 
 class BankDetailView(LoginRequiredMixin, DetailView):
     model = Bank
-    fields = ['bank', 'branch', 'sort_code', 'description']
 
 
 class BankListView(LoginRequiredMixin, ListView):
@@ -276,7 +272,6 @@ class CurrencyUpdate(LoginRequiredMixin, UpdateView):
 
 class CurrencyDetailView(LoginRequiredMixin, DetailView):
     model = Currency
-    fields = ['currency', 'description']
 
 
 class CurrencyListView(LoginRequiredMixin, ListView):

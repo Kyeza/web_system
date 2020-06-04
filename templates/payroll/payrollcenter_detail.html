@@ -6,6 +6,7 @@
         <h3 class="border-bottom mb-4">Payroll Center</h3>
         Payroll Center: <p style="font-weight: bold">{{ object.name }}</p>
         Organization: <p style="font-weight: bold">{{ object.organization }}</p>
+        Staff Category: <p style="font-weight: bold">{{ object.staff_category }}</p>
         Country: <p style="font-weight: bold">{{ object.country }}</p>
         Description: <p style="font-weight: bold">{{ object.description }}</p>
         <a class="btn btn-success" href="{% url 'payroll:payroll-center-list' %}">

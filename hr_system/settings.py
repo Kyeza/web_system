@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import sys
+from datetime import timedelta
+
+from celery.schedules import crontab
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -45,7 +50,11 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django.contrib.sites',
     'djcelery',
-    'djcelery_email'
+    'djcelery_email',
+    'channels',
+    'django_celery_results',
+    'django_celery_beat',
+    'channels_redis',
 ]
 
 SITE_ID = 1
@@ -85,6 +94,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'hr_system.wsgi.application'
+ASGI_APPLICATION = "hr_system.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -123,6 +133,12 @@ else:
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
+    }
+
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'test_payroll_schema'
     }
 # [END db_setup]
 
@@ -185,6 +201,11 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
+
+        'console': {
+            'format': '{levelname} {pathname} {funcName} {lineno} {message}',
+            'style': '{',
+        },
         'simple': {
             'format': '{levelname} {message}',
             'style': '{',
@@ -194,7 +215,7 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'console'
         },
     },
     'loggers': {
@@ -205,14 +226,12 @@ LOGGING = {
     }
 }
 
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'kyezaarnold63@gmail.com'
-EMAIL_HOST_PASSWORD = 'KAM12345'
+EMAIL_HOST_PASSWORD = 'K@m_19950'
 DEFAULT_FROM_EMAIL = 'kyezaarnold63@gmail.com'
 
 CACHES = {
@@ -226,4 +245,27 @@ CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
-CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# Periodic tasks configuration
+CELERY_BEAT_SCHEDULE = {
+    'contract_expiry_reminder': {
+        'task': 'reports.tasks.contract_expiry_reminder',
+        'schedule': crontab(hour=7, minute=30, day_of_week=1)
+    }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}

@@ -3,6 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from hr_system import settings
 from hr_system.constants import YES_OR_NO_TYPES
@@ -55,17 +56,26 @@ class EarningDeductionType(models.Model):
 
 
 class Bank(models.Model):
-    """docstring for Bank"""
+    """Bank Model
+        attrs: bank_name, branch, branch_code, sort_code, bank_code
+    """
+
     bank = models.CharField(max_length=150)
     branch = models.CharField(max_length=200, null=True, blank=True)
+    branch_code = models.PositiveIntegerField(null=True, blank=True)
     sort_code = models.CharField(max_length=100, null=True, blank=True)
     bank_code = models.CharField(max_length=3, null=True, blank=True)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('payroll:bank-detail', kwargs={'pk': self.pk})
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.bank
+
+    class Meta:
+        ordering = ['bank']
+        verbose_name = 'Bank'
+        verbose_name_plural = 'Banks'
 
 
 class Currency(models.Model):
@@ -87,23 +97,20 @@ class PAYERates(models.Model):
     rate = models.DecimalField(max_digits=12, decimal_places=2)
 
 
-# Import here to avoid circular imports issue
-from support_data.models import Country, Organization
-
-
 class PayrollCenter(models.Model):
     """docstring for PayrollCenter"""
     name = models.CharField(max_length=150)
     date_create = models.DateTimeField(auto_now=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey('support_data.Country', on_delete=models.CASCADE)
     description = models.CharField(max_length=150, null=True, blank=True)
-    organization = models.ForeignKey(Organization, on_delete=models.SET(None), null=True)
+    organization = models.ForeignKey('support_data.Organization', on_delete=models.SET(None), null=True)
+    staff_category = models.ForeignKey('users.Category', on_delete=models.SET_NULL, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('payroll:payroll-center-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {str(self.staff_category)}'
 
 
 class LSTRates(models.Model):
@@ -111,7 +118,7 @@ class LSTRates(models.Model):
     upper_boundary = models.DecimalField(max_digits=12, decimal_places=2)
     fixed_amount = models.DecimalField(max_digits=12, decimal_places=2)
     rate = models.DecimalField(max_digits=12, decimal_places=2)
-    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.ForeignKey('support_data.Country', on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class PayrollCenterEds(models.Model):
@@ -148,6 +155,8 @@ class PayrollPeriod(models.Model):
     year = models.IntegerField(choices=PAYROLL_YEARS, default=datetime.datetime.now().year, db_index=True)
     payroll_key = models.CharField(max_length=150, blank=True, null=False, default=None, unique=True)
     status = models.CharField(max_length=6, default='OPEN')
+    created_on = models.DateField(editable=False, null=True, blank=True)
+
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def to_dict(self):
@@ -170,6 +179,11 @@ class PayrollPeriod(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        try:
+            self.created_on = datetime.datetime.strptime(f'{self.month}, {self.year}', "%B, %Y")
+        except Exception:
+            self.created_on = timezone.now()
+
         self.full_clean()
         super().save(force_insert, force_update, using, update_fields)
 
