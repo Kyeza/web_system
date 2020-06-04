@@ -169,15 +169,20 @@ class Employee(models.Model):
 
 
 class PayrollProcessors(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
-    earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.PROTECT,
-                                                    blank=True, null=True)
-    earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
-                                                        on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_index=True)
-    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
     payroll_key = models.CharField(max_length=250, blank=True, primary_key=True, unique=True, default=None,
                                    editable=False)
+    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.CASCADE,
+                                       null=True, blank=True)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
+    earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType',
+                                                    on_delete=models.PROTECT, blank=True, null=True)
+    earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
+                                                        on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True,
+                                 blank=True, db_index=True, default=0)
+    summary_report = models.ForeignKey('reports.ExTraSummaryReportInfo',
+                                       on_delete=models.CASCADE, null=True, blank=True,
+                                       related_name='earning_or_deduction')
 
     def to_dict(self):
         data = {
