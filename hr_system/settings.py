@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'debug_toolbar',
     'django.contrib.sites',
-    'djcelery',
     'djcelery_email',
     'channels',
     'django_celery_results',

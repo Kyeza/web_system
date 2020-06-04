@@ -22,7 +22,6 @@ daphne==2.5.0
 defusedxml==0.6.0
 Django==3.0.6
 django-appconf==1.0.4
-django-celery==3.3.1
 django-celery-beat==2.0.0
 django-celery-email==3.0.0
 django-celery-results==1.2.1
