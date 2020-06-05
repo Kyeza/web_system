@@ -22,7 +22,8 @@ from django.views.generic.list import ListView
 from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
-from reports.tasks import update_or_create_user_summary_report
+from reports.tasks import update_or_create_user_summary_report, update_or_create_user_social_security_report, \
+    update_or_create_user_taxation_report, update_or_create_user_lst_report, update_or_create_user_bank_report
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
     TerminatedEmployees
@@ -607,7 +608,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
             employee_lst_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=65).first()
-            if employee_paye_processor:
+            if employee_paye_processor and process_lst == 'True':
                 employee_lst_processor.amount = lst
                 employee_lst_processor.save(update_fields=['amount'])
 
@@ -717,17 +718,43 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             'staff_full_name': employee.user.get_full_name(),
             'job_title': employee.job_title.job_title,
             'basic_salary': employee.gross_salary,
-            'payment_method': employee.payment_method
+            'payment_method': employee.payment_method,
+            'duty_station': employee.duty_station.duty_station,
+            'social_security_number': employee.social_security_number,
+            'tin_number': employee.tin_number
         }
+
+        user_bank_info = {}
+        if employee.bank_1 is not None:
+            user_bank_info['bank_1'] = employee.bank_1.bank
+            user_bank_info['branch_name_1'] = employee.bank_1.branch
+            user_bank_info['branch_code_1'] = employee.bank_1.branch_code
+            user_bank_info['sort_code_1'] = employee.bank_1.sort_code
+            user_bank_info['account_number_1'] = employee.first_account_number
+
+        if employee.bank_2 is not None:
+            user_bank_info['bank_2'] = employee.bank_2.bank
+            user_bank_info['branch_name_2'] = employee.bank_2.branch
+            user_bank_info['branch_code_2'] = employee.bank_2.branch_code
+            user_bank_info['sort_code_2'] = employee.bank_2.sort_code
+            user_bank_info['account_number_2'] = employee.second_account_number
 
         period_info = {
             'period_id': payroll_period.id,
-            'period': payroll_period.created_on
+            'period': payroll_period.created_on.strftime('%B, %Y')
         }
 
-        # create or update user summary report
-        update_or_create_user_summary_report.delay(report_id, user_info, net_pay, total_deductions, gross_earnings,
-                                                   period_info)
+        # create or update user reports
+        update_or_create_user_summary_report(report_id, user_info, net_pay, total_deductions, gross_earnings,
+                                             period_info)
+        update_or_create_user_social_security_report.delay(report_id, user_info, nssf_5, nssf_10, gross_earnings,
+                                                           period_info)
+        update_or_create_user_taxation_report.delay(report_id, user_info, paye, gross_earnings, period_info)
+
+        update_or_create_user_bank_report.delay(report_id, user_info, user_bank_info, net_pay, period_info)
+
+        update_or_create_user_lst_report.delay(report_id, user_info, employee_lst_processor.amount, gross_earnings,
+                                               period_info)
 
     logger.info(f'Finished processing {response}')
 

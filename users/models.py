@@ -68,7 +68,6 @@ class District(models.Model):
 
 
 class Employee(models.Model):
-
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, primary_key=True, editable=False)
     user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS, null=True)
@@ -138,7 +137,7 @@ class Employee(models.Model):
                 pass
             else:
                 try:
-                    new_pc_id = PayrollCenter.objects.filter(staff_category_id=self.current_payroll_category_id)\
+                    new_pc_id = PayrollCenter.objects.filter(staff_category_id=self.current_payroll_category_id) \
                         .values_list('id').first()[0]
                 except TypeError:
                     pass
@@ -188,6 +187,9 @@ class PayrollProcessors(models.Model):
     summary_report = models.ForeignKey('reports.ExTraSummaryReportInfo',
                                        on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='earning_or_deduction')
+    taxation_report = models.ForeignKey('reports.TaxationReport',
+                                        on_delete=models.SET_NULL, null=True, blank=True,
+                                        related_name='earning_or_deduction')
 
     def to_dict(self):
         data = {

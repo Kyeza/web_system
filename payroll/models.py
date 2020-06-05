@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.timezone import make_aware
 
 from hr_system import settings
 from hr_system.constants import YES_OR_NO_TYPES
@@ -179,7 +180,7 @@ class PayrollPeriod(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         try:
-            self.created_on = datetime.datetime.strptime(f'{self.month}, {self.year}', "%B, %Y")
+            self.created_on = make_aware(datetime.datetime.strptime(f'{self.month}, {self.year}', "%B, %Y"))
         except Exception:
             self.created_on = timezone.now()
 

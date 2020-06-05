@@ -16,7 +16,7 @@ from reports.helpers.mailer import Mailer
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
-from .models import ExTraSummaryReportInfo
+from .models import ExTraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
 
 logger = logging.getLogger('payroll')
 
@@ -259,31 +259,22 @@ def generate_reports(request):
 
                     object_list = None
                     report_template = ''
-                    # if report == 'NSIF':
-                    #     object_list = SocialSecurityReport.objects.filter(queries).select_related(
-                    #         'summary_report').all() \
-                    #         .prefetch_related('earnings', 'earnings__earning_and_deductions_type',
-                    #                           'earnings__earning_and_deductions_type__payrollprocessors_set')
-                    #
-                    #     report_template = 'reports/nssfreport_list.html'
-                    #
-                    # elif report == 'PIT':
-                    #     object_list = TaxationReport.objects.filter(queries).select_related(
-                    #         'summary_report').all() \
-                    #         .prefetch_related('earnings', 'earnings__earning_and_deductions_type',
-                    #                           'earnings__earning_and_deductions_type__payrollprocessors_set')
-                    #
-                    #     report_template = 'reports/taxationreport_list.html'
-                    #
-                    # elif report == 'BANK':
-                    #     object_list = BankReport.objects.filter(queries).select_related(
-                    #         'summary_report').all().prefetch_related('payroll_period')
-                    #
-                    #     report_template = 'reports/bankreport_list.html'
-                    #
-                    # elif report == 'CASH':
-                    #     object_list = CashReport.objects.filter(queries).select_related(
-                    #         'summary_report').all()
+                    if report == 'NSSF':
+                        object_list = SocialSecurityReport.objects.filter(queries).all()
+                        report_template = 'reports/nssfreport_list.html'
+
+                    elif report == 'PAYE':
+                        object_list = TaxationReport.objects.filter(queries).all()
+                        report_template = 'reports/taxationreport_list.html'
+
+                    elif report == 'BANK':
+                        object_list = BankReport.objects.filter(queries).all()
+                        report_template = 'reports/bankreport_list.html'
+
+                    elif report == 'LST':
+                        object_list = LSTReport.objects.filter(queries).all()
+                        report_template = 'reports/lstreport_list.html'
+
                     if report == 'SUMMARY':
                         object_list = ExTraSummaryReportInfo.objects.filter(queries).all()
                         report_template = 'reports/gen_summary_report.html'

@@ -43,7 +43,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for report in object_list %}
+                {% for report in object_list.iterator %}
                     <tr>
                         <td></td>
                         <td>{{ report.period|date:'M, Y' }}</td>
