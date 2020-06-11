@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'debug_toolbar',
     'django.contrib.sites',
-    'djcelery',
     'djcelery_email',
     'channels',
     'django_celery_results',
@@ -129,7 +128,7 @@ else:
             },
             'NAME': 'payroll_schema',
             'USER': 'root',
-            'PASSWORD': 'Kam12345',
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
@@ -138,7 +137,7 @@ else:
 if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test_payroll_schema'
+        'NAME': 'test_payroll_schema',
     }
 # [END db_setup]
 
@@ -227,12 +226,12 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'kyezaarnold63@gmail.com'
-EMAIL_HOST_PASSWORD = 'K@m_19950'
-DEFAULT_FROM_EMAIL = 'kyezaarnold63@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
 CACHES = {
     'default': {
@@ -269,3 +268,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+CELERY_CREATE_MISSING_QUEUES = True
+
+CELERY_TASK_ROUTES = {"reports.tasks.update_or_create_user_summary_report": {"queue": "summary_reports"},
+                      "reports.tasks.update_or_create_user_taxation_report": {"queue": "taxation_reports"}}

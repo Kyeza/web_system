@@ -1,4 +1,5 @@
 from django import template
+from django.db.models import Q
 
 register = template.Library()
 
@@ -10,26 +11,27 @@ def category(processors, category_id):
 
 
 @register.filter
-def category_display(processors, category_id):
-    if category_id == 1:
-        data = processors.filter(earning_and_deductions_type__display_number__lt=7).all()
-    else:
-        data = processors.filter(earning_and_deductions_type__display_number__gt=6)\
-            .filter(earning_and_deductions_type__display_number__lt=20).all()
+def category_display(processors):
+    data = list(processors.filter(Q(earning_and_deductions_type__display_number__gt=1,
+                                    earning_and_deductions_type__display_number__lt=7) |
+                                  Q(earning_and_deductions_type__display_number__gt=6,
+                                    earning_and_deductions_type__display_number__lt=20))
+                .order_by('earning_and_deductions_type__display_number').select_related('earning_and_deductions_type')
+                .all().values_list('earning_and_deductions_type__display_number', 'amount'))
 
-    return data
+    return [(list(filter(lambda n: 1 < n[0] < 7, data)), list(filter(lambda n: 6 < n[0] < 20, data)))]
 
 
 @register.filter
 def user_data(processors, staff):
-    data = processors.filter(employee_id=staff.pk).values('amount')\
+    data = processors.filter(employee_id=staff.pk).values('amount') \
         .order_by('earning_and_deductions_type__display_number').all()
     return list(data)
 
 
 @register.filter
 def user_data_headings(processors, staff):
-    return processors.filter(employee_id=staff.pk).values('earning_and_deductions_type__ed_type')\
+    return processors.filter(employee_id=staff.pk).values('earning_and_deductions_type__ed_type') \
         .order_by('earning_and_deductions_type__display_number').all()
 
 

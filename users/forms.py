@@ -19,7 +19,7 @@ class StaffCreationForm(UserCreationForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name',
+        fields = ('username', 'first_name', 'middle_name', 'last_name',
                   'email', 'password1', 'password2',
                   )
 
@@ -29,7 +29,7 @@ class StaffUpdateForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name',
+        fields = ('username', 'first_name', 'middle_name', 'last_name',
                   'email',
                   )
 

@@ -15,6 +15,18 @@ from .utils import get_image_filename
 
 
 class User(AbstractUser):
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
+
+    def get_full_name(self):
+        full_name = ''
+        if self.first_name:
+            full_name += self.first_name + " "
+        if self.middle_name:
+            full_name += self.middle_name + " "
+        if self.last_name:
+            full_name += self.last_name + " "
+        return full_name.strip()
+
     class Meta:
         permissions = [
             ("approve_employee", "Can approve Employee"),
@@ -56,7 +68,6 @@ class District(models.Model):
 
 
 class Employee(models.Model):
-
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, primary_key=True, editable=False)
     user_group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     marital_status = models.CharField(max_length=9, choices=MARITAL_STATUS, null=True)
@@ -105,6 +116,11 @@ class Employee(models.Model):
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     current_payroll_category_id = models.PositiveIntegerField(null=True, editable=False)
+    PAYMENT_OPTIONS = (
+        ('BANK', 'BANK'),
+        ('CASH', 'CASH')
+    )
+    payment_method = models.CharField(choices=PAYMENT_OPTIONS, max_length=4, null=True, blank=True)
 
     def clean(self):
         if self.current_payroll_category_id is None:
@@ -121,7 +137,7 @@ class Employee(models.Model):
                 pass
             else:
                 try:
-                    new_pc_id = PayrollCenter.objects.filter(staff_category_id=self.current_payroll_category_id)\
+                    new_pc_id = PayrollCenter.objects.filter(staff_category_id=self.current_payroll_category_id) \
                         .values_list('id').first()[0]
                 except TypeError:
                     pass
@@ -157,15 +173,23 @@ class Employee(models.Model):
 
 
 class PayrollProcessors(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
-    earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.PROTECT,
-                                                    blank=True, null=True)
-    earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
-                                                        on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_index=True)
-    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
     payroll_key = models.CharField(max_length=250, blank=True, primary_key=True, unique=True, default=None,
                                    editable=False)
+    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.CASCADE,
+                                       null=True, blank=True)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
+    earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType',
+                                                    on_delete=models.PROTECT, blank=True, null=True)
+    earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
+                                                        on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True,
+                                 blank=True, db_index=True, default=0)
+    summary_report = models.ForeignKey('reports.ExTraSummaryReportInfo',
+                                       on_delete=models.CASCADE, null=True, blank=True,
+                                       related_name='earning_or_deduction')
+    taxation_report = models.ForeignKey('reports.TaxationReport',
+                                        on_delete=models.SET_NULL, null=True, blank=True,
+                                        related_name='earning_or_deduction')
 
     def to_dict(self):
         data = {
