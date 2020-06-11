@@ -47,9 +47,9 @@
                 <tfoot>
                 <tr>
                     <th colspan="4" class="font-weight-light text-info text-center">Total:</th>
-                    {% for report in object_list.iterator %}
+                    {% for report in object_list %}
                         {% if forloop.first %}
-                            {% for earning in report.earnings.iterator %}
+                            {% for item in report.earning_or_deduction.iterator %}
                                 <th></th>
                             {% endfor %}
                             <th></th>

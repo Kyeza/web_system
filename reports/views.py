@@ -56,7 +56,7 @@ def update_summary_report(request, pp, user):
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
 
-    extra_data = ExTraSummaryReportInfo.objects.filter(key=f'{payroll_period.payroll_key}S{employee.pk}').first()
+    extra_data = ExTraSummaryReportInfo.objects.filter(report_id=f'{payroll_period.payroll_key}S{employee.pk}').first()
 
     # creating initial data for formsets
     e_data = [processor.to_dict() for processor in cat_e.iterator()]
@@ -353,7 +353,7 @@ def generate_payslip_report(request, pp, user):
         employee=employee)
     report = 'Pay Slip'
     info_key = f'{period.payroll_key}S{employee.pk}'
-    user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()
+    user_reports = ExTraSummaryReportInfo.objects.filter(report_id=info_key).all()
 
     context = {
         'report': report,
