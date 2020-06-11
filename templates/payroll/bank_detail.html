@@ -4,8 +4,11 @@
 {% block content %}
     <div class="content-section text-left">
         <h3 class="border-bottom mb-4">Bank</h3>
-        Bank: <p style="font-weight: bold">{{ object.bank }}</p>
+        Bank name: <p style="font-weight: bold">{{ object.bank }}</p>
+        Branch name: <p style="font-weight: bold">{{ object.branch }}</p>
+        Branch code: <p style="font-weight: bold">{{ object.branch_code }}</p>
         Sort code: <p style="font-weight: bold">{{ object.sort_code }}</p>
+        Bank code: <p style="font-weight: bold">{{ object.bank_code }}</p>
         Description: <p style="font-weight: bold">{{ object.description }}</p>
         <a class="btn btn-success" href="{% url 'payroll:bank-list' %}">
             CLOSE

@@ -1,3 +1,5 @@
+from typing import Type
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
@@ -8,10 +10,22 @@ from django.utils import timezone
 
 from hr_system.constants import YES_OR_NO_TYPES
 from .constants import MARITAL_STATUS, GENDER, EMP_STATUS
+from .tasks import remove_employee_from_last_payroll_period
 from .utils import get_image_filename
 
 
 class User(AbstractUser):
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
+
+    def get_full_name(self):
+        full_name = ''
+        if self.first_name:
+            full_name += self.first_name + " "
+        if self.middle_name:
+            full_name += self.middle_name + " "
+        if self.last_name:
+            full_name += self.last_name + " "
+        return full_name.strip()
 
     class Meta:
         permissions = [
@@ -81,8 +95,10 @@ class Employee(models.Model):
     appointment_date = models.DateField(default=timezone.now, null=True, blank=True)
     social_security = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, blank=True)
     payroll_center = models.ForeignKey('payroll.PayrollCenter', on_delete=models.SET_NULL, null=True)
-    bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True, blank=True)
-    bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True, blank=True)
+    bank_1 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='first_bank', null=True,
+                               blank=True)
+    bank_2 = models.ForeignKey('payroll.Bank', on_delete=models.SET_NULL, related_name='second_bank', null=True,
+                               blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, )
     first_account_number = models.CharField(max_length=200, null=True, blank=True)
     second_account_number = models.CharField(max_length=200, null=True, blank=True)
@@ -99,8 +115,36 @@ class Employee(models.Model):
     employment_status = models.CharField(max_length=17, choices=EMP_STATUS, default=EMP_STATUS[0][0], blank=True,
                                          null=True, db_index=True)
     agresso_number = models.CharField(max_length=200, null=True, blank=True, db_index=True)
+    current_payroll_category_id = models.PositiveIntegerField(null=True, editable=False)
+    PAYMENT_OPTIONS = (
+        ('BANK', 'BANK'),
+        ('CASH', 'CASH')
+    )
+    payment_method = models.CharField(choices=PAYMENT_OPTIONS, max_length=4, null=True, blank=True)
 
     def clean(self):
+        if self.current_payroll_category_id is None:
+            self.current_payroll_category_id = self.category_id
+
+        if self.category and (self.category_id != self.current_payroll_category_id):
+            prev_payroll_category = self.current_payroll_category_id
+            self.current_payroll_category_id = self.category_id
+            from payroll.models import PayrollCenter
+            try:
+                payroll_center_id = PayrollCenter.objects.filter(staff_category_id=prev_payroll_category) \
+                    .values_list('id').first()[0]
+            except TypeError:
+                pass
+            else:
+                try:
+                    new_pc_id = PayrollCenter.objects.filter(staff_category_id=self.current_payroll_category_id) \
+                        .values_list('id').first()[0]
+                except TypeError:
+                    pass
+                else:
+                    self.payroll_center_id = new_pc_id
+                remove_employee_from_last_payroll_period.delay(payroll_center_id, self.pk)
+
         if self.payroll_center is None:
             raise ValidationError("Payroll Canter required.")
 
@@ -129,15 +173,23 @@ class Employee(models.Model):
 
 
 class PayrollProcessors(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
-    earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType', on_delete=models.PROTECT,
-                                                    blank=True, null=True)
-    earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
-                                                        on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_index=True)
-    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
     payroll_key = models.CharField(max_length=250, blank=True, primary_key=True, unique=True, default=None,
                                    editable=False)
+    payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.CASCADE,
+                                       null=True, blank=True)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
+    earning_and_deductions_type = models.ForeignKey('payroll.EarningDeductionType',
+                                                    on_delete=models.PROTECT, blank=True, null=True)
+    earning_and_deductions_category = models.ForeignKey('payroll.EarningDeductionCategory',
+                                                        on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True,
+                                 blank=True, db_index=True, default=0)
+    summary_report = models.ForeignKey('reports.ExTraSummaryReportInfo',
+                                       on_delete=models.CASCADE, null=True, blank=True,
+                                       related_name='earning_or_deduction')
+    taxation_report = models.ForeignKey('reports.TaxationReport',
+                                        on_delete=models.SET_NULL, null=True, blank=True,
+                                        related_name='earning_or_deduction')
 
     def to_dict(self):
         data = {
