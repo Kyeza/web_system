@@ -19,7 +19,8 @@ def category_display(processors):
                 .order_by('earning_and_deductions_type__display_number').select_related('earning_and_deductions_type')
                 .all().values_list('earning_and_deductions_type__display_number', 'amount'))
 
-    return [(list(filter(lambda n: 1 < n[0] < 7, data)), list(filter(lambda n: 6 < n[0] < 20, data)))]
+    data = [(list(filter(lambda n: 1 < n[0] < 7, data)), list(filter(lambda n: 6 < n[0] < 20, data)))]
+    return data
 
 
 @register.filter

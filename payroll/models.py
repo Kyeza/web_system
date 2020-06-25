@@ -65,7 +65,7 @@ class Bank(models.Model):
     branch = models.CharField(max_length=200, null=True, blank=True)
     branch_code = models.PositiveIntegerField(null=True, blank=True)
     sort_code = models.CharField(max_length=100, null=True, blank=True)
-    bank_code = models.CharField(max_length=3, null=True, blank=True)
+    bank_code = models.CharField(max_length=6, null=True, blank=True)
 
     def get_absolute_url(self) -> str:
         return reverse('payroll:bank-detail', kwargs={'pk': self.pk})
