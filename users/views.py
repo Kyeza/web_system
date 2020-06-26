@@ -608,7 +608,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
             employee_lst_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=65).first()
-            if employee_paye_processor and process_lst == 'True':
+            if employee_lst_processor and process_lst == 'True':
                 employee_lst_processor.amount = lst
                 employee_lst_processor.save(update_fields=['amount'])
 
