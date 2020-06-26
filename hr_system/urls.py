@@ -46,6 +46,7 @@ urlpatterns = [
     path('admin/', views.login_admin),
     path('admin/payroll/', admin.site.urls),
     path('reports/', include('reports.urls')),
+    path('api-auth/', include('rest_framework.urls'))
 ]
 
 if settings.DEBUG:

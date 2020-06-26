@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'channels_redis',
+    'rest_framework',
 ]
 
 SITE_ID = 1
@@ -274,4 +275,12 @@ CELERY_CREATE_MISSING_QUEUES = True
 
 CELERY_TASK_ROUTES = {
     "reports.tasks.update_or_create_user_taxation_report": {"queue": "taxation_reports"}
+}
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
 }
