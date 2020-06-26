@@ -22,8 +22,7 @@ from django.views.generic.list import ListView
 from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
-from reports.tasks import update_or_create_user_summary_report, update_or_create_user_social_security_report, \
-    update_or_create_user_taxation_report, update_or_create_user_lst_report, update_or_create_user_bank_report
+from reports.tasks import update_or_create_user_summary_report, initialize_report_generation
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
     TerminatedEmployees
@@ -521,6 +520,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     paye_rates = PAYERates.objects.all()
     lst_rates = LSTRates.objects.all()
 
+    employees_reports_to_generate = []
     for employee in employees_in_period:
         try:
             logger.info(f'Processing for user {employee}')
@@ -711,7 +711,6 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             raise ProcessingDataError(str(employee), exc_type, exc_tb.tb_lineno)
 
-        report_id = f'{payroll_period.payroll_key}S{employee.pk}'
         user_info = {
             'employee_id': employee.pk,
             'analysis': employee.agresso_number,
@@ -724,37 +723,19 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             'tin_number': employee.tin_number
         }
 
-        user_bank_info = {}
-        if employee.bank_1 is not None:
-            user_bank_info['bank_1'] = employee.bank_1.bank
-            user_bank_info['branch_name_1'] = employee.bank_1.branch
-            user_bank_info['branch_code_1'] = employee.bank_1.branch_code
-            user_bank_info['sort_code_1'] = employee.bank_1.sort_code
-            user_bank_info['account_number_1'] = employee.first_account_number
-
-        if employee.bank_2 is not None:
-            user_bank_info['bank_2'] = employee.bank_2.bank
-            user_bank_info['branch_name_2'] = employee.bank_2.branch
-            user_bank_info['branch_code_2'] = employee.bank_2.branch_code
-            user_bank_info['sort_code_2'] = employee.bank_2.sort_code
-            user_bank_info['account_number_2'] = employee.second_account_number
-
         period_info = {
             'period_id': payroll_period.id,
             'period': payroll_period.created_on.strftime('%B, %Y')
         }
 
         # create or update user reports
-        update_or_create_user_summary_report(report_id, user_info, net_pay, total_deductions, gross_earnings,
-                                             period_info)
-        update_or_create_user_social_security_report.delay(report_id, user_info, nssf_5, nssf_10, gross_earnings,
-                                                           period_info)
-        update_or_create_user_taxation_report.delay(report_id, user_info, paye, gross_earnings, period_info)
+        update_or_create_user_summary_report(f'{payroll_period.payroll_key}S{employee.pk}', user_info, net_pay,
+                                             total_deductions, gross_earnings, period_info)
 
-        update_or_create_user_bank_report.delay(report_id, user_info, user_bank_info, net_pay, period_info)
+        employees_reports_to_generate.append(employee.pk)
 
-        update_or_create_user_lst_report.delay(report_id, user_info, employee_lst_processor.amount, gross_earnings,
-                                               period_info)
+    # task to create other system reports in the background
+    initialize_report_generation.delay(payroll_period.id, employees_reports_to_generate)
 
     logger.info(f'Finished processing {response}')
 

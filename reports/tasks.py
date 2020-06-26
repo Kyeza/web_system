@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.utils.timezone import make_aware
 
+from payroll.models import PayrollPeriod
 from reports.helpers.mailer import Mailer
 from reports.models import ExTraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
 from users.models import Employee, PayrollProcessors
@@ -74,10 +75,74 @@ def contract_expiry_reminder():
                 staff_emails.remove(user[3])
 
 
+@shared_task
+def initialize_report_generation(payroll_period_id, employees):
+    payroll_period = PayrollPeriod.objects.get(pk=payroll_period_id)
+    period_processes = PayrollProcessors.objects.filter(payroll_period_id=payroll_period_id).all()
+
+    for employee in Employee.objects.filter(pk__in=employees).iterator():
+        report_id = f'{payroll_period.payroll_key}S{employee.pk}'
+
+        user_info = {
+            'employee_id': employee.pk,
+            'analysis': employee.agresso_number,
+            'staff_full_name': employee.user.get_full_name(),
+            'job_title': employee.job_title.job_title,
+            'basic_salary': employee.gross_salary,
+            'payment_method': employee.payment_method,
+            'duty_station': employee.duty_station.duty_station,
+            'social_security_number': employee.social_security_number,
+            'tin_number': employee.tin_number
+        }
+
+        user_bank_info = {}
+        if employee.bank_1 is not None:
+            user_bank_info['bank_1'] = employee.bank_1.bank
+            user_bank_info['branch_name_1'] = employee.bank_1.branch
+            user_bank_info['branch_code_1'] = employee.bank_1.branch_code
+            user_bank_info['sort_code_1'] = employee.bank_1.sort_code
+            user_bank_info['account_number_1'] = employee.first_account_number
+
+        if employee.bank_2 is not None:
+            user_bank_info['bank_2'] = employee.bank_2.bank
+            user_bank_info['branch_name_2'] = employee.bank_2.branch
+            user_bank_info['branch_code_2'] = employee.bank_2.branch_code
+            user_bank_info['sort_code_2'] = employee.bank_2.sort_code
+            user_bank_info['account_number_2'] = employee.second_account_number
+
+        period_info = {
+            'period_id': payroll_period.id,
+            'period': payroll_period.created_on.strftime('%B, %Y')
+        }
+
+        nssf_5 = nssf_10 = 0
+        if employee.social_security == 'YES':
+            nssf_10 = period_processes.filter(employee=employee, earning_and_deductions_type_id=31)\
+                .values_list('amount').first()
+            nssf_5 = period_processes.filter(employee=employee, earning_and_deductions_type_id=32)\
+                .values_list('amount').first()
+
+        report = employee.report.filter(payroll_period_id=28).values('gross_earning', 'net_pay').first()
+
+        paye = period_processes.filter(employee=employee, earning_and_deductions_type_id=61)\
+            .values_list('amount').first()
+        lst = period_processes.filter(employee=employee, earning_and_deductions_type_id=65)\
+            .values_list('amount').first()
+
+        update_or_create_user_social_security_report.delay(report_id, user_info, nssf_5[0], nssf_10[0],
+                                                           report['gross_earning'], period_info)
+        update_or_create_user_taxation_report.delay(report_id, user_info, paye[0], report['gross_earning'], period_info)
+
+        update_or_create_user_bank_report.delay(report_id, user_info, user_bank_info, report['net_pay'], period_info)
+
+        update_or_create_user_lst_report.delay(report_id, user_info, lst[0], report['gross_earning'], period_info)
+
+
 def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Optional[Any]], net_pay: float,
                                          total_deductions: float, gross_earning: float,
                                          period_info: Dict[str, Optional[Any]]) -> None:
     report, created = ExTraSummaryReportInfo.objects.get_or_create(report_id=report_id)
+    report_count = report.earning_or_deduction.count()
 
     try:
         logger.info(f"processing summary report for {user_info['staff_full_name']}")
@@ -102,7 +167,7 @@ def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Op
     if report:
         processors_to_report = PayrollProcessors.objects.filter(payroll_period_id=period_info['period_id'],
                                                                 employee_id=user_info['employee_id']).all()
-        if processors_to_report.exists():
+        if processors_to_report.count() > report_count:
             for item in processors_to_report.iterator():
                 item.summary_report_id = report_id
                 item.save()
@@ -148,6 +213,7 @@ def update_or_create_user_social_security_report(report_id: str, user_info: Dict
 def update_or_create_user_taxation_report(report_id: str, user_info: Dict[str, Optional[Any]], paye: float,
                                           gross_earning: float, period_info: Dict[str, Optional[Any]]) -> None:
     report, created = TaxationReport.objects.get_or_create(report_id=report_id)
+    report_count =  report.earning_or_deduction.count()
 
     try:
         logger.info(f"processing PAYE report for {user_info['staff_full_name']}")
@@ -164,14 +230,15 @@ def update_or_create_user_taxation_report(report_id: str, user_info: Dict[str, O
         logger.error(e.args)
         raise
 
-    processors_to_report = PayrollProcessors.objects.filter(payroll_period_id=period_info['period_id'],
-                                                            employee_id=user_info['employee_id'],
-                                                            earning_and_deductions_category_id=1)\
-        .exclude(earning_and_deductions_type_id=19).all()
-    if processors_to_report.exists():
-        for item in processors_to_report.iterator():
-            item.taxation_report_id = report_id
-            item.save()
+    if report:
+        processors_to_report = PayrollProcessors.objects.filter(payroll_period_id=period_info['period_id'],
+                                                                employee_id=user_info['employee_id'],
+                                                                earning_and_deductions_category_id=1) \
+            .exclude(earning_and_deductions_type_id=19).all()
+        if processors_to_report.count() > report_count:
+            for item in processors_to_report.iterator():
+                item.taxation_report_id = report_id
+                item.save()
 
     if created:
         logger.info(f"created PAYE report for {user_info['staff_full_name']}")

@@ -195,7 +195,7 @@
                     let i;
                     let total = [];
                     for (i = 0; i < colCount; i++) {
-                        if (i > 5 && i < colCount-1) {
+                        if (i > 4 && i < colCount-1) {
                             total[i] = api
                                 .column(i)
                                 .data()
@@ -207,7 +207,7 @@
 
                     for (i = 0; i < colCount; i++) {
                         // Update footer
-                        if (i > 5 && i < colCount-1) {
+                        if (i > 4 && i < colCount-1) {
                             $( api.column( i ).footer() ).html(
                                 total[i].toLocaleString()
                             );
