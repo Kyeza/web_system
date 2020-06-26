@@ -244,6 +244,7 @@ CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
+CELERY_ENABLE_UTC = True
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
@@ -271,5 +272,6 @@ CHANNEL_LAYERS = {
 
 CELERY_CREATE_MISSING_QUEUES = True
 
-CELERY_TASK_ROUTES = {"reports.tasks.update_or_create_user_summary_report": {"queue": "summary_reports"},
-                      "reports.tasks.update_or_create_user_taxation_report": {"queue": "taxation_reports"}}
+CELERY_TASK_ROUTES = {
+    "reports.tasks.update_or_create_user_taxation_report": {"queue": "taxation_reports"}
+}

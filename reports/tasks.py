@@ -74,7 +74,6 @@ def contract_expiry_reminder():
                 staff_emails.remove(user[3])
 
 
-@shared_task
 def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Optional[Any]], net_pay: float,
                                          total_deductions: float, gross_earning: float,
                                          period_info: Dict[str, Optional[Any]]) -> None:
