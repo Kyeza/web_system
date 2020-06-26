@@ -122,7 +122,7 @@ def initialize_report_generation(payroll_period_id, employees):
             nssf_5 = period_processes.filter(employee=employee, earning_and_deductions_type_id=32)\
                 .values_list('amount').first()
 
-        report = employee.report.filter(payroll_period_id=28).values('gross_earning', 'net_pay').first()
+        report = employee.report.filter(payroll_period_id=payroll_period_id).values('gross_earning', 'net_pay').first()
 
         paye = period_processes.filter(employee=employee, earning_and_deductions_type_id=61)\
             .values_list('amount').first()
@@ -136,6 +136,8 @@ def initialize_report_generation(payroll_period_id, employees):
         update_or_create_user_bank_report.delay(report_id, user_info, user_bank_info, report['net_pay'], period_info)
 
         update_or_create_user_lst_report.delay(report_id, user_info, lst[0], report['gross_earning'], period_info)
+
+    return initialize_report_generation.request.id
 
 
 def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Optional[Any]], net_pay: float,
