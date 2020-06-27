@@ -35,34 +35,6 @@
                     <th>Net Pay</th>
                 </tr>
                 </thead>
-                <tbody>
-                {% for report in period_processes %}
-                    <tr>
-                        <td></td>
-                        <td>{{ report.analysis }}</td>
-                        <td>
-                            <a href="{% url 'reports:update-summary-report' pp=payroll_period.id user=report.employee_id %}">
-                                {{ report.staff_full_name }}
-                            </a>
-                        </td>
-                        <td>{{ report.job_title }}</td>
-                        <td>{{ report.basic_salary|intcomma }}</td>
-                        {% with report.earning_or_deduction.all|category_display as earning_and_deductions %}
-                            {% for earnings, deductions in earning_and_deductions %}
-                                {% for e in earnings %}
-                                    <td>{{ e.1 }}</td>
-                                {% endfor %}
-                                <td>{{ report.gross_earning|intcomma }}</td>
-                                {% for d in deductions %}
-                                    <td>{{ d.1 }}</td>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endwith %}
-                        <td>{{ report.total_deductions|intcomma }}</td>
-                        <td>{{ report.net_pay|intcomma }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
                 <tfoot>
                 <tr>
                     <th></th>
@@ -94,8 +66,62 @@
 {% block scripts %}
     <script>
         $(document).ready(function () {
-            var title = document.getElementById("summary_title").innerHTML;
-            var table = $('#table_id').DataTable({
+            let title = document.getElementById("summary_title").innerHTML;
+            let table = $('#table_id').DataTable({
+                "processing": true,
+                "serverSide": true,
+                ajax: {
+                    url: '/reports/api/summary_reports/?payroll_period_id={{ payroll_period }}',
+                    dataFilter: function (data) {
+                        let json = jQuery.parseJSON(data);
+                        json.recordsTotal = json.count;
+                        json.recordsFiltered = json.count;
+                        json.data = json.results;
+
+                        delete json.results;
+                        delete json.count;
+                        delete json.next;
+                        delete json.previous;
+
+                        let count;
+                        for (count = 0; count < json.data.length; count++) {
+                            json.data[count].DT_RowId = "row_" + json.data[count].report_id;
+                            json.data[count].index = count + 1;
+                            json.data[count].DT_RowData = {
+                                "pkey": json.data[count].report_id
+                            };
+                            delete json.data[count].report_id;
+                        }
+
+                        console.log(json)
+
+                        return JSON.stringify(json); // return JSON string
+                    }
+                },
+                columns: [
+                    {'data': 'index'},
+                    {'data': 'analysis'},
+                    {'data': 'staff_full_name'},
+                    {'data': 'job_title'},
+                    {'data': 'basic_salary'},
+                    {'data': 'arrears'},
+                    {'data': 'over_time_1_5'},
+                    {'data': 'hardship_allowance'},
+                    {'data': 'acting_allowance'},
+                    {'data': 'other_earnings'},
+                    {'data': 'gross_earning'},
+                    {'data': 'employee_nssf'},
+                    {'data': 'paye'},
+                    {'data': 'employee_pension'},
+                    {'data': 'telephone'},
+                    {'data': 'lunch'},
+                    {'data': 'debtors'},
+                    {'data': 'local_service_tax'},
+                    {'data': 'salary_advance'},
+                    {'data': 'vehicle_usage'},
+                    {'data': 'total_deductions'},
+                    {'data': 'net_pay'}
+                ],
                 columnDefs: [{
                     searchable: false,
                     orderable: false,

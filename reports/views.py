@@ -23,8 +23,13 @@ logger = logging.getLogger('payroll')
 
 @login_required
 def display_summary_report(request, pk):
-    payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-    context = generate_summary_data(payroll_period)
+    # payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
+    # context = generate_summary_data(payroll_period)
+    if request.is_ajax():
+        print(request.body)
+    context = {
+        'payroll_period': pk
+    }
     return render(request, 'reports/summary_report.html', context)
 
 
