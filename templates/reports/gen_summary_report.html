@@ -278,7 +278,6 @@
             });
 
             $('#send_mail').click(function () {
-                console.log(summaryReportTable.rows('.selected').data().length + ' Employee(s) selected for Payslip mailing');
                 let payroll_center = $('.payroll_center').attr('id');
                 let length = summaryReportTable.rows('.selected').data().length;
                 alert(length + ' Staff will be emailed there payslips. Would you like to continue?');
@@ -296,7 +295,6 @@
                     'users': JSON.stringify(users),
                     'payroll_center': payroll_center
                 };
-                console.log(users_data)
                 $.post(emailUrl, users_data, function (response) {
                     if (response.status === 'success') {
                         alert('Emails have been successfully sent')
