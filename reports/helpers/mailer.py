@@ -44,6 +44,8 @@ class Mailer:
                 message_content = message_template.render(context)
                 html_mail = weasyprint.HTML(string=message_content, base_url=request.build_absolute_uri())
                 pdf = html_mail.write_pdf(presentational_hints=True)
+                subject = f'PAYSLIP FOR MONTH OF {context["period"].month}'
+                body = f'Please find attached your payslip for {context["period"].month}.\nKindly report to the finance department for any inquires\n\nWarm regards\nFinance Department'
                 message = EmailMessage(subject, body, to=[recipient], from_email=self.from_email)
                 message.content_subtype = 'html'
                 message.attach('payslip.pdf', pdf, 'application/pdf')

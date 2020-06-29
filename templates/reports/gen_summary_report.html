@@ -6,11 +6,18 @@
 
 {% block content %}
     <div class="content-section">
-        <h4 style="color: #2196F3" class="border-top pt-4 mb-2 text-center">
+        <h4 id="{{ payroll_centre.id }}" style="color: #2196F3" class="border-top pt-4 mb-2 text-center payroll_center">
             {{ payroll_centre }}
         </h4>
         <h5 class="border-bottom mb-5 text-center"><span id="report_title" style="color: #2196F3">{{ title }}</span>
         </h5>
+        <div class="d-flex flex-row-reverse">
+            <div class="p-2">
+                <a id="send_mail" class="btn btn-success btn-md" href="#">
+                    Email PaySlips
+                </a>
+            </div>
+        </div>
         <div class="table-responsive table-container"
              style="font-size: 9px; font-family: TimesNewRoman,'Times New Roman',serif;">
             <table id="summary_id" class="table table-sm table-striped table-bordered w-100">
@@ -105,13 +112,13 @@
         $(document).ready(function () {
             let title_footer = document.getElementById("report_title").innerHTML;
 
-            let summaryReportTable = $('#summary_id').DataTable( {
-                columnDefs: [ {
+            let summaryReportTable = $('#summary_id').DataTable({
+                columnDefs: [{
                     searchable: false,
                     orderable: false,
                     targets: 0
-                } ],
-                order: [[ 1, 'asc' ]],
+                }],
+                order: [[1, 'asc']],
                 dom: 'lBfrtip',
                 scrollX: true,
                 scrollCollapse: true,
@@ -145,12 +152,24 @@
                         extend: 'pdfHtml5',
                         customize: function (doc) {
                             var objLayout = {};
-                            objLayout['hLineWidth'] = function(i) { return .8; };
-                            objLayout['vLineWidth'] = function(i) { return .5; };
-                            objLayout['hLineColor'] = function(i) { return '#aaa'; };
-                            objLayout['vLineColor'] = function(i) { return '#aaa'; };
-                            objLayout['paddingLeft'] = function(i) { return 8; };
-                            objLayout['paddingRight'] = function(i) { return 8; };
+                            objLayout['hLineWidth'] = function (i) {
+                                return .8;
+                            };
+                            objLayout['vLineWidth'] = function (i) {
+                                return .5;
+                            };
+                            objLayout['hLineColor'] = function (i) {
+                                return '#aaa';
+                            };
+                            objLayout['vLineColor'] = function (i) {
+                                return '#aaa';
+                            };
+                            objLayout['paddingLeft'] = function (i) {
+                                return 8;
+                            };
+                            objLayout['paddingRight'] = function (i) {
+                                return 8;
+                            };
                             doc.content[1].layout = objLayout;
                         },
                         orientation: 'landscape',
@@ -178,15 +197,15 @@
                         }
                     },
                 ],
-                "footerCallback": function ( row, data, start, end, display ) {
+                "footerCallback": function (row, data, start, end, display) {
                     var api = this.api(), data;
 
                     let colCount = api.columns().header().length;
 
                     // Remove the formatting to get integer data for summation
-                    let intVal = function ( i ) {
+                    let intVal = function (i) {
                         return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '')*1 :
+                            i.replace(/[\$,]/g, '') * 1 :
                             typeof i === 'number' ?
                                 i : 0;
                     };
@@ -195,7 +214,7 @@
                     let i;
                     let total = [];
                     for (i = 0; i < colCount; i++) {
-                        if (i > 4 && i < colCount-1) {
+                        if (i > 4 && i < colCount - 1) {
                             total[i] = api
                                 .column(i)
                                 .data()
@@ -207,25 +226,25 @@
 
                     for (i = 0; i < colCount; i++) {
                         // Update footer
-                        if (i > 4 && i < colCount-1) {
-                            $( api.column( i ).footer() ).html(
+                        if (i > 4 && i < colCount - 1) {
+                            $(api.column(i).footer()).html(
                                 total[i].toLocaleString()
                             );
                         }
                     }
                 }
-            } );
+            });
 
-            summaryReportTable.on( 'order.dt search.dt', function () {
-                summaryReportTable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                    cell.innerHTML = i+1;
+            summaryReportTable.on('order.dt search.dt', function () {
+                summaryReportTable.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
                     summaryReportTable.cell(cell).invalidate('dom');
-                } );
-            } ).draw();
+                });
+            }).draw();
 
-            $('#summary_id tbody').on( 'click', 'tr', function () {
+            $('#summary_id tbody').on('click', 'tr', function () {
                 $(this).toggleClass('selected');
-            } );
+            });
 
             function getCookie(name) {
                 let cookieValue = null;
@@ -251,35 +270,39 @@
             }
 
             $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
+                beforeSend: function (xhr, settings) {
                     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                         xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     }
                 }
             });
 
-            $('#send_mail').click( function () {
-                console.log( summaryReportTable.rows('.selected').data().length +' Employee(s) selected for Payslip mailing' );
-                let payroll_period = $('.payroll_period').attr('id');
+            $('#send_mail').click(function () {
+                console.log(summaryReportTable.rows('.selected').data().length + ' Employee(s) selected for Payslip mailing');
+                let payroll_center = $('.payroll_center').attr('id');
                 let length = summaryReportTable.rows('.selected').data().length;
                 alert(length + ' Staff will be emailed there payslips. Would you like to continue?');
                 let users = [];
                 let i;
                 for (i = 0; i < length; i++) {
-                    users.push(summaryReportTable.rows('.selected').data()[i][1])
+                    let user = []
+                    user.push(summaryReportTable.rows('.selected').data()[i][1])
+                    user.push(summaryReportTable.rows('.selected').data()[i][2])
+                    users.push(user)
                 }
 
                 let emailUrl = '/reports/email/payslips/';
                 let users_data = {
-                    'users': users,
-                    'payroll_period': payroll_period
+                    'users': JSON.stringify(users),
+                    'payroll_center': payroll_center
                 };
+                console.log(users_data)
                 $.post(emailUrl, users_data, function (response) {
                     if (response.status === 'success') {
                         alert('Emails have been successfully sent')
                     }
                 });
-            } );
+            });
         });
     </script>
 {% endblock scripts %}

@@ -1,4 +1,5 @@
-import datetime
+from datetime import datetime
+import json
 import logging
 
 from django.conf import settings
@@ -369,16 +370,18 @@ def generate_payslip_report(request, pp, user):
 def send_mass_mail(request):
     response = {}
     if request.method == 'POST':
-        users = request.POST.getlist('users[]')
-        period_id = request.POST.get('payroll_period')
-        employees = [Employee.objects.filter(agresso_number=sap_no).first() for sap_no in users]
-        payroll_period = get_object_or_404(PayrollPeriod, pk=int(period_id))
-        emails = []
+        users = json.loads(request.POST.getlist('users')[0])
+        payroll_center = request.POST.get('payroll_center')
+        employees = [(user[0], Employee.objects.filter(agresso_number=user[1]).first()) for user in users]
+        print(employees)
         user_payslip_data = dict()
-        for employee in employees:
-            data = PayrollProcessors.objects.filter(payroll_period=payroll_period).filter(employee=employee)
+        for period, employee in employees:
+            payroll_period = PayrollPeriod.objects \
+                .filter(created_on=datetime.strptime(period, '%b, %Y'), payroll_center_id=payroll_center).first()
+            data = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id, employee=employee)
+
             info_key = f'{payroll_period.payroll_key}S{employee.pk}'
-            user_reports = ExTraSummaryReportInfo.objects.filter(key=info_key).all()
+            user_reports = ExTraSummaryReportInfo.objects.filter(report_id=info_key).all()
             context = {
                 'report': 'PaySlip',
                 'period': payroll_period,
@@ -388,10 +391,8 @@ def send_mass_mail(request):
             user_payslip_data[employee.user.email] = context
 
         mailer = Mailer(settings.DEFAULT_FROM_EMAIL)
-        subject = f'PAYSLIP FOR MONTH OF {payroll_period.month}'
-        body = f'Please find attached your payslip for {payroll_period.month}.\nKindly report to the finance department for any inquires\n\nWarm regards\nFinance Department'
         template = 'partials/payslip.html'
-        mailer.send_messages(subject, body, template, user_payslip_data, request)
+        mailer.send_messages('', '', template, user_payslip_data, request)
 
         response = {'status': 'success'}
 
