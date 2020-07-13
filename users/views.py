@@ -779,10 +779,10 @@ def process_payroll_period(request, pk, user=None):
             return JsonResponse(response)
 
     elif request.method == 'GET':
-        employee = Employee.objects.get(pk=user)
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        processor(payroll_period, user=employee)
-        # return HttpResponseRedirect(reverse('reports:display-summary-report', args=(payroll_period.id,)))
+        if user is not None and not user.is_superuser:
+            employee = Employee.objects.get(pk=user)
+            processor(payroll_period, user=employee)
         return redirect('reports:display-summary-report', payroll_period.id)
 
 
