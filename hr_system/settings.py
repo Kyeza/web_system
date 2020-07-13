@@ -18,7 +18,19 @@ from datetime import timedelta
 
 from celery.schedules import crontab
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+sentry_sdk.init(
+    dsn="https://0f41ebf1f46241c6bc4601e1c68db378@o416035.ingest.sentry.io/5334317",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
