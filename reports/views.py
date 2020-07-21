@@ -17,7 +17,7 @@ from reports.helpers.mailer import Mailer
 from users.forms import ProcessUpdateForm
 from users.models import PayrollProcessors, Employee
 from .forms import ReportGeneratorForm, ReconciliationReportGeneratorForm
-from .models import ExTraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
+from .models import ExtraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
 
 logger = logging.getLogger('payroll')
 
@@ -32,7 +32,7 @@ def display_summary_report(request, pk):
 # generating summary data context
 def generate_summary_data(payroll_period):
 
-    period_processes = ExTraSummaryReportInfo.objects.filter(payroll_period_id=payroll_period.id).all()
+    period_processes = ExtraSummaryReportInfo.objects.filter(payroll_period_id=payroll_period.id).all()
 
     context = {
         'payroll_period': payroll_period,
@@ -57,7 +57,7 @@ def update_summary_report(request, pp, user):
     cat_d = processors.filter(earning_and_deductions_category=2).all()
     cat_s = processors.filter(earning_and_deductions_category=3).all()
 
-    extra_data = ExTraSummaryReportInfo.objects.filter(report_id=f'{payroll_period.payroll_key}S{employee.pk}').first()
+    extra_data = ExtraSummaryReportInfo.objects.filter(report_id=f'{payroll_period.payroll_key}S{employee.pk}').first()
 
     # creating initial data for formsets
     e_data = [processor.to_dict() for processor in cat_e.iterator()]
@@ -277,11 +277,11 @@ def generate_reports(request):
                         report_template = 'reports/lstreport_list.html'
 
                     if report == 'SUMMARY':
-                        object_list = ExTraSummaryReportInfo.objects.filter(queries).all()
+                        object_list = ExtraSummaryReportInfo.objects.filter(queries).all()
                         report_template = 'reports/gen_summary_report.html'
 
                     elif report == 'LEGER_EXPORT':
-                        extra_reports = ExTraSummaryReportInfo.objects.select_related('employee') \
+                        extra_reports = ExtraSummaryReportInfo.objects.select_related('employee') \
                             .filter(payroll_period_id=payroll_period.pk).all()
                         if extra_reports.exists():
                             logger.info(f'generating report data for {month_from}-{year}')
@@ -354,7 +354,7 @@ def generate_payslip_report(request, pp, user):
         employee=employee)
     report = 'Pay Slip'
     info_key = f'{period.payroll_key}S{employee.pk}'
-    user_reports = ExTraSummaryReportInfo.objects.filter(report_id=info_key).all()
+    user_reports = ExtraSummaryReportInfo.objects.filter(report_id=info_key).all()
 
     context = {
         'report': report,
@@ -381,7 +381,7 @@ def send_mass_mail(request):
             data = PayrollProcessors.objects.filter(payroll_period_id=payroll_period.id, employee=employee)
 
             info_key = f'{payroll_period.payroll_key}S{employee.pk}'
-            user_reports = ExTraSummaryReportInfo.objects.filter(report_id=info_key).all()
+            user_reports = ExtraSummaryReportInfo.objects.filter(report_id=info_key).all()
             context = {
                 'report': 'PaySlip',
                 'period': payroll_period,
@@ -479,10 +479,10 @@ def generate_reconciliation_report(request):
                     user_processors_data_2 = get_user_processors(context_2['period_processes'], employee)
 
                     logger.info(f'Getting user Extra reports for {employee}')
-                    period_one_extra_data = ExTraSummaryReportInfo.objects.filter(
+                    period_one_extra_data = ExtraSummaryReportInfo.objects.filter(
                         payroll_period=period_one).filter(employee=employee) \
                         .values('gross_earning', 'total_deductions', 'net_pay').first()
-                    period_two_extra_data = ExTraSummaryReportInfo.objects.filter(
+                    period_two_extra_data = ExtraSummaryReportInfo.objects.filter(
                         payroll_period=period_two).filter(employee=employee) \
                         .values('gross_earning', 'total_deductions', 'net_pay').first()
 
@@ -576,7 +576,7 @@ def generate_reconciliation_report(request):
                     user_processors_data_1 = get_user_processors(context_1['period_processes'], employee)
 
                     logger.info(f'Getting user Extra reports for {employee}')
-                    period_one_extra_data = ExTraSummaryReportInfo.objects.filter(
+                    period_one_extra_data = ExtraSummaryReportInfo.objects.filter(
                         payroll_period=period_one).filter(employee=employee) \
                         .values_list('gross_earning', 'total_deductions', 'net_pay').firs()
 
@@ -638,7 +638,7 @@ def generate_reconciliation_report(request):
                     user_processors_data_2 = get_user_processors(context_2['period_processes'], employee)
 
                     logger.info(f'Getting user Extra reports for {employee}')
-                    period_two_extra_data = ExTraSummaryReportInfo.objects.filter(
+                    period_two_extra_data = ExtraSummaryReportInfo.objects.filter(
                         payroll_period=period_two).filter(employee=employee) \
                         .values_list('gross_earning', 'total_deductions', 'net_pay').firs()
 

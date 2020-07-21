@@ -16,7 +16,7 @@ class Report(models.Model):
         abstract = True
 
 
-class ExTraSummaryReportInfo(Report):
+class ExtraSummaryReportInfo(Report):
     employee = models.ForeignKey('users.Employee', on_delete=models.SET_NULL, related_name='report', null=True, blank=True)
     analysis = models.CharField(max_length=150, null=True, blank=True)
     job_title = models.CharField(max_length=150, null=True, blank=True)

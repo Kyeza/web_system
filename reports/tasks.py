@@ -10,7 +10,7 @@ from django.utils.timezone import make_aware
 
 from payroll.models import PayrollPeriod
 from reports.helpers.mailer import Mailer
-from reports.models import ExTraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
+from reports.models import ExtraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
 from users.models import Employee, PayrollProcessors
 
 logger = logging.getLogger('payroll')
@@ -143,7 +143,7 @@ def initialize_report_generation(payroll_period_id, employees):
 def update_or_create_user_summary_report(report_id: str, user_info: Dict[str, Optional[Any]], net_pay: float,
                                          total_deductions: float, gross_earning: float,
                                          period_info: Dict[str, Optional[Any]]) -> None:
-    report, created = ExTraSummaryReportInfo.objects.get_or_create(report_id=report_id)
+    report, created = ExtraSummaryReportInfo.objects.get_or_create(report_id=report_id)
     report_count = report.earning_or_deduction.count()
 
     try:

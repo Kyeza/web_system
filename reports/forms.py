@@ -4,7 +4,7 @@ from django import forms
 
 from payroll.constants import PAYROLL_YEARS, MONTHS
 from payroll.models import PayrollCenter, PayrollPeriod
-from .models import ExTraSummaryReportInfo
+from .models import ExtraSummaryReportInfo
 
 
 class SummaryReportUpdateForm(forms.ModelForm):
@@ -28,7 +28,7 @@ class SummaryReportUpdateForm(forms.ModelForm):
     )
 
     class Meta:
-        model = ExTraSummaryReportInfo
+        model = ExtraSummaryReportInfo
         exclude = ['key']
 
 

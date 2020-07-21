@@ -22,6 +22,7 @@ from django.views.generic.list import ListView
 from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
+from reports.models import ExtraSummaryReportInfo
 from reports.tasks import update_or_create_user_summary_report, initialize_report_generation
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
@@ -507,6 +508,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     # removing any terminated employees before processing
     if users.exists() and user is None:
         if period_processes.exists():
+            ExtraSummaryReportInfo.objects.filter(payroll_period_id=payroll_period.id, employee__employment_status='TERMINATED').delete()
             for process in period_processes.iterator():
                 if process.employee.employment_status == 'TERMINATED':
                     process.delete()
