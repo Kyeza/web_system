@@ -18,14 +18,23 @@ from datetime import timedelta
 
 from celery.schedules import crontab
 
+import logging
 import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+sentry_logging = LoggingIntegration(
+    level=logging.DEBUG,        # Capture info and above as breadcrumbs
+    event_level=logging.ERROR  # Send errors as events
+)
+
 sentry_sdk.init(
     dsn="https://0f41ebf1f46241c6bc4601e1c68db378@o416035.ingest.sentry.io/5334317",
-    integrations=[DjangoIntegration()],
+    integrations=[DjangoIntegration(), RedisIntegration(), CeleryIntegration()],
 
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
