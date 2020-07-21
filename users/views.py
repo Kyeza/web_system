@@ -782,7 +782,7 @@ def process_payroll_period(request, pk, user=None):
 
     elif request.method == 'GET':
         payroll_period = get_object_or_404(PayrollPeriod, pk=pk)
-        if user is not None and not user.is_superuser:
+        if user is not None:
             employee = Employee.objects.get(pk=user)
             processor(payroll_period, user=employee)
         return redirect('reports:display-summary-report', payroll_period.id)
