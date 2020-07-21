@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Kyeza/web_system.svg?token=qpWxpMJp8QJhzw7jDjsy&branch=develop)](https://travis-ci.com/Kyeza/web_system)
+[![Build Status](https://travis-ci.com/Kyeza/web_system.svg?branch=uganda-master)](https://travis-ci.com/Kyeza/web_system)
 
 # PAYROLL SYSTEM
 
