@@ -22,7 +22,7 @@ from django.views.generic.list import ListView
 from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
-from reports.models import ExtraSummaryReportInfo
+from reports.models import ExtraSummaryReportInfo, TaxationReport, SocialSecurityReport, BankReport, LSTReport
 from reports.tasks import update_or_create_user_summary_report, initialize_report_generation
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
@@ -458,6 +458,19 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
         return context
 
 
+def delete_terminated_employees_reports(period_id):
+    ids_for_reports_to_delete = ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id,
+                                                                      employee__employment_status='TERMINATED') \
+        .values_list('report_id')
+    if ids_for_reports_to_delete:
+        ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
+        for report_id in ids_for_reports_to_delete.iterator():
+            TaxationReport.objects.filter(report_id=report_id[0]).delete()
+            SocialSecurityReport.objects.filter(report_id=report_id[0]).delete()
+            BankReport.objects.filter(report_id=report_id[0]).delete()
+            LSTReport.objects.filter(report_id=report_id[0]).delete()
+
+
 def processor(payroll_period, process_lst='False', method='GET', user=None):
     logger.debug(f'started processing')
     response = {}
@@ -508,7 +521,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     # removing any terminated employees before processing
     if users.exists() and user is None:
         if period_processes.exists():
-            ExtraSummaryReportInfo.objects.filter(payroll_period_id=payroll_period.id, employee__employment_status='TERMINATED').delete()
+            delete_terminated_employees_reports(payroll_period.id)
             for process in period_processes.iterator():
                 if process.employee.employment_status == 'TERMINATED':
                     process.delete()
