@@ -45,10 +45,11 @@ sentry_sdk.init(
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '141b364869dd5b23831d1cad86b05342'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -147,11 +148,11 @@ else:
                 'sql_mode': 'STRICT_TRANS_TABLES',
                 'isolation_level': 'read committed'
             },
-            'NAME': 'payroll_schema',
-            'USER': 'root',
-            'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
+            'NAME': os.environ.get('MYSQL_DATABASE'),
+            'USER': os.environ.get('MYSQL_USER'),
+            'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
+            'HOST': 'host.docker.internal',
+            'PORT': 3306,
         }
     }
 
@@ -247,12 +248,12 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_USER = 'uganda.payroll@savethechildren.org'
+EMAIL_HOST_PASSWORD = 'Welcome2'
+DEFAULT_FROM_EMAIL = 'uganda.payroll@savethechildren.org'
 
 CACHES = {
     'default': {
@@ -266,7 +267,7 @@ CACHE_MIDDLEWARE_SECONDS = 000
 CACHE_MIDDLEWARE_KEY_PREFIX = 'SCUIG'
 
 CELERY_ENABLE_UTC = True
-CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://redis:6379'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -286,7 +287,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
