@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "13306:3306"
+    volumes:
+      - local-data:/var/lib/mysql
+
+  web:
+    build: .
+    image: &payroll payroll
+    env_file:
+      - .env
+    command: daphne hr_system.asgi:application --port 8000 --bind 0.0.0.0
+    volumes:
+      - .:/code
+    expose:
+      - 8000
+    depends_on:
+      - db
+      - redis
+      - celery_worker
+
+  celery_worker:
+    build: .
+    image: *payroll
+    env_file:
+      - .env
+    command: celery -A hr_system worker --loglevel=info -E -Q celery,taxation_reports --uid=celery
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - db
+
+  redis:
+    image: 'redis:5.0.7-alpine'
+    ports:
+      - '16379:6379'
+    volumes:
+      - 'redisdata:/data'
+    depends_on:
+      - helper
+      - db
+    sysctls:
+      - net.core.somaxconn=511
+  helper:
+    image: alpine
+    command: sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+    privileged: true
+
+  nginx:
+    build: ./nginx
+    volumes:
+    - .:/code
+    ports:
+      - 80:80
+    depends_on:
+      - web
+
+volumes:
+  local-data:
+  redisdata:
