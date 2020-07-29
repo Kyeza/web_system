@@ -9,6 +9,9 @@ shell:
 test:
 	docker-compose exec web python manage.py test
 
+logs:
+	docker-compose logs -f
+
 superuser:
 	docker-compose exec web python manage.py createsuperuser
 
