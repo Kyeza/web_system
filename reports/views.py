@@ -31,7 +31,6 @@ def display_summary_report(request, pk):
 
 # generating summary data context
 def generate_summary_data(payroll_period):
-
     period_processes = ExtraSummaryReportInfo.objects.filter(payroll_period_id=payroll_period.id).all()
 
     context = {
@@ -125,28 +124,7 @@ def generate(payroll_period, report):
         .filter(payroll_period_id=payroll_period.pk).all() \
         .prefetch_related('employee__report', 'employee__report__payroll_period').all()
     if payroll_period:
-        if report == 'BANK' or report == 'SUMMARY':
-            results[payroll_period] = PayrollProcessors.objects \
-                .select_related('employee', 'payroll_period', 'payroll_period__payroll_center',
-                                'earning_and_deductions_type',
-                                'earning_and_deductions_category', 'employee__user', 'employee__job_title',
-                                'employee__duty_country',
-                                'employee__duty_station', 'employee__currency', 'employee__bank_1', 'employee__bank_2') \
-                .filter(payroll_period_id=payroll_period.pk).all() \
-                .prefetch_related('employee__report', 'employee__report__payroll_period').all()
-        elif report == 'LEGER_EXPORT':
-            results[payroll_period] = processors.exclude(amount=0)
-        elif report == 'LST':
-            p = processors.filter(earning_and_deductions_type_id=65).all()
-            results[payroll_period] = p
-        elif report == 'NSSF':
-            p = processors.filter(Q(earning_and_deductions_type_id=32) | Q(earning_and_deductions_type_id=31)).all()
-            results[payroll_period] = p
-        elif report == 'PAYE':
-            p = processors.filter(earning_and_deductions_type_id=61).all()
-            earnings = processors.filter(earning_and_deductions_type__ed_category=1)
-            results['earnings'] = earnings
-            results[payroll_period] = p
+        results[payroll_period] = processors.exclude(amount=0)
 
     logger.debug(f'{report} report --> results: {results}')
     return results
@@ -281,22 +259,23 @@ def generate_reports(request):
                         report_template = 'reports/gen_summary_report.html'
 
                     elif report == 'LEGER_EXPORT':
-                        extra_reports = ExtraSummaryReportInfo.objects.select_related('employee') \
-                            .filter(payroll_period_id=payroll_period.pk).all()
-                        if extra_reports.exists():
-                            logger.info(f'generating report data for {month_from}-{year}')
+                        if len(payroll_period_ids) == 1:
+                            extra_reports = ExtraSummaryReportInfo.objects.select_related('employee') \
+                                .filter(payroll_period_id__in=payroll_period_ids).all()
+                            if extra_reports.exists():
+                                logger.info(f'generating report data for {month_from}-{year}')
 
-                            results = generate(payroll_period, report)
+                                results = generate(payroll_period.first(), report)
 
-                            results = generate_leger_export(results, payroll_period)
+                                results = generate_leger_export(results, payroll_period.first())
 
-                            context = {
-                                'title': report.capitalize() + ' Report',
-                                'report': report,
-                                'results': results,
-                            }
+                                context = {
+                                    'title': 'LEDGER EXPORT',
+                                    'report': report,
+                                    'results': results,
+                                    'period': payroll_period.first()
+                                }
 
-                            if report == 'LEGER_EXPORT':
                                 num_months = {
                                     'JANUARY': 1,
                                     'FEBRUARY': 2,
@@ -311,11 +290,14 @@ def generate_reports(request):
                                     'NOVEMBER': 11,
                                     'DECEMBER': 12
                                 }
-                                context['trans_date'] = datetime.datetime(int(year), num_months[payroll_period.month],
-                                                                          28) \
+                                context['trans_date'] = datetime(int(year), num_months[payroll_period.first().month], 28)\
                                     .strftime("%d/%m/%Y")
 
-                            return render(request, 'reports/generated_report.html', context)
+                                return render(request, 'reports/generated_report.html', context)
+                            else:
+                                logger.error(f'Legder Report requires only one month')
+                                messages.error(request, f'Please ensure start and end month are the same')
+                                return redirect('reports:generate-reports')
 
                     context = {
                         'title': title,
@@ -327,11 +309,11 @@ def generate_reports(request):
                     return render(request, report_template, context)
                 else:
                     logger.error(f'PayrollPeriod ({payroll_period}) not processed yet!')
-                    messages.warning(request, f'PayrollPeriod ({payroll_period}) has not been processed yet!')
+                    messages.error(request, f'PayrollPeriod ({payroll_period}) has not been processed yet!')
                     return redirect('reports:generate-reports')
             else:
                 logger.error(f'PayrollPeriod ({[month_from, month_to]}) does not exist!')
-                messages.warning(request, f'Reports for PayrollPeriod({[month_from, month_to]}) don\'t exist.')
+                messages.error(request, f'Reports for PayrollPeriod({[month_from, month_to]}) don\'t exist.')
                 return redirect('reports:generate-reports')
     else:
         form = ReportGeneratorForm()
