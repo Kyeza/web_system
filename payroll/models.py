@@ -47,7 +47,9 @@ class EarningDeductionType(models.Model):
     agresso_type = models.CharField(max_length=50, null=True, blank=True, choices=AGGRESSO_TYPES)
     account_code = models.CharField(max_length=15, null=True, blank=True)
     debit_credit_sign = models.CharField(max_length=15, null=True, blank=True)
-    display_number = models.IntegerField(null=True, blank=True, default=0)
+    display_number = models.IntegerField(null=True, blank=True, default=1001)
+    usable = models.CharField(max_length=3, choices=YES_OR_NO_TYPES, null=True, 
+        default=YES_OR_NO_TYPES[1][0], verbose_name='Should this enumaration be added to current Payroll Period')
 
     def get_absolute_url(self):
         return reverse('payroll:ed-type-detail', kwargs={'pk': self.pk})

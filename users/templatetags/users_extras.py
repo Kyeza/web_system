@@ -1,6 +1,8 @@
 from django import template
 from django.db.models import Q
 
+from users.models import DisplayIdCounter
+
 register = template.Library()
 
 
@@ -12,14 +14,18 @@ def category(processors, category_id):
 
 @register.filter
 def category_display(processors):
+    display_id_setter = DisplayIdCounter.load()
+    upper_display_bound = display_id_setter.current_id + 1
+
     data = list(processors.filter(Q(earning_and_deductions_type__display_number__gt=1,
                                     earning_and_deductions_type__display_number__lt=7) |
                                   Q(earning_and_deductions_type__display_number__gt=6,
-                                    earning_and_deductions_type__display_number__lt=20))
+                                    earning_and_deductions_type__display_number__lt=upper_display_bound))
+                .exclude(earning_and_deductions_type__display_number=20)
                 .order_by('earning_and_deductions_type__display_number').select_related('earning_and_deductions_type')
                 .all().values_list('earning_and_deductions_type__display_number', 'amount'))
 
-    data = [(list(filter(lambda n: 1 < n[0] < 7, data)), list(filter(lambda n: 6 < n[0] < 20, data)))]
+    data = [(list(filter(lambda n: 1 < n[0] < 7, data)), list(filter(lambda n: 6 < n[0] < upper_display_bound, data)))]
     return data
 
 

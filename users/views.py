@@ -540,6 +540,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         try:
             logger.info(f'Processing for user {employee}')
             gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
+            chargeable_income, ge_minus_paye = 0, 0
             ge_data = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_category_id=1).all()
 
@@ -600,6 +601,37 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 raise EmptyLSTRatesTableError(
                     'There are currently no LST rates in the system to process the Payroll, Contact IT Administrator.',
                     line_number=exc_tb.tb_lineno)
+
+            # calculating the chargeable income
+            chargeable_income = gross_earnings - lst
+
+            # calculating PAYE from the chargeable income
+            logger.info(f'Processing for user {employee}: calculating PAYE')
+            try:
+                if paye_rates.count() != 0:
+                    tax_bracket, tax_rate, fixed_tax = 0, 0, 0
+                    for tx_brac in paye_rates.iterator():
+                        if int(chargeable_income) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
+                            tax_bracket = tx_brac.lower_boundary
+                            tax_rate = tx_brac.rate / 100
+                            fixed_tax = tx_brac.fixed_amount
+                            break
+                    paye = (chargeable_income - tax_bracket) * tax_rate + fixed_tax
+                else:
+                    raise EmptyPAYERatesTableError
+            except EmptyPAYERatesTableError as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                logger.error(f"Payroll Processing Error: {exc_type} on line:{exc_tb.tb_lineno}")
+                raise EmptyPAYERatesTableError(
+                    'There are currently no PAYE rates in the system to process the Payroll, Contact IT Administrator.',
+                    line_number=exc_tb.tb_lineno)
+
+            # update chargeable income
+            chargeable_income_processor = period_processes.filter(employee=employee) \
+                .filter(earning_and_deductions_type_id=79).first()
+            if chargeable_income_processor:
+                chargeable_income_processor.amount = chargeable_income
+                chargeable_income_processor.save(update_fields=['amount'])
 
             # calculating NSSF 5% and 10%
             logger.info(f'Processing for user {employee}: calculating NSSF')

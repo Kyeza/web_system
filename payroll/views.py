@@ -141,7 +141,7 @@ class PayrollPeriodForProcessing(LoginRequiredMixin, PermissionRequiredMixin, Li
 class EarningAndDeductionCreate(LoginRequiredMixin, CreateView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable', 'export', 'account_code',
-              'debit_credit_sign', 'account_name', 'agresso_type', 'factor', 'summarize']
+              'debit_credit_sign', 'account_name', 'agresso_type', 'factor', 'summarize', 'usable']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -152,7 +152,7 @@ class EarningAndDeductionCreate(LoginRequiredMixin, CreateView):
 class EarningAndDeductionUpdate(LoginRequiredMixin, UpdateView):
     model = EarningDeductionType
     fields = ['ed_type', 'description', 'ed_category', 'recurrent', 'taxable', 'export', 'account_code',
-              'debit_credit_sign', 'account_name', 'agresso_type', 'factor', 'summarize']
+              'debit_credit_sign', 'account_name', 'agresso_type', 'factor', 'summarize', 'usable']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

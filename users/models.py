@@ -296,3 +296,31 @@ class EmployeeProject(models.Model):
 
     def __str__(self):
         return f'{self.employee} project'
+
+
+class SingletonBaseModel(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonBaseModel, self).save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+class DisplayIdCounter(SingletonBaseModel):
+    start_id = models.PositiveIntegerField(default=1)
+    end_id = models.PositiveIntegerField(default=1000)
+    current_id = models.PositiveIntegerField(default=0)
+    previous_id = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'Display ID'
+
+    def __str__(self):
+        return f'Current Display ID: {str(self.current_id)}'
