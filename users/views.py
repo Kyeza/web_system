@@ -590,7 +590,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                             for lst_brac in lst_rates.iterator():
                                 if int(ge_minus_paye) in range(int(lst_brac.lower_boundary),
                                                                int(lst_brac.upper_boundary) + 1):
-                                    fixed_lst = lst_brac.fixed_amount / 4
+                                    fixed_lst = lst_brac.fixed_amount
                                     break
                     lst = fixed_lst
                 else:
