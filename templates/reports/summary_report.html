@@ -51,11 +51,11 @@
                         {% with report.earning_or_deduction.all|category_display as earning_and_deductions %}
                             {% for earnings, deductions in earning_and_deductions %}
                                 {% for e in earnings %}
-                                    <td>{{ e.1 }}</td>
+                                    <td>{{ e.1|intcomma }}</td>
                                 {% endfor %}
                                 <td>{{ report.gross_earning|intcomma }}</td>
                                 {% for d in deductions %}
-                                    <td>{{ d.1 }}</td>
+                                    <td>{{ d.1|intcomma }}</td>
                                 {% endfor %}
                             {% endfor %}
                         {% endwith %}
