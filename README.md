@@ -22,29 +22,29 @@ The System is customizable to an organizations needs and any changes can be made
 * Ensure you system has Make to read Make files for easy deployment.
 
 * Create .env files and provide the following enviroment variables
-    MYSQL_DATABASE=database_name
-    MYSQL_USER=database_user
-    MYSQL_PASSWORD=database_password
-    MYSQL_ROOT_PASSWORD=database_password
-    DEBUG=False/True
-    SECRET_KEY=secret_app_key
-    MYSQL_HOST=database_host
-    DEFAULT_FROM_EMAIL=default_email_sender
-    EMAIL_HOST_PASSWORD=email_host_password
-    EMAIL_HOST_USER=email_host_user
-    EMAIL_USE_TLS=True/False
-    EMAIL_PORT=email_host_port
-    EMAIL_HOST=email_host
-    EMAIL_BACKEND=email_host_backend
-    EMAIL_BACKEND=email_host_backend
+    * MYSQL_DATABASE=database_name
+    * MYSQL_USER=database_user
+    * MYSQL_PASSWORD=database_password
+    * MYSQL_ROOT_PASSWORD=database_password
+    * DEBUG=False/True
+    * SECRET_KEY=secret_app_key
+    * MYSQL_HOST=database_host
+    * DEFAULT_FROM_EMAIL=default_email_sender
+    * EMAIL_HOST_PASSWORD=email_host_password
+    * EMAIL_HOST_USER=email_host_user
+    * EMAIL_USE_TLS=True/False
+    * EMAIL_PORT=email_host_port
+    * EMAIL_HOST=email_host
+    * EMAIL_BACKEND=email_host_backend
+    * EMAIL_BACKEND=email_host_backend
+
+* Run the following command to deploy the application
+    * $ make deploy - builds and runs docker container
+    * $ make migrate - makes migrations and also runs the migrate command
+    * $ make logs - to view system logs
     
-  * Run the following command to deploy the application
-    $ make deploy - builds and runs docker container
-    $ make migrate - makes migrations and also runs the migrate command
-    $ make logs - to view system logs
-    
-  * Run the following command to run tests
-    $ make test 
+* Run the following command to run tests
+    * $ make test 
 
 ## Built With
 
