@@ -11,10 +11,10 @@ The System is customizable to an organizations needs and any changes can be made
 
 ### Summary of system features
 * Support for automated employee contract renewals
-* Authentication of comapny employees
-* Calculating months payroll enumarations for different taxes for employess
+* Authentication of company employees
+* Calculating monthly payroll enumarations for different taxes for employess
 * Automated emailing of monthly payslips to users
-* Generation of numerous financial reports e.g Bank reports, PAYE reports, Reconcilation reports
+* Generation of vatious financial reports e.g Bank reports, PAYE reports, Reconcilation reports
 * Reconciliation of ledgers for different monthly reports
 * Automated remainders for birtdays and messaging to employess with custom messages
 
