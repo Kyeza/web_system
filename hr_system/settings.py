@@ -45,11 +45,11 @@ sentry_sdk.init(
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', "secret")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG', True)
 
 ALLOWED_HOSTS = ['*']
 
@@ -148,10 +148,10 @@ else:
                 'sql_mode': 'STRICT_TRANS_TABLES',
                 'isolation_level': 'read committed'
             },
-            'NAME': os.environ.get('MYSQL_DATABASE'),
-            'USER': os.environ.get('MYSQL_USER'),
-            'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
-            'HOST': 'db',
+            'NAME': os.environ.get('MYSQL_DATABASE', "payroll_schema"),
+            'USER': os.environ.get('MYSQL_USER', "root"),
+            'PASSWORD': os.environ.get('MYSQL_PASSWORD', ""),
+            'HOST': os.environ.get('MYSQL_HOST', "localhost"),
             'PORT': 3306,
         }
     }
@@ -247,13 +247,13 @@ LOGGING = {
     }
 }
 
-EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_PORT = 587
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'uganda.payroll@savethechildren.org'
-EMAIL_HOST_PASSWORD = 'Welcome2'
-DEFAULT_FROM_EMAIL = 'uganda.payroll@savethechildren.org'
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 
 CACHES = {
     'default': {
