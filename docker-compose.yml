@@ -27,6 +27,7 @@ services:
       - celery_worker
 
   celery_worker:
+    restart: always
     build: .
     image: *payroll
     env_file:

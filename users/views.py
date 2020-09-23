@@ -459,16 +459,7 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
 
 
 def delete_terminated_employees_reports(period_id):
-    ids_for_reports_to_delete = ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id,
-                                                                      employee__employment_status='TERMINATED') \
-        .values_list('report_id')
-    if ids_for_reports_to_delete:
-        ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
-        for report_id in ids_for_reports_to_delete.iterator():
-            TaxationReport.objects.filter(report_id=report_id[0]).delete()
-            SocialSecurityReport.objects.filter(report_id=report_id[0]).delete()
-            BankReport.objects.filter(report_id=report_id[0]).delete()
-            LSTReport.objects.filter(report_id=report_id[0]).delete()
+    ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
 
 
 def processor(payroll_period, process_lst='False', method='GET', user=None):
