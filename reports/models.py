@@ -7,6 +7,8 @@ from users.models import Employee
 
 
 class Report(models.Model):
+    employee = models.ForeignKey('users.Employee', on_delete=models.SET_NULL, related_name='report', null=True,
+                                 blank=True)
     report_id = models.CharField(max_length=150, unique=True, db_index=True, primary_key=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
     period = models.DateTimeField(default=timezone.now, null=True, blank=True)
@@ -17,8 +19,6 @@ class Report(models.Model):
 
 
 class ExtraSummaryReportInfo(Report):
-    employee = models.ForeignKey('users.Employee', on_delete=models.SET_NULL, related_name='report', null=True,
-                                 blank=True)
     analysis = models.CharField(max_length=150, null=True, blank=True)
     job_title = models.CharField(max_length=150, null=True, blank=True)
     basic_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -44,8 +44,6 @@ class SocialSecurityReport(Report):
     gross_earning = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     nssf_5 = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     nssf_10 = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    summary_report = models.ForeignKey(ExtraSummaryReportInfo, on_delete=models.CASCADE,
-                                       related_name='social_summary_report', null=True, blank=True)
 
     @property
     def total_social_security(self):
@@ -64,8 +62,6 @@ class TaxationReport(Report):
     tin_number = models.CharField(max_length=30, null=True, blank=True)
     gross_earning = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     paye = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    summary_report = models.ForeignKey(ExtraSummaryReportInfo, on_delete=models.CASCADE,
-                                       related_name='taxation_summary_report', null=True, blank=True)
 
     class Meta:
         ordering = ['-period', 'staff_full_name']
@@ -83,8 +79,6 @@ class BankReport(Report):
     sort_code = models.CharField(max_length=15, null=True, blank=True)
     account_number = models.CharField(max_length=30, null=True, blank=True)
     net_pay = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    summary_report = models.ForeignKey(ExtraSummaryReportInfo, on_delete=models.CASCADE,
-                                       related_name='bank_summary_report', null=True, blank=True)
 
     class Meta:
         ordering = ['-period', 'staff_full_name']
@@ -99,8 +93,6 @@ class LSTReport(Report):
     duty_station = models.CharField(max_length=150, null=True, blank=True)
     gross_earning = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     lst = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    summary_report = models.ForeignKey(ExtraSummaryReportInfo, on_delete=models.CASCADE,
-                                       related_name='lst_summary_report', null=True, blank=True)
 
     class Meta:
         ordering = ['-period', 'staff_full_name']
