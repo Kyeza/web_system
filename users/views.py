@@ -1,6 +1,7 @@
 import logging
 import re
 import sys
+import time
 from builtins import super
 from decimal import Decimal
 
@@ -771,6 +772,9 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                                              total_deductions, gross_earnings, period_info)
 
         employees_reports_to_generate.append(employee.pk)
+
+    # delay for 2 minutes
+    time.sleep(120)
 
     # task to create other system reports in the background
     initialize_report_generation.delay(payroll_period.id, employees_reports_to_generate)
