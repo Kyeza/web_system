@@ -7,7 +7,7 @@ from users.models import Employee
 
 
 class Report(models.Model):
-    employee = models.ForeignKey('users.Employee', on_delete=models.SET_NULL, related_name='report', null=True,
+    employee = models.ForeignKey('users.Employee', on_delete=models.SET_NULL, null=True,
                                  blank=True)
     report_id = models.CharField(max_length=150, unique=True, db_index=True, primary_key=True)
     payroll_period = models.ForeignKey('payroll.PayrollPeriod', on_delete=models.SET_NULL, null=True, blank=True)
