@@ -627,7 +627,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             chargeable_income_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=79).first()
             if chargeable_income_processor:
-                chargeable_income_processor.amount = gross_earnings - lst
+                chargeable_income_processor.amount = chargeable_income
                 chargeable_income_processor.save(update_fields=['amount'])
 
             # calculating NSSF 5% and 10%
