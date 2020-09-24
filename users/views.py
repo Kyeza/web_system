@@ -620,9 +620,6 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 raise EmptyPAYERatesTableError(
                     'There are currently no PAYE rates in the system to process the Payroll, Contact IT Administrator.',
                     line_number=exc_tb.tb_lineno)
-            except Exception as err:
-                print(err.args)
-                raise
 
             # update chargeable income
             chargeable_income_processor = period_processes.filter(employee=employee) \
