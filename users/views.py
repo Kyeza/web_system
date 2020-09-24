@@ -621,11 +621,10 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     'There are currently no PAYE rates in the system to process the Payroll, Contact IT Administrator.',
                     line_number=exc_tb.tb_lineno)
 
-            logger.info(f'Processing for user {employee}: updating Chargeable income')
             # update chargeable income
             chargeable_income_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=79).first()
-            if chargeable_income_processor:
+            if chargeable_income_processor is not None:
                 chargeable_income_processor.amount = chargeable_income
                 chargeable_income_processor.save(update_fields=['amount'])
 
@@ -651,7 +650,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
             employee_lst_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=65).first()
-            if employee_lst_processor and process_lst == 'True':
+            if employee_lst_processor:
                 employee_lst_processor.amount = lst
                 employee_lst_processor.save(update_fields=['amount'])
 
