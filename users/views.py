@@ -752,7 +752,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 EmptyPAYERatesTableError, EmptyLSTRatesTableError, NoEmployeeInPayrollPeriodError,
                 NoEmployeeInSystemError):
             raise
-        except Exception:
+        except Exception as err:
+            print(err.args)
             exc_type, exc_obj, exc_tb = sys.exc_info()
             raise ProcessingDataError(str(employee), exc_type, exc_tb.tb_lineno)
 
