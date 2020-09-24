@@ -650,7 +650,11 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
             employee_lst_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=65).first()
-            if employee_lst_processor:
+            if employee_lst_processor and user is not None:
+                if employee_lst_processor.amount == 0 and lst > 0:
+                    employee_lst_processor.amount = lst
+                    employee_lst_processor.save(update_fields=['amount'])
+            elif employee_lst_processor and user is None:
                 employee_lst_processor.amount = lst
                 employee_lst_processor.save(update_fields=['amount'])
 
