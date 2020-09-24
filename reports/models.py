@@ -19,6 +19,8 @@ class Report(models.Model):
 
 
 class ExtraSummaryReportInfo(Report):
+    employee = models.ForeignKey('users.Employee', on_delete=models.SET_NULL, null=True,
+                                 blank=True, related_name='report')
     analysis = models.CharField(max_length=150, null=True, blank=True)
     job_title = models.CharField(max_length=150, null=True, blank=True)
     basic_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
