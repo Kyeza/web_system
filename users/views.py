@@ -22,7 +22,7 @@ from django.views.generic.list import ListView
 from hr_system.exception import ProcessingDataError, EmptyPAYERatesTableError, EmptyLSTRatesTableError, \
     NoEmployeeInPayrollPeriodError, NoEmployeeInSystemError
 from payroll.models import PayrollPeriod, PAYERates, PayrollCenterEds, LSTRates
-from reports.models import ExtraSummaryReportInfo
+from reports.models import ExtraSummaryReportInfo, SocialSecurityReport, TaxationReport, BankReport, LSTReport
 from reports.tasks import update_or_create_user_summary_report, initialize_report_generation
 from users.mixins import NeverCacheMixin
 from users.models import Employee, PayrollProcessors, CostCentre, SOF, DEA, EmployeeProject, Category, Project, \
@@ -460,6 +460,10 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
 
 def delete_terminated_employees_reports(period_id):
     ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
+    SocialSecurityReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
+    TaxationReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
+    BankReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
+    LSTReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
 
 
 def processor(payroll_period, process_lst='False', method='GET', user=None):
@@ -621,7 +625,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             chargeable_income_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=79).first()
             if chargeable_income_processor:
-                chargeable_income_processor.amount = chargeable_income
+                chargeable_income_processor.amount = gross_earnings - lst
                 chargeable_income_processor.save(update_fields=['amount'])
 
             # calculating NSSF 5% and 10%
