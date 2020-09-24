@@ -198,7 +198,7 @@ def update_or_create_user_social_security_report(report_id: str, user_info: Dict
         report.gross_earning = gross_earning
         report.nssf_5 = nssf_5
         report.nssf_10 = nssf_10
-        report.summary_report = report_id
+        report.summary_report.report_id = report_id
         report.save()
 
     except Exception as e:
@@ -216,7 +216,7 @@ def update_or_create_user_social_security_report(report_id: str, user_info: Dict
 def update_or_create_user_taxation_report(report_id: str, user_info: Dict[str, Optional[Any]], paye: float,
                                           gross_earning: float, period_info: Dict[str, Optional[Any]]) -> None:
     report, created = TaxationReport.objects.get_or_create(report_id=report_id)
-    report_count =  report.earning_or_deduction.count()
+    report_count = report.earning_or_deduction.count()
 
     try:
         logger.info(f"processing PAYE report for {user_info['staff_full_name']}")
@@ -226,7 +226,7 @@ def update_or_create_user_taxation_report(report_id: str, user_info: Dict[str, O
         report.tin_number = user_info['tin_number']
         report.gross_earning = gross_earning
         report.paye = paye
-        report.summary_report = report_id
+        report.summary_report.report_id = report_id
         report.save()
 
     except Exception as e:
@@ -272,7 +272,7 @@ def update_or_create_user_bank_report(report_id: str, user_info: Dict[str, Optio
                 report_1.sort_code = user_bank_info['sort_code_1']
                 report_1.account_number = user_bank_info['account_number_1']
                 report_1.net_pay = net_pay
-                report_1.summary_report = report_id
+                report_1.summary_report.report_id = report_id
                 report_1.save()
 
             except Exception as e:
@@ -297,7 +297,7 @@ def update_or_create_user_bank_report(report_id: str, user_info: Dict[str, Optio
                 report_2.sort_code = user_bank_info['sort_code_2']
                 report_2.account_number = user_bank_info['account_number_2']
                 report_2.net_pay = net_pay
-                report_2.summary_report = report_id
+                report_2.summary_report.report_id = report_id
                 report_2.save()
 
             except Exception as e:
@@ -324,7 +324,7 @@ def update_or_create_user_lst_report(report_id: str, user_info: Dict[str, Option
         report.duty_station = user_info['duty_station']
         report.gross_earning = gross_earning
         report.lst = lst
-        report.summary_report = report_id
+        report.summary_report.report_id = report_id
         report.save()
 
     except Exception as e:
