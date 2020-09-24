@@ -535,7 +535,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
         try:
             logger.info(f'Processing for user {employee}')
             gross_earnings, total_deductions, lst, paye, nssf, net_pay = 0, 0, 0, 0, 0, 0
-            chargeable_income, ge_minus_paye = 0, 0
+
             ge_data = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_category_id=1).all()
 
@@ -599,6 +599,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
 
             # calculating the chargeable income
             chargeable_income = gross_earnings - lst
+
+            print(f'>>>>>>>>>>>> Chargeable income: {chargeable_income}\n>>>>>>>>>>>> Gross income: {gross_earnings}')
 
             # calculating PAYE from the chargeable income
             logger.info(f'Processing for user {employee}: calculating PAYE')
