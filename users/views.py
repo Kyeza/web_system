@@ -616,6 +616,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                             tax_rate = tx_brac.rate / 100
                             fixed_tax = tx_brac.fixed_amount
                             break
+                    global paye
                     paye = (chargeable_income - tax_bracket) * tax_rate + fixed_tax
                 else:
                     raise EmptyPAYERatesTableError
