@@ -459,7 +459,8 @@ class SeparatedEmployeesListView(LoginRequiredMixin, NeverCacheMixin, Permission
 
 
 def delete_terminated_employees_reports(period_id):
-    ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
+    ExtraSummaryReportInfo.objects.filter(payroll_period_id=period_id,
+                                          employee__employment_status='TERMINATED').delete()
     SocialSecurityReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
     TaxationReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
     BankReport.objects.filter(payroll_period_id=period_id, employee__employment_status='TERMINATED').delete()
@@ -534,7 +535,8 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
     for employee in employees_in_period:
         try:
             logger.info(f'Processing for user {employee}')
-            gross_earnings, total_deductions, lst, paye, nssf, net_pay, chargeable_income = 0, 0, 0, 0, 0, 0, 0
+            gross_earnings, total_deductions, lst, paye, paye_from_chargeable_income, \
+                nssf, net_pay, chargeable_income = 0, 0, 0, 0, 0, 0, 0, 0
 
             ge_data = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_category_id=1).all()
@@ -611,13 +613,13 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                 if paye_rates.count() != 0:
                     tax_bracket, tax_rate, fixed_tax = 0, 0, 0
                     for tx_brac in paye_rates.iterator():
-                        if int(chargeable_income) in range(int(tx_brac.lower_boundary), int(tx_brac.upper_boundary) + 1):
+                        if int(chargeable_income) in range(int(tx_brac.lower_boundary),
+                                                           int(tx_brac.upper_boundary) + 1):
                             tax_bracket = tx_brac.lower_boundary
                             tax_rate = tx_brac.rate / 100
                             fixed_tax = tx_brac.fixed_amount
                             break
-                    global paye
-                    paye = (chargeable_income - tax_bracket) * tax_rate + fixed_tax
+                    paye_from_chargeable_income = (chargeable_income - tax_bracket) * tax_rate + fixed_tax
                 else:
                     raise EmptyPAYERatesTableError
             except EmptyPAYERatesTableError as e:
@@ -648,7 +650,7 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
             employee_paye_processor = period_processes.filter(employee=employee) \
                 .filter(earning_and_deductions_type_id=61).first()
             if employee_paye_processor:
-                employee_paye_processor.amount = paye
+                employee_paye_processor.amount = paye_from_chargeable_income
                 employee_paye_processor.save(update_fields=['amount'])
 
             # update LST if exists in payroll center
