@@ -598,7 +598,12 @@ def processor(payroll_period, process_lst='False', method='GET', user=None):
                     line_number=exc_tb.tb_lineno)
 
             # calculating the chargeable income
-            chargeable_income = gross_earnings - lst
+            if user is None:
+                chargeable_income = gross_earnings - lst
+            else:
+                current_users_lst = period_processes.filter(employee=employee) \
+                    .filter(earning_and_deductions_type_id=65).first()
+                chargeable_income = gross_earnings - current_users_lst.amount
 
             # calculating PAYE from the chargeable income
             logger.info(f'Processing for user {employee}: calculating PAYE')
