@@ -297,3 +297,9 @@ CELERY_CREATE_MISSING_QUEUES = True
 CELERY_TASK_ROUTES = {
     "reports.tasks.update_or_create_user_taxation_report": {"queue": "taxation_reports"}
 }
+
+if 'loaddata' in sys.argv:
+    # only change this for loaddata command.
+    DATABASES['default']['OPTIONS'] = {
+       "init_command": "SET foreign_key_checks = 0;",
+    }
