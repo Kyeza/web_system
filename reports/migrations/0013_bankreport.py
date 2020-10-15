@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('payroll', '0007_auto_20200602_0958'),
-        ('reports', '0012_socialsecurityreport'),
+        ('reports', '0009_auto_20200604_1430'),
     ]
 
     operations = [
