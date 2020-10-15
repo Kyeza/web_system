@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0016_auto_20200924_0845'),
-        ('reports', '0016_auto_20200924_0845'),
+        # ('reports', '0016_auto_20200924_0845'),
     ]
 
     operations = [
