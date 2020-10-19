@@ -131,9 +131,6 @@ if os.getenv('GAE_APPLICATION', None):
             'USER': 'root',
             'PASSWORD': 'Kam12345',
             'NAME': 'payroll_schema',
-            'OPTIONS': {
-                "init_command": "SET foreign_key_checks = 0;",
-            },
         }
     }
 else:
@@ -147,7 +144,8 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'OPTIONS': {
-                'init_command': 'SET default_storage_engine=INNODB',
+                'init_command': 'SET default_storage_engine=INNODB; \
+                                        SET foreign_key_checks = 0;',
                 'sql_mode': 'STRICT_TRANS_TABLES',
                 'isolation_level': 'read committed'
             },
