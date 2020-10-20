@@ -144,10 +144,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'OPTIONS': {
-                'init_command': 'SET default_storage_engine=INNODB; \
-                                        SET foreign_key_checks = 0;',
-                'sql_mode': 'STRICT_TRANS_TABLES',
-                'isolation_level': 'read committed'
+                'init_command': 'SET foreign_key_checks=0;',
             },
             'NAME': os.environ.get('MYSQL_DATABASE', "payroll_schema"),
             'USER': os.environ.get('MYSQL_USER', "root"),
