@@ -65,15 +65,14 @@ services:
       - web
 
   phpmyadmin:
-    depends_on:
-      - db
     image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
     restart: always
     ports:
-      - 8081:81
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      - 8082:80
+    volumes:
+      - /sessions
 
 volumes:
   local-data:
