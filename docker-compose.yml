@@ -70,7 +70,7 @@ services:
       - PMA_ARBITRARY=1
     restart: always
     ports:
-      - 8082:80
+      - "8082:8082"
     volumes:
       - /sessions
 
