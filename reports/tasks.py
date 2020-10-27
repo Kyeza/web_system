@@ -118,9 +118,9 @@ def initialize_report_generation(payroll_period_id, employees):
         nssf_5 = nssf_10 = 0
         if employee.social_security == 'YES':
             nssf_10 = period_processes.filter(employee=employee, earning_and_deductions_type_id=31)\
-                .values_list('amount').first()
+                .values_list('amount').first()[0]
             nssf_5 = period_processes.filter(employee=employee, earning_and_deductions_type_id=32)\
-                .values_list('amount').first()
+                .values_list('amount').first()[0]
 
         report = employee.report.filter(payroll_period_id=payroll_period_id).values('gross_earning', 'net_pay').first()
 
@@ -129,7 +129,7 @@ def initialize_report_generation(payroll_period_id, employees):
         lst = period_processes.filter(employee=employee, earning_and_deductions_type_id=65)\
             .values_list('amount').first()
 
-        update_or_create_user_social_security_report.delay(report_id, user_info, nssf_5[0], nssf_10[0],
+        update_or_create_user_social_security_report.delay(report_id, user_info, nssf_5, nssf_10,
                                                            report['gross_earning'], period_info)
         update_or_create_user_taxation_report.delay(report_id, user_info, paye[0], report['gross_earning'], period_info)
 
