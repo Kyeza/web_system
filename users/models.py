@@ -184,7 +184,7 @@ class PayrollProcessors(models.Model):
                                                         on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2, null=True,
                                  blank=True, db_index=True, default=0)
-    summary_report = models.ForeignKey('reports.ExTraSummaryReportInfo',
+    summary_report = models.ForeignKey('reports.ExtraSummaryReportInfo',
                                        on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='earning_or_deduction')
     taxation_report = models.ForeignKey('reports.TaxationReport',
