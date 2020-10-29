@@ -32,7 +32,7 @@ services:
     image: *payroll
     env_file:
       - .env
-    command: celery -A hr_system worker --loglevel=info -E -Q celery,taxation_reports --uid=celery
+    command: celery -A hr_system worker -B --loglevel=info -E -Q celery,taxation_reports --uid=celery
     volumes:
       - .:/code
     depends_on:
