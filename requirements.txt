@@ -11,7 +11,7 @@ billiard==3.6.3.0
 bootstrap4==0.1.0
 cairocffi==1.1.0
 CairoSVG==2.4.2
-celery==4.4.2
+celery==5.2.2
 certifi==2020.6.20
 cffi==1.14.0
 channels==2.4.0
